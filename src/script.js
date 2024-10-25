@@ -20,7 +20,7 @@ const scene = new THREE.Scene();
 ** Grid Helper 
 */
 const gridHelper = new THREE.GridHelper(50, 50); 
-// scene.add(gridHelper); 
+scene.add(gridHelper); 
 
 /*
 ** Objects
