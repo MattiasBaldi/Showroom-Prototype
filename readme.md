@@ -3,7 +3,7 @@
 Dette er en generel opsætning af et showroom med joystick og basic controls.
 ---
 
-## Content 
+## Content ##
 
 - Catwalk
 - Showroom
