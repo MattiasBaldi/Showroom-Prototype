@@ -11,7 +11,6 @@ let walkAxis = 'x';
 let walkSpeed = 1;
 let walkStart = 0;
 let walkEnd = 1; 
-let catWalk = null;  
 
 // First person controls parameters
 let moveForward = false;
@@ -51,10 +50,10 @@ const debugUI = {
 };
 
 const characterDebug = gui.addFolder('Character Control'); 
-characterDebug.add(debugUI, 'walkSpeed').min(0).max(20).step(0.01); 
+characterDebug.add(debugUI, 'walkSpeed').min(0).max(5).step(0.01); 
 characterDebug.add(debugUI, 'walkAxis', ['x', 'y', 'z']);
-characterDebug.add(debugUI, 'walkStart').min(0).max(10).step(1);
-characterDebug.add(debugUI, 'walkEnd').min(0).max(10).step(1);
+characterDebug.add(debugUI, 'walkStart').min(0).max(100).step(1);
+characterDebug.add(debugUI, 'walkEnd').min(0).max(100).step(1);
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl');
@@ -237,7 +236,6 @@ const sculpture = new THREE.Mesh(geometry, material);
 sculpture.position.set(10, 3, 10)
 scene.add(sculpture);
 
-
 // Character
 let mixer = null; 
 let model = null; 
@@ -303,6 +301,8 @@ gltfLoader.load('walking_test.glb',
     }
 );
 
+// Catwalk
+
 /*
 ** Light
 */
@@ -338,15 +338,14 @@ const renderer = new THREE.WebGLRenderer({canvas: canvas})
 renderer.setSize(sizes.width, sizes.height); 
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
 
+// Catwalk visualization
+let catWalkLine = null;
 
 /*
 ** Animation Loop 
 */
 const clock = new THREE.Clock(); 
 let previousTime = 0; 
-
-// Test
-// console.log(walkSpeed); 
 
 const animationLoop = () => 
 {
@@ -401,7 +400,26 @@ const animationLoop = () =>
             const fade = Math.sin(walkPercentage * Math.PI);
             material1.opacity = fade;
             material2.opacity = fade;
-                
+
+             // Visualize catWalk
+            if (catWalkLine) 
+            {
+            scene.remove(catWalkLine);
+            catWalkLine.geometry.dispose();
+            catWalkLine.material.dispose();
+            }
+
+            const catWalkVertices = new Float32Array([
+            walkStart, model.position.y - 1, model.position.z,
+            walkEnd, model.position.y - 1, model.position.z
+            ]);
+
+            const catWalkGeometry = new THREE.BufferGeometry();
+            catWalkGeometry.setAttribute('position', new THREE.BufferAttribute(catWalkVertices, 3));
+            const catWalkMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+            catWalkLine = new THREE.Line(catWalkGeometry, catWalkMaterial);
+            scene.add(catWalkLine);
+            
         }
 
     // Update renderer
