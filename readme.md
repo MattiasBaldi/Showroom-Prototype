@@ -10,3 +10,8 @@ Dette er en standard opsætning af et showroom med joystick og basic controls.
 - Spinning Sculpture
 
 ...
+
+
+## Bugs list
+
+-
