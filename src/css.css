@@ -4,10 +4,47 @@
 }
 
 .webgl {
-
+    position: fixed; 
 }
 
-html, body {
-    margin: 0; 
-    padding: 0;
+#blocker {
+    position: absolute; 
+    width: 100vw; 
+    height: 100vh;
+    color: white; 
+    z-index: 2; 
+    background-color: rgba(0, 0, 0, 0.5);
 }
+
+#instructions {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: helvetica neue; 
+}
+
+/*
+#blocker {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+#instructions {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+}
+/*
