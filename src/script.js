@@ -8,9 +8,9 @@ import { PointerLockControls } from 'three/addons/controls/PointerLockControls.j
 
 // Character Walking Parameters
 let walkAxis = 'x'; 
-let walkSpeed = 1;
+let walkSpeed = 0.8;
 let walkStart = 0;
-let walkEnd = 1; 
+let walkEnd = 15; 
 
 // First person controls parameters
 let moveForward = false;
@@ -64,6 +64,13 @@ const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene(); 
 
 /*
+** Sound 
+*/
+const sound = new Audio('./sounds/Break_Well.mp3')
+sound.loop = true;
+sound.volume = 0.5;
+
+/*
 ** Sizes 
 */
 const sizes = 
@@ -98,8 +105,8 @@ scene.add(camera);
 /*
 ** Grid Helper 
 */
-const gridHelper = new THREE.GridHelper(50, 50); 
-scene.add(gridHelper);
+// const gridHelper = new THREE.GridHelper(50, 50); 
+// scene.add(gridHelper);
 
 /*
 ** Controls 
@@ -109,7 +116,6 @@ const controls = new PointerLockControls(camera, canvas);
 const fullscreen = document.querySelector('button.full-screen'); 
 const blocker = document.getElementById('blocker'); 
 const instructions = document.getElementById('instructions'); 
-
 
 // Fullscreen mode
 fullscreen.addEventListener('click', async () => {
@@ -130,9 +136,9 @@ fullscreen.addEventListener('click', async () => {
 });
 
 // Activate controls vs. active instructions/menu
-blocker.addEventListener('click', () => 
-{
+blocker.addEventListener('click', async () => {
     controls.lock();
+    sound.play(); 
 }); 
 
 controls.addEventListener('lock', () => 
@@ -212,10 +218,36 @@ const onKeyUp = function ( event ) {
 document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
 
-
 /*
 ** Objects
 */
+
+// catWalk Group
+const catWalkGroup = new THREE.Group(); 
+
+// Video
+var video = document.getElementById('video');
+video.muted = true; // Mute the video
+video.loop = true; // Loop the video
+
+var texture = new THREE.VideoTexture(video);
+texture.needsUpdate;
+texture.minFilter = THREE.LinearFilter;
+texture.magFilter = THREE.LinearFilter;
+texture.format = THREE.RGBFormat;
+texture.crossOrigin = 'anonymous';
+
+const videoPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(10,10),
+    new THREE.MeshBasicMaterial({ map: texture }),);
+videoPlane.rotation.y = Math.PI * 0.5; 
+videoPlane.position.x = 0.5; 
+videoPlane.position.y = 5; 
+catWalkGroup.add( videoPlane );
+
+video.src = "./videos/PLN.mp4";
+video.load();
+video.play();
 
 // Cube
 const cube = new THREE.Mesh
@@ -230,11 +262,26 @@ new THREE.MeshStandardMaterial(
 // scene.add(cube); 
 
 // Sculpture
+const sculptureGroup = new THREE.Group()
+
 const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
-const material = new THREE.MeshStandardMaterial({ color: 'white', metalness: 0.5, roughness: 0.1 });
+const material = new THREE.MeshStandardMaterial({ color: 'white', metalness: 0.5, roughness: 0.01 });
 const sculpture = new THREE.Mesh(geometry, material);
-sculpture.position.set(10, 3, 10)
-scene.add(sculpture);
+sculpture.position.set(0, 3, 0)
+sculptureGroup.add(sculpture);
+
+// Sculpture light
+const sculptureLight = new THREE.SpotLight('white', 10, 20, Math.PI * 0.5, 0.05, 3)
+sculptureLight.position.set(0, 0, 0)
+sculptureLight.target = sculpture;
+sculptureGroup.add(sculptureLight);
+
+// Light Helper
+const spotLightHelper = new THREE.SpotLightHelper(sculptureLight); 
+// sculptureGroup.add(spotLightHelper);
+
+sculptureGroup.position.set(25, 0, 25); 
+scene.add(sculptureGroup)
 
 // Character
 let mixer = null; 
@@ -254,13 +301,17 @@ gltfLoader.load('walking_test.glb',
 
         // add model
         model.rotation.y += Math.PI * 0.5;
-        scene.add(model);
+        catWalkGroup.add(model);
 
         // allow transparency
         material1 = model.children[0].children[0].material
         material2 = model.children[0].children[1].material
         material1.transparent = true; 
         material2.transparent = true; 
+        material1.roughness = 0; 
+        material2.roughness = 0; 
+        material1.metalness = 0.7; 
+        material2.metalness = 0.7; 
 
         // Animation
         mixer = new THREE.AnimationMixer(model);
@@ -273,9 +324,7 @@ gltfLoader.load('walking_test.glb',
             'scene: ', characterScene, '\n' + 
             'model: ', model, '\n' + 
             'Animation: ', animation, '\n' +
-            'Action', action, '\n' + 
-            'Duration: ', animation.duration, '\n' +
-            'Opacity: ', material1.opacity, '\n'
+            'Action', action, '\n'
         ); 
         
         // Skeleton
@@ -301,35 +350,45 @@ gltfLoader.load('walking_test.glb',
     }
 );
 
-// Catwalk
-
 /*
 ** Light
 */
 const lights = new THREE.Group(); 
-const intensity = 30; 
-const height = 20; 
-const width = 2.5; 
+const intensity = 10; 
+const height = 10; 
+const width = 1.5; 
 
-// Light One
-const rectAreaLight = new THREE.RectAreaLight('white', intensity, height, width); 
-rectAreaLight.position.set(0, 1, 5)
-rectAreaLight.rotation.x += Math.PI * 0.15; 
+// // Light One
+// const rectAreaLight = new THREE.RectAreaLight('white', intensity, width, height); 
+// rectAreaLight.position.set(0, 1, 5)
+// rectAreaLight.rotation.x += Math.PI * 0.15; 
 
-// Light two
-const rectAreaLight2 = new THREE.RectAreaLight('white', intensity, height, width); 
-rectAreaLight2.position.set(0, 1, -5)
-rectAreaLight2.rotation.x += Math.PI; 
-rectAreaLight2.rotation.x += - Math.PI * 0.15; 
+const catWalkLight = new THREE.SpotLight('grey', 80, 4, 0.6, 0.5, 0)
+catWalkLight.position.set(0, -1, 0)
+
+const catWalkLight2 = new THREE.SpotLight('grey', 20, 4, 0.6, 0.5, 0)
+catWalkLight2.position.set(0, 5, 0)
+
+catWalkGroup.add(catWalkLight, catWalkLight2); 
+
+// Helpers
+// const catWalkLightHelper = new THREE.SpotLightHelper(catWalkLight)
+// const catWalkLightHelper2 = new THREE.SpotLightHelper(catWalkLight2)
+// catWalkGroup.add(catWalkLightHelper, catWalkLightHelper2); 
+
+// // Light two
+// const rectAreaLight2 = new THREE.RectAreaLight('white', intensity, width, height); 
+// rectAreaLight2.position.set(0, 1, -5)
+// rectAreaLight2.rotation.x += Math.PI; 
+// rectAreaLight2.rotation.x += - Math.PI * 0.15; 
 
 // Light Helper
-const rectLightHelper = new RectAreaLightHelper(rectAreaLight);
-const rectLightHelper2 = new RectAreaLightHelper(rectAreaLight2);
+// const rectLightHelper = new RectAreaLightHelper(rectAreaLight);
+// const rectLightHelper2 = new RectAreaLightHelper(rectAreaLight2);
 
 // lights.add(rectLightHelper, rectLightHelper2);
-lights.add(rectAreaLight, rectAreaLight2);
-scene.add(lights); 
-
+// lights.add(rectAreaLight, rectAreaLight2);
+// catWalkGroup.add(lights); 
 
 /*
 ** Renderer 
@@ -337,9 +396,11 @@ scene.add(lights);
 const renderer = new THREE.WebGLRenderer({canvas: canvas})
 renderer.setSize(sizes.width, sizes.height); 
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+renderer.shadowMap.enabled = true; 
 
-// Catwalk visualization
+// Catwalk group
 let catWalkLine = null;
+scene.add(catWalkGroup); 
 
 /*
 ** Animation Loop 
@@ -391,9 +452,9 @@ const animationLoop = () =>
 
             // Reset walking
             if (model.position[walkAxis] > walkEnd)
-                {
-                    model.position[walkAxis] = walkStart; 
-                }
+            {
+                model.position[walkAxis] = walkStart; 
+            }
 
             //Fade model in and out
             const walkPercentage = model.position[walkAxis] / (walkStart + walkEnd);
@@ -402,25 +463,38 @@ const animationLoop = () =>
             material2.opacity = fade;
 
              // Visualize catWalk
-            if (catWalkLine) 
-            {
-            scene.remove(catWalkLine);
-            catWalkLine.geometry.dispose();
-            catWalkLine.material.dispose();
-            }
+            // if (catWalkLine) 
+            // {
+            // catWalkGroup.remove(catWalkLine);
+            // catWalkLine.geometry.dispose();
+            // catWalkLine.material.dispose();
+            // }
 
-            const catWalkVertices = new Float32Array([
-            walkStart, model.position.y - 1, model.position.z,
-            walkEnd, model.position.y - 1, model.position.z
-            ]);
+            // const catWalkVertices = new Float32Array([
+            // walkStart, model.position.y - 1, model.position.z,
+            // walkEnd, model.position.y - 1, model.position.z
+            // ]);
 
-            const catWalkGeometry = new THREE.BufferGeometry();
-            catWalkGeometry.setAttribute('position', new THREE.BufferAttribute(catWalkVertices, 3));
-            const catWalkMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
-            catWalkLine = new THREE.Line(catWalkGeometry, catWalkMaterial);
-            scene.add(catWalkLine);
-            
+            // const catWalkGeometry = new THREE.BufferGeometry();
+            // catWalkGeometry.setAttribute('position', new THREE.BufferAttribute(catWalkVertices, 3));
+            // const catWalkMaterial = new THREE.LineBasicMaterial({ });
+            // catWalkLine = new THREE.Line(catWalkGeometry, catWalkMaterial);
+            // catWalkGroup.add(catWalkLine);
+
+            // Points light at model
+            catWalkLight.target = model;
+            catWalkLight.position[walkAxis] = model.position[walkAxis];
+            // catWalkLightHelper.position[walkAxis] = model.position[walkAxis];
+            // catWalkLightHelper.update();
+
+            catWalkLight2.target = model;
+            catWalkLight2.position[walkAxis] = model.position[walkAxis];
+            // catWalkLightHelper2.position[walkAxis] = model.position[walkAxis];
+            // catWalkLightHelper2.update();
         }
+
+    // Put Cat Walk light on model
+    // catWalkLight.position = model.position
 
     // Update renderer
     renderer.render(scene, camera); 
