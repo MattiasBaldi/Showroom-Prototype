@@ -225,6 +225,22 @@ document.addEventListener( 'keyup', onKeyUp );
 // catWalk Group
 const catWalkGroup = new THREE.Group(); 
 
+// Floor
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(50, 50),
+    new THREE.MeshStandardMaterial(
+    {  
+        color: 'white', 
+        // roughness: 0.1,
+        // metalness: 0.7
+    })
+)
+
+floor.receiveShadow = true; 
+floor.rotation.x = Math.PI * - 0.5; 
+floor.position.x = 3; 
+scene.add(floor)
+
 // Video
 var video = document.getElementById('video');
 video.muted = true; // Mute the video
@@ -271,7 +287,7 @@ sculpture.position.set(0, 3, 0)
 sculptureGroup.add(sculpture);
 
 // Sculpture light
-const sculptureLight = new THREE.SpotLight('white', 10, 20, Math.PI * 0.5, 0.05, 3)
+const sculptureLight = new THREE.SpotLight('white', 10, 20, Math.PI * 0.5, 0.05, )
 sculptureLight.position.set(0, 0, 0)
 sculptureLight.target = sculpture;
 sculptureGroup.add(sculptureLight);
@@ -313,6 +329,12 @@ gltfLoader.load('walking_test.glb',
         material1.metalness = 0.7; 
         material2.metalness = 0.7; 
 
+        // Shadow
+        model.children[0].children[0].castShadow = true;
+        model.children[0].children[1].castShadow = true;
+        // model.children[0].children[0].receiveShadow = true;
+        // model.children[0].children[1].receiveShadow = true;  
+
         // Animation
         mixer = new THREE.AnimationMixer(model);
         animation = gltf.animations[0];
@@ -353,28 +375,42 @@ gltfLoader.load('walking_test.glb',
 /*
 ** Light
 */
-const lights = new THREE.Group(); 
-const intensity = 10; 
-const height = 10; 
-const width = 1.5; 
-
-// // Light One
-// const rectAreaLight = new THREE.RectAreaLight('white', intensity, width, height); 
-// rectAreaLight.position.set(0, 1, 5)
-// rectAreaLight.rotation.x += Math.PI * 0.15; 
 
 const catWalkLight = new THREE.SpotLight('grey', 80, 4, 0.6, 0.5, 0)
 catWalkLight.position.set(0, -1, 0)
 
-const catWalkLight2 = new THREE.SpotLight('grey', 20, 4, 0.6, 0.5, 0)
+const catWalkLight2 = new THREE.SpotLight('grey', 20, 6, 0.6, 0.5, 0)
 catWalkLight2.position.set(0, 5, 0)
+
+catWalkLight.castShadow = true; 
+catWalkLight2.castShadow = true; 
+
+catWalkLight.shadow.mapSize.width = 512; 
+catWalkLight.shadow.mapSize.height = 512; 
+// catWalkLight.shadow.camera.near = 1; 
+// catWalkLight.shadow.camera.far = 5; 
+
+catWalkLight2.shadow.mapSize.width = 512; 
+catWalkLight2.shadow.mapSize.height = 512; 
+// catWalkLight2.shadow.camera.near = 1; 
+// catWalkLight2.shadow.camera.far = 5; 
+// Helpers
+const catWalkLightHelper = new THREE.SpotLightHelper(catWalkLight)
+const catWalkLightHelper2 = new THREE.SpotLightHelper(catWalkLight2)
+catWalkGroup.add(catWalkLightHelper, catWalkLightHelper2); 
 
 catWalkGroup.add(catWalkLight, catWalkLight2); 
 
-// Helpers
-// const catWalkLightHelper = new THREE.SpotLightHelper(catWalkLight)
-// const catWalkLightHelper2 = new THREE.SpotLightHelper(catWalkLight2)
-// catWalkGroup.add(catWalkLightHelper, catWalkLightHelper2); 
+// // Rect Area Light
+// const lights = new THREE.Group(); 
+// const intensity = 10; 
+// const height = 10; 
+// const width = 1.5; 
+
+// // // Light One
+// const rectAreaLight = new THREE.RectAreaLight('white', intensity, width, height); 
+// rectAreaLight.position.set(0, 1, 5)
+// rectAreaLight.rotation.x += Math.PI * 0.15; 
 
 // // Light two
 // const rectAreaLight2 = new THREE.RectAreaLight('white', intensity, width, height); 
@@ -382,7 +418,7 @@ catWalkGroup.add(catWalkLight, catWalkLight2);
 // rectAreaLight2.rotation.x += Math.PI; 
 // rectAreaLight2.rotation.x += - Math.PI * 0.15; 
 
-// Light Helper
+// // Light Helper
 // const rectLightHelper = new RectAreaLightHelper(rectAreaLight);
 // const rectLightHelper2 = new RectAreaLightHelper(rectAreaLight2);
 
@@ -484,13 +520,15 @@ const animationLoop = () =>
             // Points light at model
             catWalkLight.target = model;
             catWalkLight.position[walkAxis] = model.position[walkAxis];
+            catWalkLight2.target = model;
+            catWalkLight2.position[walkAxis] = model.position[walkAxis];
+
+            //Light Helper
+            // catWalkLightHelper2.position[walkAxis] = model.position[walkAxis];
+            // catWalkLightHelper2.update();
             // catWalkLightHelper.position[walkAxis] = model.position[walkAxis];
             // catWalkLightHelper.update();
 
-            catWalkLight2.target = model;
-            catWalkLight2.position[walkAxis] = model.position[walkAxis];
-            // catWalkLightHelper2.position[walkAxis] = model.position[walkAxis];
-            // catWalkLightHelper2.update();
         }
 
     // Put Cat Walk light on model
