@@ -50,7 +50,7 @@ const debugUI = {
 };
 
 const characterDebug = gui.addFolder('Character Control'); 
-characterDebug.add(debugUI, 'walkSpeed').min(0).max(5).step(0.01); 
+characterDebug.add(debugUI, 'walkSpeed').min(0).max(100).step(0.01); 
 characterDebug.add(debugUI, 'walkAxis', ['x', 'y', 'z']);
 characterDebug.add(debugUI, 'walkStart').min(0).max(100).step(1);
 characterDebug.add(debugUI, 'walkEnd').min(0).max(100).step(1);
@@ -107,6 +107,10 @@ scene.add(camera);
 */
 // const gridHelper = new THREE.GridHelper(50, 50); 
 // scene.add(gridHelper);
+
+// Ambient light for positioning
+const ambientLight = new THREE.AmbientLight('white', 0.1); 
+scene.add(ambientLight); 
 
 /*
 ** Controls 
@@ -188,6 +192,7 @@ const onKeyDown = function ( event ) {
     }
 
 };
+
 const onKeyUp = function ( event ) {
 
     switch ( event.code ) {
@@ -239,7 +244,7 @@ const floor = new THREE.Mesh(
 floor.receiveShadow = true; 
 floor.rotation.x = Math.PI * - 0.5; 
 floor.position.x = 3; 
-scene.add(floor)
+// scene.add(floor)
 
 // Video
 var video = document.getElementById('video');
@@ -278,17 +283,16 @@ new THREE.MeshStandardMaterial(
 // scene.add(cube); 
 
 // Sculpture
-const sculptureGroup = new THREE.Group()
-
+const sculptureGroup = new THREE.Group();
 const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
 const material = new THREE.MeshStandardMaterial({ color: 'white', metalness: 0.5, roughness: 0.01 });
 const sculpture = new THREE.Mesh(geometry, material);
-sculpture.position.set(0, 3, 0)
-sculptureGroup.add(sculpture);
+sculpture.position.set(0, 3, 0);
+// sculptureGroup.add(sculpture);
 
 // Sculpture light
-const sculptureLight = new THREE.SpotLight('white', 10, 20, Math.PI * 0.5, 0.05, )
-sculptureLight.position.set(0, 0, 0)
+const sculptureLight = new THREE.SpotLight('white', 10, 20, Math.PI * 0.5, 0.05);
+sculptureLight.position.set(0, 0, 0);
 sculptureLight.target = sculpture;
 sculptureGroup.add(sculptureLight);
 
@@ -308,7 +312,7 @@ let animation = null;
 let material1 = null
 let material2 = null
 const gltfLoader = new GLTFLoader()
-gltfLoader.load('walking_test.glb', 
+gltfLoader.load('/models/walking_test.glb', 
     (gltf) =>
     { 
         // variables
@@ -372,10 +376,54 @@ gltfLoader.load('walking_test.glb',
     }
 );
 
+// Scene
+gltfLoader.load('/scenes/scene_3.glb', (gltf) => {
+    // Traverse the scene to update materials and add spotlights
+    gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+            // Update material
+            child.material = new THREE.MeshStandardMaterial({
+                color: child.material.color,
+                roughness: 0.5,
+                metalness: 0.5
+            });
+
+            // Create and position a spotlight above the mesh
+            const spotlight = new THREE.SpotLight(0xffffff, 100); // White light with intensity 1
+            spotlight.position.set(child.position.x, child.position.y + 7, child.position.z); // Position above the mesh
+            spotlight.target = child; // Point the spotlight at the mesh
+
+            // Adjust the spotlight properties
+spotlight.angle = Math.PI / 6; // Narrower beam
+spotlight.distance = 10; // Limit the distance the light travels
+spotlight.penumbra = 0.5; // Soft edges
+
+            scene.add(spotlight);
+        }
+    });
+
+    // Scale the scene
+    gltf.scene.scale.setScalar(5);
+    scene.add(gltf.scene);
+    
+    // Create an AnimationMixer and play all animations
+    const mixer = new THREE.AnimationMixer(gltf.scene);
+    gltf.animations.forEach((clip) => {
+        const action = mixer.clipAction(clip);
+        action.play();
+    });
+
+    // Store the mixer for updating in the animation loop
+    mixers.push(mixer);
+    console.log('GLTF scene:', gltf.scene);
+});
+
+// Array to store mixers
+const mixers = [];
+
 /*
 ** Light
 */
-
 const catWalkLight = new THREE.SpotLight('grey', 80, 4, 0.6, 0.5, 0)
 catWalkLight.position.set(0, -1, 0)
 
@@ -394,37 +442,13 @@ catWalkLight2.shadow.mapSize.width = 512;
 catWalkLight2.shadow.mapSize.height = 512; 
 // catWalkLight2.shadow.camera.near = 1; 
 // catWalkLight2.shadow.camera.far = 5; 
+
 // Helpers
 const catWalkLightHelper = new THREE.SpotLightHelper(catWalkLight)
 const catWalkLightHelper2 = new THREE.SpotLightHelper(catWalkLight2)
 catWalkGroup.add(catWalkLightHelper, catWalkLightHelper2); 
 
 catWalkGroup.add(catWalkLight, catWalkLight2); 
-
-// // Rect Area Light
-// const lights = new THREE.Group(); 
-// const intensity = 10; 
-// const height = 10; 
-// const width = 1.5; 
-
-// // // Light One
-// const rectAreaLight = new THREE.RectAreaLight('white', intensity, width, height); 
-// rectAreaLight.position.set(0, 1, 5)
-// rectAreaLight.rotation.x += Math.PI * 0.15; 
-
-// // Light two
-// const rectAreaLight2 = new THREE.RectAreaLight('white', intensity, width, height); 
-// rectAreaLight2.position.set(0, 1, -5)
-// rectAreaLight2.rotation.x += Math.PI; 
-// rectAreaLight2.rotation.x += - Math.PI * 0.15; 
-
-// // Light Helper
-// const rectLightHelper = new RectAreaLightHelper(rectAreaLight);
-// const rectLightHelper2 = new RectAreaLightHelper(rectAreaLight2);
-
-// lights.add(rectLightHelper, rectLightHelper2);
-// lights.add(rectAreaLight, rectAreaLight2);
-// catWalkGroup.add(lights); 
 
 /*
 ** Renderer 
@@ -436,11 +460,12 @@ renderer.shadowMap.enabled = true;
 
 // Catwalk group
 let catWalkLine = null;
-scene.add(catWalkGroup); 
+// scene.add(catWalkGroup); 
 
 /*
 ** Animation Loop 
 */
+
 const clock = new THREE.Clock(); 
 let previousTime = 0; 
 
@@ -455,6 +480,10 @@ const animationLoop = () =>
     {
         mixer.update(delta); 
     }
+    
+        mixers.forEach((mixer) => {
+            mixer.update(delta);
+        });
 
     // First Person Controls
     if (controls.isLocked) 
