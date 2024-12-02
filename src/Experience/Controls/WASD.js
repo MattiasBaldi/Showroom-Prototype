@@ -3,12 +3,14 @@ import Experience from '../Experience.js'
 import { PointerLockControls } from 'three/examples/jsm/Addons.js'
 
 export default class WASD {
-    constructor(arbitraryCameraParameter, arbitraryCanvasParameter)
+    constructor(camera, canvas)
     {
         this.experience = new Experience()
         this.scene = this.experience.scene
         this.debug = this.experience.debug
         this.time = this.experience.time
+        this.camera = camera
+        this.canvas = canvas
 
         // Setup
         this.velocity = new THREE.Vector3();
@@ -23,11 +25,11 @@ export default class WASD {
         this.canJump = false;
 
         this.setKeyMap()
-        this.setPointerLockControls(arbitraryCameraParameter, arbitraryCanvasParameter)
-        this.setLock(arbitraryCanvasParameter)
+        this.setPointerLockControls( this.camera , this.canvas)
+        this.setLock(this.canvas)
     }
 
-    setLock(arbitraryCanvasParameter)
+    setLock()
     {
             this.fullscreen = document.querySelector('button.full-screen');
             this.blocker = document.getElementById('blocker'); 
@@ -40,14 +42,14 @@ export default class WASD {
                 });
 
                 if (!document.fullscreenElement) {
-                if (this.experience.canvas.requestFullscreen) {
-                    this.experience.canvas.requestFullscreen();
-                } else if (this.experience.canvas.mozRequestFullScreen) { // Firefox
-                    this.experience.canvas.mozRequestFullScreen();
-                } else if (this.experience.canvas.webkitRequestFullscreen) { // Chrome, Safari and Opera
-                    this.experience.canvas.webkitRequestFullscreen();
-                } else if (this.experience.canvas.msRequestFullscreen) { // IE/Edge
-                    this.experience.canvas.msRequestFullscreen();
+                if (this.canvas.requestFullscreen) {
+                    this.canvas.requestFullscreen();
+                } else if (this.canvas.mozRequestFullScreen) { // Firefox
+                    this.canvas.mozRequestFullScreen();
+                } else if (this.canvas.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    this.canvas.webkitRequestFullscreen();
+                } else if (this.canvas.msRequestFullscreen) { // IE/Edge
+                    this.canvas.msRequestFullscreen();
                 }
                 }
             })
@@ -125,10 +127,10 @@ export default class WASD {
         document.addEventListener('keyup', onKeyUp);
     }
 
-    setPointerLockControls(arbitraryCameraParameter, arbitraryCanvasParameter) {
-        arbitraryCameraParameter.position.y = 1; 
-        this.PointerLockControls = new PointerLockControls(arbitraryCameraParameter, arbitraryCanvasParameter)
-        this.setLock(arbitraryCanvasParameter)
+    setPointerLockControls() {
+        this.camera.position.y = 1; 
+        this.PointerLockControls = new PointerLockControls(this.camera, this.canvas)
+        this.setLock(this.canvas)
         this.setKeyMap()
     }
 

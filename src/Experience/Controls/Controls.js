@@ -4,11 +4,12 @@ import  WASD from './WASD.js'
 import * as THREE from 'three'
 
 export default class Controls {
-    constructor(camera) {
+    constructor(camera, canvas) {
         this.experience = new Experience()
         this.debug = this.experience.debug
         this.canvas = this.experience.canvas
         this.camera = camera
+        this.canvas = canvas
 
         // Controls
         this.OrbitControls = null;

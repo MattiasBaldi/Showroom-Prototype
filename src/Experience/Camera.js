@@ -13,7 +13,7 @@ export default class Camera
   
         // Set Controls
         this.setInstance()
-        this.controls = new Controls(this.instance)
+        this.controls = new Controls(this.instance, this.canvas)
         this.controls.setControls('PointerLock')
         
     }
