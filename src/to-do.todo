@@ -1,0 +1,70 @@
+✔ Add RGBELoader in resources.js @done (22.11.2024, 13.48.07)
+✔ Import all models & HDR in sources.js and console.log() to check @done (26.11.2024, 11.03.33)
+✔ Environment @done (26.11.2024, 11.04.03)
+✔ Base models @done (26.11.2024, 11.04.02)
+ 
+Scene_1
+✔ Fade @done (26.11.2024, 23.33.36)
+☐ Catwalk Visualizer Debug
+☐ Switch controls
+
+Scene_2
+☐ Arts
+☐ Switch controls
+
+Scene_3
+✔ Debug @done (26.11.2024, 23.33.43)
+✔ Double sided room @done (26.11.2024, 23.33.45)
+☐ Switch controls
+
+Controls / W-A-S-D Movement
+✔ Controls @done (27.11.2024, 19.15.40)
+☐ Create W-A-S-D file and import PointerLockControls in there
+☐ Debug
+☐ Finish switch mechanism
+☐ if (switch has changed)
+{
+    this.setControls
+}
+
+World
+✔ Fix grid @done (27.11.2024, 23.28.56)
+☐ Dispose objects not visible in scene
+
+Teleportation
+✔ Create .js File @done (28.11.2024, 21.03.09)
+✔ Set each model destination @done (28.11.2024, 22.01.21)
+✔ Update controls @done (28.11.2024, 22.01.21)
+✔ Adjust positoning @done (29.11.2024, 11.47.16)
+☐ Ensure teleportation cannot happen while orbitcontrols
+
+Lights
+☐ Spotlights
+☐ Bloom Selective
+
+Environment
+☐ Fog
+☐ Tweaks to look realistic
+
+Sound
+☐ Import different sounds
+☐ Declare radius and switches
+
+
+☐ Debug and Tweaks
+☐ Optimize perfomance and code
+☐ Change controls
+☐ PivotPoint on Orbitcontrols to the relevant scene
+
+
+Prioritized list
+☐ Lighting & Shadow
+☐ Environment
+☐ Scene 2
+☐ Music / Sound
+
+
+☐ Perfomance tips
+☐ Remove animation on posed model
+☐ Check  notion for perfomance tips
+☐ Check three.js for perfomance tips

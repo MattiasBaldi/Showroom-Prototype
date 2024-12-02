@@ -1,17 +1,16 @@
-# Dette er en test
+# Three.js Journey
 
-Dette er en standard opsætning af et showroom med joystick og basic controls.
+## Setup
+Download [Node.js](https://nodejs.org/en/download/).
+Run this followed commands:
 
+``` bash
+# Install dependencies (only the first time)
+npm install
 
-## Content
+# Run the local server at localhost:8080
+npm run dev
 
-- Catwalk
-- Showroom
-- Spinning Sculpture
-
-...
-
-
-## Bugs list
-
--
+# Build for production in the dist/ directory
+npm run build
+```
