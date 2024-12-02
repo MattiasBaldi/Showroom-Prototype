@@ -54,6 +54,8 @@ export default class WASD {
                 }
             })
 
+            // This is a test
+
             // Activate on blocker click
             this.blocker.addEventListener('click', () => {
                 this.PointerLockControls.lock();
