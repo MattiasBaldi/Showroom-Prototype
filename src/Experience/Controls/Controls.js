@@ -26,14 +26,6 @@ export default class Controls {
 
     reset()
     {
-        // Remove eventListeners
-        // const fullscreen = document.querySelector('button.full-screen');
-        // const blocker = document.getElementById('blocker');
-        // const fullscreenClone = fullscreen.cloneNode(true)
-        // fullscreen.parentNode.replaceChild(fullscreenClone, fullscreen)
-        // const blockerClone = blocker.cloneNode(true)
-        // blocker.parentNode.replaceChild(blockerClone, blocker)
-
         if (this.OrbitControls) 
         {
         this.OrbitControls.dispose();
@@ -49,34 +41,18 @@ export default class Controls {
 
     setFullscreen()
     {
-
-      
     const fullscreen = document.querySelector('button.full-screen');
     const blocker = document.getElementById('blocker');
     
+
+
+
+
     // Clicking on the fullscreen icon toggles fullscreen and removes blocker
     fullscreen.addEventListener('click', () =>
     {
-        if (this.OrbitControls) 
-    {
-        if (!document.fullscreenElement) {
-            if (this.experience.canvas.requestFullscreen) {
-                this.experience.canvas.requestFullscreen();
-            } else if (this.experience.canvas.mozRequestFullScreen) { // Firefox
-                this.experience.canvas.mozRequestFullScreen();
-            } else if (this.experience.canvas.webkitRequestFullscreen) { // Chrome, Safari and Opera
-                this.experience.canvas.webkitRequestFullscreen();
-            } else if (this.experience.canvas.msRequestFullscreen) { // IE/Edge
-                this.experience.canvas.msRequestFullscreen();
-            }
-        } 
-    }
-        else if (this.wasd)
+        const setFullscreen = () =>
             {
-        const waitforPointerLock = async () => 
-            {
-                let resolved = await this.wasd.PointerLockControls.lock();
-                console.log('Locked')
                 if (!document.fullscreenElement) {
                     if (this.experience.canvas.requestFullscreen) {
                         this.experience.canvas.requestFullscreen();
@@ -87,20 +63,33 @@ export default class Controls {
                     } else if (this.experience.canvas.msRequestFullscreen) { // IE/Edge
                         this.experience.canvas.msRequestFullscreen();
                     }
-            };
-            
+                } 
+        }
+    
+        if (this.OrbitControls) 
+        {
+        console.log('Fullscreen')
+        setFullscreen();  
+        }
+        else if (this.wasd)
+            {
+        const waitforPointerLock = async () => 
+            {
+                const resolved = await this.wasd.PointerLockControls.lock();
+                console.log('Locked')
+                setFullscreen(); 
+                console.log('Fullscreen PointerLock')
             }; 
             waitforPointerLock();
-            }
-        })
-
-
+        }
+    })
 
     // Escape toggles menu
     document.addEventListener('keydown', (event) =>
       {
         if(event.key === 'Escape')
         {
+             blocker.style.display = 'block'
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.mozCancelFullScreen) { // Firefox
@@ -110,7 +99,6 @@ export default class Controls {
             } else if (document.msExitFullscreen) { // IE/Edge
                 document.msExitFullscreen();
             }
-             blocker.style.display = 'block'
         }
     })
 
@@ -119,17 +107,20 @@ export default class Controls {
         {
             if(this.OrbitControls)
             {
+                console.log('Not locked controls')
                 blocker.style.display = 'none'
+                console.log('Blocker removed')
             }
 
             else if (this.wasd) 
             {
-                const waitforPointerLock = async () => 
-                {
-                    let resolved = await this.wasd.PointerLockControls.lock();
-                    blocker.style.display = 'none';
-                };
-                waitforPointerLock();
+         const waitforPointerLock = async () => 
+        {
+            await this.wasd.PointerLockControls.lock();
+            blocker.style.display = 'none';
+        }
+
+        waitforPointerLock();
             }
         });
 
