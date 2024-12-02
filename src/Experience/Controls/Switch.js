@@ -18,10 +18,6 @@ export default class Switch {
         this.radius = radius
         this.height = height
 
-        console.log('Pivot Point:', this.pivotPoint);
-        console.log('Radius:', this.radius);
-        console.log('Height:', this.height);
-
         this.distance = null;
         this.keydownHandler = this.listener.bind(this);
         this.listenerAdded = false; // Initialize the flag
@@ -42,11 +38,10 @@ export default class Switch {
         this.controls.OrbitControls.maxDistance = this.radius; 
     }
 
-    setPointerLock()
+    setWASD()
     {
         console.log('Setting Pointer Lock Controls');
         this.controls.setControls('PointerLock')
-        console.log(this.controls)
     }
 
     listener(event) {
@@ -65,7 +60,7 @@ export default class Switch {
             else if (this.controls.OrbitControls)
             {
                 console.log('PointerLock trying to activate');
-                this.setPointerLock();
+                this.setWASD();
             }
         }
     }
@@ -105,7 +100,6 @@ export default class Switch {
     {
         // This is the distance that is getting updated
         this.distance = this.camera.instance.position.distanceTo(this.pivotPoint.localToWorld(this.localPosition));
-        // console.log(this.distance)
 
         // if the camera is within radius of the pivotpoint
         if (this.distance <= this.radius)

@@ -27,6 +27,7 @@ export default class WASD {
         this.moveRight = false;
         this.canJump = false;
 
+        this.setKeyMap()
         this.setPointerLockControls()
     }
 
@@ -36,8 +37,6 @@ export default class WASD {
             this.blocker = document.getElementById('blocker'); 
 
             // Unlock
-
-
             // When I click on fullscreen icon, the screen becomes fullscreen and the locker locks
             this.fullscreen.addEventListener('click', async () => {
                 await new Promise((resolve) => {
@@ -82,23 +81,13 @@ export default class WASD {
             });
     }
 
-    createBlocker()
-    {
-
-        
-
-
-    }
-
-    removeBlocker()
-    {
-
-    }
-
     setKeyMap() {
 
-        console.log('Setting keymaps')
+        // console.log('Removing keymaps')
+        // document.addEventListener('keydown', onKeyDown);
+        // document.addEventListener('keyup', onKeyUp);
 
+        console.log('Setting keymaps')
         const onKeyDown = (event) => {
             switch (event.code) {
                 case 'ArrowUp':
@@ -157,10 +146,9 @@ export default class WASD {
     }
 
     setPointerLockControls() {
-        this.setKeyMap()
         this.camera.position.y = 1; 
         this.PointerLockControls = new PointerLockControls(this.camera, this.canvas)
-        this.setLock(this.canvas)
+        this.setLock()
     }
 
     update()

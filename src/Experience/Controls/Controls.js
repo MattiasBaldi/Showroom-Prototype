@@ -26,12 +26,12 @@ export default class Controls {
     reset()
     {
         // Remove eventListeners
-        const fullscreen = document.querySelector('button.full-screen');
-        const blocker = document.getElementById('blocker');
-        const fullscreenClone = fullscreen.cloneNode(true)
-        fullscreen.parentNode.replaceChild(fullscreenClone, fullscreen)
-        const blockerClone = blocker.cloneNode(true)
-        blocker.parentNode.replaceChild(blockerClone, blocker)
+        // const fullscreen = document.querySelector('button.full-screen');
+        // const blocker = document.getElementById('blocker');
+        // const fullscreenClone = fullscreen.cloneNode(true)
+        // fullscreen.parentNode.replaceChild(fullscreenClone, fullscreen)
+        // const blockerClone = blocker.cloneNode(true)
+        // blocker.parentNode.replaceChild(blockerClone, blocker)
 
         if (this.OrbitControls) 
         {
@@ -51,6 +51,7 @@ export default class Controls {
     const fullscreen = document.querySelector('button.full-screen');
     const blocker = document.getElementById('blocker');
     
+    // Clicking on the fullscreen icon toggles fullscreen and removes blocker
     fullscreen.addEventListener('click', () =>
     {
         if (!document.fullscreenElement) {
@@ -98,7 +99,6 @@ export default class Controls {
     }
 
     setOrbitControls() {
-        console.log('OrbitControls')
         this.reset()
         this.OrbitControls = new OrbitControls(this.camera, this.canvas); 
         this.OrbitControls.enableDamping = true;
@@ -107,14 +107,12 @@ export default class Controls {
 
     setWASDControls()
     {
-        console.log('WASD')
         this.reset()
         this.wasd = new WASD(this.camera, this.canvas);
     }
   
     setControls(switchState) {
     
-        console.log('switch controls')
         // Switch
         switch (switchState) {   
             case 'OrbitControls':
@@ -147,12 +145,10 @@ export default class Controls {
 
         if (this.OrbitControls) {
             this.OrbitControls.update()
-            // console.log('OrbitControls updated')
         }
 
         if (this.wasd) {
             this.wasd.update()
-            // console.log('Pointerlock updated')
         }
 
     }

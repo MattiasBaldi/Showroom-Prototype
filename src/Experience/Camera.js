@@ -20,7 +20,6 @@ export default class Camera
 
     setInstance()
     {
-        console.log('Running Camera Instance')
         this.instance = new THREE.PerspectiveCamera(35, this.sizes.width / this.sizes.height, 0.1, 75)
         this.instance.position.set(6, 4, 8)
         this.scene.add(this.instance)
