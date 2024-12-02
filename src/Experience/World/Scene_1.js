@@ -9,7 +9,7 @@ export default class Scene_1
         this.experience  = new Experience()
         this.scene = this.experience.scene
         this.camera = this.experience.camera
-        // this.controls = this.camera.controls
+        this.controls = this.camera.controls
         this.resources = this.experience.resources
         this.time = this.experience.time
         this.debug = this.experience.debug
@@ -85,7 +85,7 @@ export default class Scene_1
         this.bodyMaterial = new THREE.MeshBasicMaterial({color: 'white'}); 
         this.animatedBody = this.animatedModel.children[0]
         this.posedBody = this.posedModel.children[1]
-        // this.switch = new Switch(this.posedBody, 1.5, 10)
+        this.switch = new Switch(this.posedBody, 1.5, 10)
 
 
         //  Set all chrome except the bodies
@@ -257,7 +257,7 @@ export default class Scene_1
             this.animation.mixer.pose.update(this.time.delta * 0.001); 
             this.updateWalk()
             this.setFade()
-            // this.switch.update()
+            this.switch.update()
     }
 }
 

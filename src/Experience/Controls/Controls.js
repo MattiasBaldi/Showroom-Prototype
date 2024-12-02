@@ -147,12 +147,12 @@ export default class Controls {
 
         if (this.OrbitControls) {
             this.OrbitControls.update()
-            console.log('OrbitControls updated')
+            // console.log('OrbitControls updated')
         }
 
         if (this.wasd) {
             this.wasd.update()
-            console.log('Pointerlock updated')
+            // console.log('Pointerlock updated')
         }
 
     }

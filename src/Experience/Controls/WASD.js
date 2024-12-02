@@ -5,6 +5,9 @@ import { PointerLockControls } from 'three/examples/jsm/Addons.js'
 export default class WASD {
     constructor(camera, canvas)
     {
+
+        console.log('Wasd class called')
+
         this.experience = new Experience()
         this.scene = this.experience.scene
         this.debug = this.experience.debug
@@ -24,9 +27,7 @@ export default class WASD {
         this.moveRight = false;
         this.canJump = false;
 
-        this.setKeyMap()
-        this.setPointerLockControls( this.camera , this.canvas)
-        this.setLock(this.canvas)
+        this.setPointerLockControls()
     }
 
     setLock()
@@ -34,11 +35,15 @@ export default class WASD {
             this.fullscreen = document.querySelector('button.full-screen');
             this.blocker = document.getElementById('blocker'); 
 
-            // Active on fullscreen click
+            // Unlock
+
+
+            // When I click on fullscreen icon, the screen becomes fullscreen and the locker locks
             this.fullscreen.addEventListener('click', async () => {
                 await new Promise((resolve) => {
                 this.PointerLockControls.addEventListener('lock', resolve, { once: true });
                 this.PointerLockControls.lock();
+                console.log('Clicking fullscreen and locks')
                 });
 
                 if (!document.fullscreenElement) {
@@ -54,24 +59,46 @@ export default class WASD {
                 }
             })
 
-            // This is a test
-
-            // Activate on blocker click
+            // When I click the blocker, the controls are locked
             this.blocker.addEventListener('click', () => {
                 this.PointerLockControls.lock();
+                console.log('Clicking blocker and controls lock')
             });
 
-            // 
+
+            // Lock
+
+            // When I unlock the controls, the display appears
             this.PointerLockControls.addEventListener('unlock', () => {
                 this.blocker.style.display = 'block'
+                console.log('Unlocked therefore blocker shows')
             });
 
+
+            // When I lock the controls, the display dissapears
             this.PointerLockControls.addEventListener('lock', () => {
                 this.blocker.style.display = 'none'
+                console.log('Locked therefore blocker dissapears')
             });
     }
 
+    createBlocker()
+    {
+
+        
+
+
+    }
+
+    removeBlocker()
+    {
+
+    }
+
     setKeyMap() {
+
+        console.log('Setting keymaps')
+
         const onKeyDown = (event) => {
             switch (event.code) {
                 case 'ArrowUp':
@@ -130,10 +157,10 @@ export default class WASD {
     }
 
     setPointerLockControls() {
+        this.setKeyMap()
         this.camera.position.y = 1; 
         this.PointerLockControls = new PointerLockControls(this.camera, this.canvas)
         this.setLock(this.canvas)
-        this.setKeyMap()
     }
 
     update()

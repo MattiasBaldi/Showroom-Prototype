@@ -36,7 +36,7 @@ export default class Switch {
         this.pivotPoint.localToWorld(this.localPosition)
 
         // Set pivot point
-        this.controls.setControls(this.camera.instance, this.experience.canvas, 'OrbitControls')
+        this.controls.setControls('OrbitControls')
         this.controls.OrbitControls.target.copy(this.localPosition)
         this.controls.OrbitControls.target.y = this.height
         this.controls.OrbitControls.maxDistance = this.radius; 
@@ -45,7 +45,7 @@ export default class Switch {
     setPointerLock()
     {
         console.log('Setting Pointer Lock Controls');
-        this.controls.setControls(this.camera.instance, this.experience.canvas, 'PointerLock')
+        this.controls.setControls('PointerLock')
         console.log(this.controls)
     }
 
@@ -87,7 +87,6 @@ export default class Switch {
         this.instructionOverlay.textContent = 'I'
         this.instructionOverlay.style.zIndex = '10'
         document.body.append(this.instructionOverlay);
-        console.log(this.instructionOverlay); 
 
     }
 
@@ -111,7 +110,7 @@ export default class Switch {
         // if the camera is within radius of the pivotpoint
         if (this.distance <= this.radius)
         {   
-            console.log('Camera is within distance ')
+            // console.log('Camera is within distance ')
             // if the listener is not already there, then add it 
             if (!this.listenerAdded)
             {
@@ -121,7 +120,7 @@ export default class Switch {
         // else if the camera is not within that direction
             else 
             {   
-            console.log('Camera is not within distance')
+            // console.log('Camera is not within distance')
             //and if there event listener is still there - then remove it 
             if (this.listenerAdded)
             {
