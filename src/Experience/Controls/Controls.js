@@ -14,6 +14,7 @@ export default class Controls {
         // Controls
         this.OrbitControls = null;
         this.wasd = null;
+        this.setFullscreen()
 
         // Debug
         if (this.debug.active)
@@ -46,13 +47,17 @@ export default class Controls {
         }
     }
 
-    setOrbitFullscreenMode()
+    setFullscreen()
     {
+
+      
     const fullscreen = document.querySelector('button.full-screen');
     const blocker = document.getElementById('blocker');
     
     // Clicking on the fullscreen icon toggles fullscreen and removes blocker
     fullscreen.addEventListener('click', () =>
+    {
+        if (this.OrbitControls) 
     {
         if (!document.fullscreenElement) {
             if (this.experience.canvas.requestFullscreen) {
@@ -65,13 +70,35 @@ export default class Controls {
                 this.experience.canvas.msRequestFullscreen();
             }
         } 
-    })
+    }
+        else if (this.wasd)
+            {
+        const waitforPointerLock = async () => 
+            {
+                let resolved = await this.wasd.PointerLockControls.lock();
+                console.log('Locked')
+                if (!document.fullscreenElement) {
+                    if (this.experience.canvas.requestFullscreen) {
+                        this.experience.canvas.requestFullscreen();
+                    } else if (this.experience.canvas.mozRequestFullScreen) { // Firefox
+                        this.experience.canvas.mozRequestFullScreen();
+                    } else if (this.experience.canvas.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                        this.experience.canvas.webkitRequestFullscreen();
+                    } else if (this.experience.canvas.msRequestFullscreen) { // IE/Edge
+                        this.experience.canvas.msRequestFullscreen();
+                    }
+            };
+            
+            }; 
+            waitforPointerLock();
+            }
+        })
+
+
 
     // Escape toggles menu
     document.addEventListener('keydown', (event) =>
       {
-        if  (!this.wasd)
-        {
         if(event.key === 'Escape')
         {
             if (document.exitFullscreen) {
@@ -85,24 +112,34 @@ export default class Controls {
             }
              blocker.style.display = 'block'
         }
-    }
-    else {
-
-    }
-      })
+    })
 
     // Click on display toggles gameplay
     blocker.addEventListener('click', () =>
         {
-            blocker.style.display = 'none'
-        })
+            if(this.OrbitControls)
+            {
+                blocker.style.display = 'none'
+            }
+
+            else if (this.wasd) 
+            {
+                const waitforPointerLock = async () => 
+                {
+                    let resolved = await this.wasd.PointerLockControls.lock();
+                    blocker.style.display = 'none';
+                };
+                waitforPointerLock();
+            }
+        });
+
     }
 
     setOrbitControls() {
         this.reset()
         this.OrbitControls = new OrbitControls(this.camera, this.canvas); 
         this.OrbitControls.enableDamping = true;
-        this.setOrbitFullscreenMode()
+        // this.setOrbitFullscreenMode()
     }
 
     setWASDControls()

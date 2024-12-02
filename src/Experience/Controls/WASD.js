@@ -64,28 +64,23 @@ export default class WASD {
                 console.log('Clicking blocker and controls lock')
             });
 
-
-            // Lock
-
-            // When I unlock the controls, the display appears
-            this.PointerLockControls.addEventListener('unlock', () => {
-                this.blocker.style.display = 'block'
-                console.log('Unlocked therefore blocker shows')
-            });
+            // // When I unlock the controls, the display appears
+            // this.PointerLockControls.addEventListener('unlock', () => {
+            //     this.blocker.style.display = 'block'
+            //     console.log('Unlocked therefore blocker shows')
+            // });
 
 
-            // When I lock the controls, the display dissapears
-            this.PointerLockControls.addEventListener('lock', () => {
-                this.blocker.style.display = 'none'
-                console.log('Locked therefore blocker dissapears')
-            });
+            // // When I lock the controls, the display dissapears
+            // this.PointerLockControls.addEventListener('lock', () => {
+            //     this.blocker.style.display = 'none'
+            //     console.log('Locked therefore blocker dissapears')
+            // });
+
+
     }
 
     setKeyMap() {
-
-        // console.log('Removing keymaps')
-        // document.addEventListener('keydown', onKeyDown);
-        // document.addEventListener('keyup', onKeyUp);
 
         console.log('Setting keymaps')
         const onKeyDown = (event) => {
@@ -148,7 +143,7 @@ export default class WASD {
     setPointerLockControls() {
         this.camera.position.y = 1; 
         this.PointerLockControls = new PointerLockControls(this.camera, this.canvas)
-        this.setLock()
+        // this.setLock()
     }
 
     update()
