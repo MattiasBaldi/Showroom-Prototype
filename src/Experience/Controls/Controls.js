@@ -43,10 +43,6 @@ export default class Controls {
     {
     const fullscreen = document.querySelector('button.full-screen');
     const blocker = document.getElementById('blocker');
-    
-
-
-
 
     // Clicking on the fullscreen icon toggles fullscreen and removes blocker
     fullscreen.addEventListener('click', () =>
@@ -73,14 +69,20 @@ export default class Controls {
         }
         else if (this.wasd)
             {
-        const waitforPointerLock = async () => 
-            {
-                const resolved = await this.wasd.PointerLockControls.lock();
-                console.log('Locked')
-                setFullscreen(); 
-                console.log('Fullscreen PointerLock')
-            }; 
-            waitforPointerLock();
+
+        const waitforPointerLock = async () => {
+            this.wasd.PointerLockControls.lock();
+        
+            // Polling until isLocked is true
+            while (!this.wasd.PointerLockControls.isLocked) {
+                await new Promise(resolve => setTimeout(resolve, 50));  // Check every 50ms
+            }
+        
+            setFullscreen()  // Remove blocker once locked
+            console.log('Blocker removed');
+        };
+        
+        waitforPointerLock();
         }
     })
 
@@ -114,15 +116,24 @@ export default class Controls {
 
             else if (this.wasd) 
             {
-         const waitforPointerLock = async () => 
-        {
-            await this.wasd.PointerLockControls.lock();
-            blocker.style.display = 'none';
-        }
 
-        waitforPointerLock();
+                const waitforPointerLock = async () => {
+                    this.wasd.PointerLockControls.lock();
+                
+                    // Polling until isLocked is true
+                    while (!this.wasd.PointerLockControls.isLocked) {
+                        await new Promise(resolve => setTimeout(resolve, 50));  // Check every 50ms
+                    }
+                
+                    blocker.style.display = 'none';  // Remove blocker once locked
+                    console.log('Blocker removed');
+                };
+                
+                waitforPointerLock();
             }
         });
+
+
 
     }
 
@@ -154,6 +165,7 @@ export default class Controls {
             default:
                 this.setOrbitControls()
         }
+
 
         //Debug
         // if (this.debug.active)

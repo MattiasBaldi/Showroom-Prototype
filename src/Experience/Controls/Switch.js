@@ -3,6 +3,7 @@
 
 import * as THREE from 'three'
 import Experience from '../Experience.js'
+import { PointerLockControls } from 'three/examples/jsm/Addons.js'
 
 export default class Switch {
     constructor(pivotPoint, height, radius)
@@ -27,7 +28,6 @@ export default class Switch {
 
     setOrbit()
     {
-        console.log('Setting Orbit Controls');
         // Create a vector to store the local position
         this.pivotPoint.localToWorld(this.localPosition)
 
@@ -40,12 +40,10 @@ export default class Switch {
 
     setWASD()
     {
-        console.log('Setting Pointer Lock Controls');
         this.controls.setControls('PointerLock')
     }
 
     listener(event) {
-            console.log('Key pressed:', event.key);
             // if the key pressed was I
             if (event.key === 'I' || event.key === 'i') {
          
@@ -67,7 +65,6 @@ export default class Switch {
 
     setListener()
     {
-        console.log('Adding event listener');
         document.addEventListener('keydown', this.keydownHandler);
         this.listenerAdded = true;
 
@@ -87,7 +84,6 @@ export default class Switch {
 
     removeListener()
     {
-        console.log('Removing event listener');
         document.removeEventListener('keydown', this.keydownHandler);
         this.listenerAdded = false;
         if (this.instructionOverlay) {
@@ -98,6 +94,7 @@ export default class Switch {
 
     update()
     {
+
         // This is the distance that is getting updated
         this.distance = this.camera.instance.position.distanceTo(this.pivotPoint.localToWorld(this.localPosition));
 
@@ -124,4 +121,3 @@ export default class Switch {
     }
 
 }
-
