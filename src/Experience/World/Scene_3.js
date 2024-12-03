@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience'
+import Switch from '../Controls/Switch.js'
 
 export default class Scene_3 {
 
@@ -24,6 +25,7 @@ export default class Scene_3 {
         this.sceneModels = this.resource.scene
         this.setScene()
         this.updateMaterials()
+        this.switch = new Switch(this.table, 0.1, 1)
     }
 
     setScene()
@@ -86,17 +88,6 @@ export default class Scene_3 {
 
     update()
     {
-        // Radius update function
-        // if(this.camera.instance.position === this.radius && this.camera.controls.OrbitControls == null)
-        // {
-                // add.eventListner( // this.camera.controls.setOrbitControls(this.camera.instance, this.camera.canvas))
-        // }
-
-        // if(this.camera.instance.position !=== this.radius && this.camera.controls.wasd.PointerLock == null)
-        // {
-            // remove.eventListener()
-            // this.camera.controls.setWASDControls(this.camera.instance, this.camera.canvas)
-        // }
-
+        this.switch.update()
     }
 }

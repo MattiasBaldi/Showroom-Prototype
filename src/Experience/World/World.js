@@ -20,9 +20,9 @@ export default class World
         this.resources.on('ready', () =>
         {   
             // Setup
-            this.scene_1 = new Scene_1()
-            this.scene_2 = new Scene_2()
             this.scene_3 = new Scene_3()
+            this.scene_2 = new Scene_2()
+            this.scene_1 = new Scene_1()
             this.teleportation = new Teleportation()
             this.environment = new Environment()
             this.lights = new Lights()
@@ -31,30 +31,29 @@ export default class World
 
     }
 
-addFloor()
-{
-const floor = new THREE.Mesh
-(
-    new THREE.PlaneGeometry(100, 100),
-    new THREE.MeshStandardMaterial({ color: 'black' })
-)
+    addFloor()
+    {
+    const floor = new THREE.Mesh
+    (
+        new THREE.PlaneGeometry(100, 100),
+        new THREE.MeshStandardMaterial({ color: 'black' })
+    )
 
-floor.rotation.x = Math.PI * - 0.5
-floor.receiveShadow = true; // Ensure the floor receives shadows
-this.scene.add(floor)
-}
+    floor.rotation.x = Math.PI * - 0.5
+    floor.receiveShadow = true; // Ensure the floor receives shadows
+    this.scene.add(floor)
+    }
 
 update()
     {
+        if(this.scene_3)
+        {
+            this.scene_3.update()
+        } 
 
         if(this.scene_1)
         {
         this.scene_1.update()
-        } 
-
-        if(this.scene_3)
-        {
-            this.scene_3.update()
         } 
 
         if(this.scene_2)

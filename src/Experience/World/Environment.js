@@ -33,11 +33,8 @@ export default class Environment
         {
             this.environmentMap.mapping =  THREE.EquirectangularReflectionMapping
             this.scene.environment = this.environmentMap
-            this.scene.environmentIntensity = 0.07
+            this.scene.environmentIntensity = 0.25
             this.scene.background = new THREE.Color('black')
-
-
-
             
             // Debug
             if(this.debug.active)

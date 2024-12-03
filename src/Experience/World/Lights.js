@@ -5,7 +5,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import { FilmPass } from 'three/addons/postprocessing/FilmPass.js'
-
+import VolumetricSpotLight from '../Utils/VolumetricLight.js'
 
 export default class Lights 
 {
@@ -22,8 +22,8 @@ export default class Lights
         this.scene_3 = this.world.scene_3
 
         // Setup
-        this.setSpotlight()
-        this.setHelpers()
+        this.setSpotlight(10)
+        this.setVolumetricLight()
 
         // Debug
         if (this.debug.active)
@@ -32,26 +32,55 @@ export default class Lights
         }
     }
 
-    setSpotlight() 
+    setSpotlight(count) 
     {
-        this.spotLight1 = new THREE.SpotLight('white', 1, 5, Math.PI / 4, 0.2, 1)
-        this.spotLight1.castShadow = true; // Ensure the light casts shadows
-        this.spotLight1.position.y = 0
-        this.spotLight1.position.z = 0
-        this.spotLight1.position.x = 0
 
-        this.clone1 = this.spotLight1.clone()
-        this.clone1.position.z += 10; 
-        this.clone2 = this.spotLight1.clone()
-        this.clone2.position.x += 20; 
-        this.scene.add(this.spotLight1.target)
-        this.scene.add(this.spotLight1, this.clone1, this.clone2)
+        for (let i = 0; i < count; i++)
+        {
+            this.spotLight = new VolumetricSpotLight()
+            this.spotLight.castShadow = true; // Ensure the light casts shadows
+
+            // Position X
+            const gap = 10; 
+            const positionX = (i % 2 === 0) ? (i + 1) * gap : -(i + 1) * gap;
+            this.spotLight.positionX = positionX;
+
+            // Position Y
+            this.spotLightpositionY = 5; 
+
+            // Create a target object and set its position directly below the spotlight
+            // const target = new THREE.Object3D();
+            // target.position.set(this.spotLight.positionX, this.spotLight.positionY - 1, this.spotLight.positionZ);
+            // this.scene.add(target);
+
+            // Set the spotlight to look at the target
+            // this.spotLight.target = target;
+
+            // this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight)
+            this.scene.add(this.spotLight)
+            // this.scene.add(this.spotLightHelper)
+            
+        }
+
+
+        // this.spotLight1.position.y = 0
+        // this.spotLight1.position.z = 0
+        // this.spotLight1.position.x = 0
+
     }
 
-    setHelpers() {
-    this.spotLight1Helper = new THREE.SpotLightHelper(this.spotLight1)
-    this.scene.add(this.spotLight1Helper)
+    // setHelpers() {
+    // this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight)
+    // this.scene.add(this.spotLightHelper)
+    // }
+
+    setVolumetricLight()
+    {
+        this.SpotLightCone = new VolumetricSpotLight()
+        this.scene.add(this.SpotLightCone)
+
     }
+
 
     setBloom() {
         this.bloomParams = {
@@ -98,7 +127,8 @@ export default class Lights
         }
     }
 
+
     update(){
     }
-
+    
 }

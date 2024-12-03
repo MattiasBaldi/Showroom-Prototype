@@ -22,20 +22,25 @@ export default class Switch {
         this.distance = null;
         this.keydownHandler = this.listener.bind(this);
         this.listenerAdded = false; // Initialize the flag
-        this.localPosition = new THREE.Vector3();
 
     }
 
     setOrbit()
     {
         // Create a vector to store the local position
-        this.pivotPoint.localToWorld(this.localPosition)
+        const localPosition = new THREE.Vector3();
+        this.pivotPoint.localToWorld(localPosition);
+
 
         // Set pivot point
         this.controls.setControls('OrbitControls')
-        this.controls.OrbitControls.target.copy(this.localPosition)
+        this.controls.OrbitControls.autoRotate = true;
+        this.controls.OrbitControls.autoRotateSpeed = 2;
+        this.controls.OrbitControls.target.copy(localPosition)
         this.controls.OrbitControls.target.y = this.height
-        this.controls.OrbitControls.maxDistance = this.radius; 
+        this.controls.OrbitControls.maxDistance = this.radius - 0.1;
+
+        document.body.style.cursor = 'none'; // Show the cursor
     }
 
     setWASD()
@@ -95,8 +100,7 @@ export default class Switch {
     update()
     {
 
-        // This is the distance that is getting updated
-        this.distance = this.camera.instance.position.distanceTo(this.pivotPoint.localToWorld(this.localPosition));
+        this.distance = this.camera.instance.position.distanceTo(this.pivotPoint.localToWorld(new THREE.Vector3()));
 
         // if the camera is within radius of the pivotpoint
         if (this.distance <= this.radius)
@@ -111,7 +115,7 @@ export default class Switch {
         // else if the camera is not within that direction
             else 
             {   
-            // console.log('Camera is not within distance')
+                // console.log('Camera is not within distance ')
             //and if there event listener is still there - then remove it 
             if (this.listenerAdded)
             {
@@ -121,3 +125,6 @@ export default class Switch {
     }
 
 }
+
+
+

@@ -34,6 +34,7 @@ export default class Controls {
 
         if (this.wasd) 
         {
+            this.wasd.PointerLockControls.unlock()
             this.wasd.PointerLockControls.dispose(); 
             this.wasd = null;
         }
@@ -104,6 +105,8 @@ export default class Controls {
         }
     })
 
+
+
     // Click on display toggles gameplay
     blocker.addEventListener('click', () =>
         {
@@ -141,13 +144,13 @@ export default class Controls {
         this.reset()
         this.OrbitControls = new OrbitControls(this.camera, this.canvas); 
         this.OrbitControls.enableDamping = true;
-        // this.setOrbitFullscreenMode()
     }
 
     setWASDControls()
     {
         this.reset()
         this.wasd = new WASD(this.camera, this.canvas);
+        this.wasd.PointerLockControls.lock()
     }
   
     setControls(switchState) {
@@ -168,17 +171,16 @@ export default class Controls {
 
 
         //Debug
-        // if (this.debug.active)
-        // {
-        //     this.debugFolder
-        //         .add({ mode: ['PointerLock', 'OrbitControls'] }, 'mode')
-        //         .name('Switch')
-        //         .onChange((value) => 
-        //         {
-        //             this.switch = value;
-        //             this.setControls(this.camera, this.canvas, value);
-        //         });
-        // }
+        if (this.debug.active) {
+            const modes = { switchState: '' };
+            this.debugFolder
+                .add(modes, 'switchState', ['PointerLock', 'OrbitControls'])
+                .name('Switch')
+                .onChange((value) => {
+                    modes.switchState = value;
+                    this.setControls(value);
+                });
+        }
 }
 
     update() {

@@ -3,33 +3,26 @@
 ✔ Environment @done (26.11.2024, 11.04.03)
 ✔ Base models @done (26.11.2024, 11.04.02)
  
-Scene_1
-✔ Fade @done (26.11.2024, 23.33.36)
-☐ Catwalk Visualizer Debug
-☐ Switch controls
-
-Scene_2
-☐ Arts
-☐ Switch controls
-
 Scene_3
 ✔ Debug @done (26.11.2024, 23.33.43)
 ✔ Double sided room @done (26.11.2024, 23.33.45)
-☐ Switch controls
+
+Scene_1
+✔ Fade @done (26.11.2024, 23.33.36)
+☐ Catwalk Visualizer Debug
+☐ Remove unneccessary animation
+
+Scene_2
+☐ Arts
 
 Controls / W-A-S-D Movement
 ✔ Controls @done (27.11.2024, 19.15.40)
-☐ Create W-A-S-D file and import PointerLockControls in there
+✔ Create W-A-S-D file and import PointerLockControls in there @done (3.12.2024, 15.51.36)
 ☐ Debug
-☐ Finish switch mechanism
-☐ if (switch has changed)
-{
-    this.setControls
-}
 
-World
-✔ Fix grid @done (27.11.2024, 23.28.56)
-☐ Dispose objects not visible in scene
+Switch
+✔ Orbit position is weird for some objects @done (3.12.2024, 15.51.16)
+☐ Set geometry origin as true pivotPoint (Max zoom, doesnt match radius), height parameter needs to be removed
 
 Teleportation
 ✔ Create .js File @done (28.11.2024, 21.03.09)
@@ -37,6 +30,17 @@ Teleportation
 ✔ Update controls @done (28.11.2024, 22.01.21)
 ✔ Adjust positoning @done (29.11.2024, 11.47.16)
 ☐ Ensure teleportation cannot happen while orbitcontrols
+
+World
+✔ Fix grid @done (27.11.2024, 23.28.56)
+☐ Dispose objects not visible in scene
+
+
+Prioritized list
+☐ Lighting & Shadow
+☐ Environment
+☐ Scene 2
+☐ Music / Sound
 
 Lights
 ☐ Spotlights
@@ -50,19 +54,10 @@ Sound
 ☐ Import different sounds
 ☐ Declare radius and switches
 
-
 ☐ Debug and Tweaks
 ☐ Optimize perfomance and code
 ☐ Change controls
 ☐ PivotPoint on Orbitcontrols to the relevant scene
-
-
-Prioritized list
-☐ Lighting & Shadow
-☐ Environment
-☐ Scene 2
-☐ Music / Sound
-
 
 ☐ Perfomance tips
 ☐ Remove animation on posed model

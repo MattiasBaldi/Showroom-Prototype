@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
+import Switch from '../Controls/Switch.js'
 
 export default class Scene_2
 {
@@ -20,6 +21,8 @@ export default class Scene_2
         // Setup
         this.setScene()
         this.createBox()
+
+        this.switch = new Switch(this.sceneGroup, 0, 10)
     }
 
     setScene()
@@ -34,7 +37,7 @@ export default class Scene_2
     {
         this.debugFolder.add(this.sceneGroup.position, 'x').name('PositionX').step(1).min(-100).max(100)
         this.debugFolder.add(this.sceneGroup.scale, 'x', 'y', 'z').name('Scale').step(0.01).min(0).max(2).onChange((value) => 
-            {this.sceneGroup.scale.set(value, value, value)})
+        {this.sceneGroup.scale.set(value, value, value)})
     }
     }
 
@@ -73,7 +76,6 @@ export default class Scene_2
         // Create the mesh
         this.box = new THREE.Mesh(this.boxgeometry, this.boxMaterial);
         this.sceneGroup.add(this.box);
-
     }
 
     update()
@@ -82,10 +84,9 @@ export default class Scene_2
             this.box.rotation.x += 0.1 * (this.time.delta * 0.001);
             this.box.rotation.y += 0.1 * (this.time.delta * 0.001);
             this.boxMaterial.uniforms.time.value += 1 * (this.time.delta * 0.001) ; // Convert to seconds
-
+            this.switch.update()
    
     }
 
 }
-
 

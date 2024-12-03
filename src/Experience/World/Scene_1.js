@@ -37,6 +37,9 @@ export default class Scene_1
         this.setWalk()
         this.setFade()
 
+        this.switch = new Switch(this.posedBody, 2, 10)
+
+
     }
 
     setScene()
@@ -85,7 +88,6 @@ export default class Scene_1
         this.bodyMaterial = new THREE.MeshBasicMaterial({color: 'white'}); 
         this.animatedBody = this.animatedModel.children[0]
         this.posedBody = this.posedModel.children[1]
-        this.switch = new Switch(this.posedBody, 1.5, 10)
 
 
         //  Set all chrome except the bodies

@@ -20,7 +20,10 @@ export default class Teleportation {
     setTeleporter()
     {
           const keyDown = (event) => {
-            switch (event.key) {
+            
+                
+            switch (event.key) 
+            {
                 case '1':
                     this.camera.position.x = this.scene_1.sceneGroup.position.x;
                     this.camera.position.z = 7
@@ -40,9 +43,12 @@ export default class Teleportation {
                     this.camera.lookAt(this.scene_3.sceneGroup.position)
                     console.log('Key 3 pressed');
                     break;
-            }
-        };
-        document.addEventListener('keydown', keyDown);
+                    }
+            
+        }
+            
+            document.addEventListener('keydown', keyDown);
+
     }
 
 }
