@@ -43,7 +43,10 @@ export default class Lights
             // Position X
             const gap = 10; 
             const positionX = (i % 2 === 0) ? (i + 1) * gap : -(i + 1) * gap;
-            this.spotLight.positionX = positionX;
+            this.spotLight.position.x = positionX;
+            console.log(this.spotLight)
+            this.spotLight.children[0].material.uniforms.spotPosition.value.x = positionX;
+            // console.log( this.spotLight.mesh.material.uniforms.spotPosition.x)
 
             // Position Y
             this.spotLightpositionY = 5; 

@@ -1,0 +1,14 @@
+{
+  "name": "threex.volumetricspotlight",
+  "homepage": "https://github.com/jeromeetienne/threex.volumetricspotlight",
+  "_release": "3bf43f2749",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "3bf43f2749ff208ef486165954845ee3cc3fbc31"
+  },
+  "_source": "https://github.com/jeromeetienne/threex.volumetricspotlight.git",
+  "_target": "*",
+  "_originalSource": "threex.volumetricspotlight",
+  "_direct": true
+}
