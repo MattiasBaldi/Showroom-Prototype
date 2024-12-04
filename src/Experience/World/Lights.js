@@ -41,8 +41,8 @@ export default class Lights
         for (let i = 0; i < count; i++)
         {
 
-            //     constructor(color = 'grey', attenuation = 6, anglePower = 0.1, intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0)
-            this.spotLight = new VolumetricSpotLight('grey', 6, 0.1 * Math.PI, 100, 6, 0.1, 1, 0)
+            //     constructor(color = 'grey', attenuation = 6, radiusBottom = 1, anglePower = 0.1, intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0)
+            this.spotLight = new VolumetricSpotLight('white', 6, 10, 0.1 * Math.PI, 100, 6, 0.1, 1, 0)
             this.spotLight.castShadow = true; // Ensure the light casts shadows
 
             // Position X
@@ -56,7 +56,7 @@ export default class Lights
             console.log('Light Angle:', this.spotLight.children[1].angle);
             console.log('Light Penumbra:', this.spotLight.children[1].penumbra);
             console.log('Light Decay:', this.spotLight.children[1].decay);
-
+            console.log('Cone RadiusBottom:', this.spotLight.children[0].geometry.parameters.radiusBottom);
 
             this.spotLights.push(this.spotLight)
             this.scene.add(this.spotLight)
@@ -64,6 +64,7 @@ export default class Lights
 
     if (this.debug.active) {
         const debugObject = {
+            radiusBottom:  this.spotLights[0].children[0].geometry.parameters.radiusBottom,
             attenuation: this.spotLights[0].children[0].material.uniforms.attenuation.value,
             anglePower: this.spotLights[0].children[0].material.uniforms.anglePower.value,
             lightDistance:  this.spotLights[0].children[1].distance,
@@ -72,6 +73,31 @@ export default class Lights
             lightPenumbra: this.spotLights[0].children[1].penumbra, 
             lightDecay:  this.spotLights[0].children[1].decay,
         };
+
+        this.Volumetric
+            .add(debugObject, 'radiusBottom')
+            .name('radiusBottom')
+            .step(0.001)
+            .min(0)
+            .max(20)
+            .onChange((value) => {
+            // Update the radiusBottom value for all spotlights
+            this.spotLights.forEach((spotLight) => {
+            const oldGeometry = spotLight.children[0].geometry;
+            const newGeometry = oldGeometry.clone();
+            newGeometry.parameters.radiusBottom = value;
+            newGeometry.dispose(); // Dispose the old geometry
+            spotLight.children[0].geometry = new THREE.CylinderGeometry(
+            newGeometry.parameters.radiusTop,
+            value,
+            newGeometry.parameters.height,
+            newGeometry.parameters.radialSegments
+            );
+            // Rotate the spotlight so it is pointing down
+            spotLight.children[0].rotation.x = -Math.PI / 0.5;
+            spotLight.children[0].position.y = 0
+            });
+            });
 
         this.Volumetric
             .add(debugObject, 'attenuation')

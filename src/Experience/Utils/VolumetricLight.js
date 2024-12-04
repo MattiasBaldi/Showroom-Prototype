@@ -3,7 +3,7 @@ import Experience from '../Experience.js'
 
 export default class VolumetricSpotLight {
 
-    constructor(color = 'grey', attenuation = 6, anglePower = 0.1 * Math.PI, intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0) {
+    constructor(color = 'grey', attenuation = 6, radiusBottom = 1, anglePower = 0.1 * Math.PI, intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0) {
         
         // Setup
         this.experience = new Experience()
@@ -17,6 +17,7 @@ export default class VolumetricSpotLight {
         this.color = color;
         this.attenuation = attenuation; 
         this.anglePower = anglePower; 
+        this.radiusBottom = radiusBottom
         this.distance = distance;
         this.intensity = intensity;
         this.angle = angle;
@@ -120,7 +121,7 @@ export default class VolumetricSpotLight {
             uniforms: {
                 attenuation: { type: "f", value: this.attenuation },
                 anglePower: { type: "f", value: Math.cos(this.anglePower) },
-                edgeScale: { type: "f", value: 20.0 }, // Adjust this value as needed
+                edgeScale: { type: "f", value: 50.0 }, // Adjust this value as needed
                 edgeConstractPower: { type: "f", value: 1.5 }, // Adjust this value as needed
                 cameraNear: { type: "f", value: this.camera.near },
                 cameraFar: { type: "f", value: this.camera.far },
@@ -142,11 +143,11 @@ export default class VolumetricSpotLight {
 
     setGeometry() {
         const radiusTop = 0.1;
-        const radiusBottom = Math.tan(this.angle) * this.distance;
         const height = this.distance;
-        this.geometry = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, 64, 20, true);
+        this.geometry = new THREE.CylinderGeometry(radiusTop, this.radiusBottom, height, 128, 20, true);
         this.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, -this.geometry.parameters.height / 2, 0));
         this.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+        // this.geometry.computeVertexNormals();
     }
 
     setCone() {
