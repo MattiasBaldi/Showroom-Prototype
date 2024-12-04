@@ -41,7 +41,8 @@ export default class Lights
         for (let i = 0; i < count; i++)
         {
 
-            this.spotLight = new VolumetricSpotLight()
+            //     constructor(color = 'grey', attenuation = 6, anglePower = 0.1, intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0)
+            this.spotLight = new VolumetricSpotLight('grey', 6, 0.1 * Math.PI, 100, 6, 0.1, 1, 0)
             this.spotLight.castShadow = true; // Ensure the light casts shadows
 
             // Position X

@@ -3,9 +3,9 @@ import Experience from '../Experience.js'
 
 export default class VolumetricSpotLight {
 
-    constructor(color = 'grey', intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0) {
+    constructor(color = 'grey', attenuation = 6, anglePower = 0.1 * Math.PI, intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0) {
         
-        
+        // Setup
         this.experience = new Experience()
         this.debug = this.experience.debug
         this.camera = this.experience.camera.instance
@@ -15,8 +15,8 @@ export default class VolumetricSpotLight {
 
         // Parameters
         this.color = color;
-        this.attenuation = null; 
-        this.anglePower = null; 
+        this.attenuation = attenuation; 
+        this.anglePower = anglePower; 
         this.distance = distance;
         this.intensity = intensity;
         this.angle = angle;
@@ -24,7 +24,6 @@ export default class VolumetricSpotLight {
         this.decay = decay;
     
         
- 
         // Position
         this.positionX = 0;
         this.positionY = 5;
@@ -119,8 +118,8 @@ export default class VolumetricSpotLight {
     setMaterial() {
         this.material = new THREE.ShaderMaterial({
             uniforms: {
-                attenuation: { type: "f", value: this.distance },
-                anglePower: { type: "f", value: Math.cos(this.angle) },
+                attenuation: { type: "f", value: this.attenuation },
+                anglePower: { type: "f", value: Math.cos(this.anglePower) },
                 edgeScale: { type: "f", value: 20.0 }, // Adjust this value as needed
                 edgeConstractPower: { type: "f", value: 1.5 }, // Adjust this value as needed
                 cameraNear: { type: "f", value: this.camera.near },
