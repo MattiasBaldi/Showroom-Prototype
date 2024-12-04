@@ -21,22 +21,26 @@ export default class Lights
         this.scene_2 = this.world.scene_2
         this.scene_3 = this.world.scene_3
 
-        // Setup
-        this.setSpotlight(10)
-        this.setVolumetricLight()
-
         // Debug
-        if (this.debug.active)
-        {
-            this.debugFolder = this.debug.ui.addFolder('Lights')
+        if (this.debug.active) {
+
+            // Ensure this.debugFolder is initialized
+            this.debugFolder = this.debug.ui.addFolder('Lights');            
+            this.Volumetric = this.debugFolder.addFolder('Volumetric Lights');
         }
+
+        // Setup
+        this.setSpotlight(6)
+ 
     }
 
     setSpotlight(count) 
     {
+        this.spotLights = [];
 
         for (let i = 0; i < count; i++)
         {
+
             this.spotLight = new VolumetricSpotLight()
             this.spotLight.castShadow = true; // Ensure the light casts shadows
 
@@ -44,45 +48,123 @@ export default class Lights
             const gap = 10; 
             const positionX = (i % 2 === 0) ? (i + 1) * gap : -(i + 1) * gap;
             this.spotLight.position.x = positionX;
-            console.log(this.spotLight)
             this.spotLight.children[0].material.uniforms.spotPosition.value.x = positionX;
-            // console.log( this.spotLight.mesh.material.uniforms.spotPosition.x)
 
-            // Position Y
-            this.spotLightpositionY = 5; 
+            console.log(this.spotLight.children[1].intensity)
+            console.log('Light Intensity:', this.spotLight.children[1].intensity);
+            console.log('Light Angle:', this.spotLight.children[1].angle);
+            console.log('Light Penumbra:', this.spotLight.children[1].penumbra);
+            console.log('Light Decay:', this.spotLight.children[1].decay);
 
-            // Create a target object and set its position directly below the spotlight
-            // const target = new THREE.Object3D();
-            // target.position.set(this.spotLight.positionX, this.spotLight.positionY - 1, this.spotLight.positionZ);
-            // this.scene.add(target);
 
-            // Set the spotlight to look at the target
-            // this.spotLight.target = target;
-
-            // this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight)
+            this.spotLights.push(this.spotLight)
             this.scene.add(this.spotLight)
-            // this.scene.add(this.spotLightHelper)
-            
         }
 
+    if (this.debug.active) {
+        const debugObject = {
+            attenuation: this.spotLights[0].children[0].material.uniforms.attenuation.value,
+            anglePower: this.spotLights[0].children[0].material.uniforms.anglePower.value,
+            lightDistance:  this.spotLights[0].children[1].distance,
+            lightIntensity: this.spotLights[0].children[1].intensity, 
+            lightAngle: this.spotLights[0].children[1].angle,
+            lightPenumbra: this.spotLights[0].children[1].penumbra, 
+            lightDecay:  this.spotLights[0].children[1].decay,
+        };
 
-        // this.spotLight1.position.y = 0
-        // this.spotLight1.position.z = 0
-        // this.spotLight1.position.x = 0
+        this.Volumetric
+            .add(debugObject, 'attenuation')
+            .name('Attenuation')
+            .step(0.001)
+            .min(0)
+            .max(20)
+            .onChange((value) => {
+                // Update the attenuation value for all spotlights
+                this.spotLights.forEach((spotLight) => {
+                    spotLight.children[0].material.uniforms.attenuation.value = value;
+                });
+            });
 
+            this.Volumetric
+            .add(debugObject, 'anglePower')
+            .name('AnglePower')
+            .step(0.001)
+            .min(0)
+            .max(20)
+            .onChange((value) => {
+                // Update the attenuation value for all spotlights
+                this.spotLights.forEach((spotLight) => {
+                    spotLight.children[0].material.uniforms.anglePower.value = value;
+                });
+            });
+
+            this.Volumetric
+            .add(debugObject, 'lightDistance')
+            .name('Light Distance')
+            .step(0.001)
+            .min(0)
+            .max(10)
+            .onChange((value) => {
+                // Update the light intensity for all spotlights
+                this.spotLights.forEach((spotLight) => {
+                    spotLight.children[1].distance = value;
+                });
+            });
+
+    this.Volumetric
+        .add(debugObject, 'lightIntensity')
+        .name('Light Intensity')
+        .step(0.001)
+        .min(0)
+        .max(10)
+        .onChange((value) => {
+            // Update the light intensity for all spotlights
+            this.spotLights.forEach((spotLight) => {
+                spotLight.children[1].intensity = value;
+            });
+        });
+
+    this.Volumetric
+        .add(debugObject, 'lightAngle')
+        .name('Light Angle')
+        .step(0.001)
+        .min(0)
+        .max(Math.PI / 2)
+        .onChange((value) => {
+            // Update the light angle for all spotlights
+            this.spotLights.forEach((spotLight) => {
+                spotLight.children[1].angle = value;
+            });
+        });
+
+    this.Volumetric
+        .add(debugObject, 'lightPenumbra')
+        .name('Light Penumbra')
+        .step(0.001)
+        .min(0)
+        .max(1)
+        .onChange((value) => {
+            // Update the light penumbra for all spotlights
+            this.spotLights.forEach((spotLight) => {
+                spotLight.children[1].penumbra = value;
+            });
+        });
+
+    this.Volumetric
+        .add(debugObject, 'lightDecay')
+        .name('Light Decay')
+        .step(0.001)
+        .min(0)
+        .max(2)
+        .onChange((value) => {
+            // Update the light decay for all spotlights
+            this.spotLights.forEach((spotLight) => {
+                spotLight.children[1].decay = value;
+            });
+        });
     }
-
-    // setHelpers() {
-    // this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight)
-    // this.scene.add(this.spotLightHelper)
-    // }
-
-    setVolumetricLight()
-    {
-        this.SpotLightCone = new VolumetricSpotLight()
-        this.scene.add(this.SpotLightCone)
-
-    }
+    
+}
 
 
     setBloom() {

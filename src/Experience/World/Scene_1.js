@@ -85,7 +85,7 @@ export default class Scene_1
     {
         this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.01', metalness: '1',  emissive: 0x000000, // Emissive color
             emissiveIntensity: 0 });
-        this.bodyMaterial = new THREE.MeshBasicMaterial({color: 'white'}); 
+        this.bodyMaterial = new THREE.MeshStandardMaterial({color: 'white', roughness: '0.01'}); 
         this.animatedBody = this.animatedModel.children[0]
         this.posedBody = this.posedModel.children[1]
 

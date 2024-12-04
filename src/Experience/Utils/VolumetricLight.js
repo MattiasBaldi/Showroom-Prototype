@@ -3,10 +3,11 @@ import Experience from '../Experience.js'
 
 export default class VolumetricSpotLight {
 
-    constructor(color = 'grey', intensity = 10, distance = 20, angle = 0.1 * Math.PI, penumbra = 1, decay = 0) {
+    constructor(color = 'grey', intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0) {
         
         
         this.experience = new Experience()
+        this.debug = this.experience.debug
         this.camera = this.experience.camera.instance
         this.sizes = this.experience.sizes
         this.height = this.sizes.height
@@ -14,11 +15,15 @@ export default class VolumetricSpotLight {
 
         // Parameters
         this.color = color;
-        this.intensity = intensity;
+        this.attenuation = null; 
+        this.anglePower = null; 
         this.distance = distance;
+        this.intensity = intensity;
         this.angle = angle;
         this.penumbra = penumbra;
         this.decay = decay;
+    
+        
  
         // Position
         this.positionX = 0;
@@ -133,6 +138,7 @@ export default class VolumetricSpotLight {
             transparent: true,
             depthWrite: false,
         });
+
     }
 
     setGeometry() {
@@ -152,7 +158,7 @@ export default class VolumetricSpotLight {
     }
 
     setLight() {
-        this.spotLight = new THREE.SpotLight(this.color, this.intensity, this.distance, this.angle * 1.3, this.penumbra, this.decay);
+        this.spotLight = new THREE.SpotLight(this.color, this.intensity, this.distance, this.angle, this.penumbra, this.decay);
         this.spotLight.position.set(this.positionX, this.positionY, this.positionZ);
         this.target = new THREE.Object3D();
         this.spotLight.target = this.target;

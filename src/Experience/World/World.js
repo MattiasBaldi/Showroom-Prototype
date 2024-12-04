@@ -35,7 +35,7 @@ export default class World
     {
     const floor = new THREE.Mesh
     (
-        new THREE.PlaneGeometry(100, 100),
+        new THREE.PlaneGeometry(1000, 1000),
         new THREE.MeshStandardMaterial({ color: 'black' })
     )
 
@@ -60,6 +60,7 @@ update()
         {
             this.scene_2.update()
         }
+        
         if(this.lights)
         {
             this.lights.update()
