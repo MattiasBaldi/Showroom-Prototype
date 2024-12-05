@@ -39,8 +39,6 @@ export default class Switch {
         this.controls.OrbitControls.target.copy(localPosition)
         this.controls.OrbitControls.target.y = this.height
         this.controls.OrbitControls.maxDistance = this.radius - 0.1;
-
-        document.body.style.cursor = 'none'; // Show the cursor
     }
 
     setWASD()
