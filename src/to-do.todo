@@ -9,8 +9,9 @@ Scene_3
 
 Scene_1
 ✔ Fade @done (26.11.2024, 23.33.36)
+✔ Remove unneccessary animation @done (5.12.2024, 17.24.36)
 ☐ Catwalk Visualizer Debug
-☐ Remove unneccessary animation
+☐ Remove hands
 
 Scene_2
 ☐ Arts
@@ -22,7 +23,7 @@ Controls / W-A-S-D Movement
 
 Switch
 ✔ Orbit position is weird for some objects @done (3.12.2024, 15.51.16)
-☐ Set geometry origin as true pivotPoint (Max zoom, doesnt match radius), height parameter needs to be removed
+☐ Set geometry origin as true pivotPoint (Issue being that, the max zoom, doesnt match the togggle radius), height parameter needs to be removed
 
 Teleportation
 ✔ Create .js File @done (28.11.2024, 21.03.09)
@@ -35,31 +36,51 @@ World
 ✔ Fix grid @done (27.11.2024, 23.28.56)
 ☐ Dispose objects not visible in scene
 
+Lights
+-------
+☐ Spotlights
+☐ Bloom Selective
+
+Shadow
+-------
+☐ 
+☐ 
+
+PostProcessing
+-----------
+
+Environment
+-----------
+☐ Fog
+☐ Tweaks to look realistic
+
+
+
+Sound
+------------------
+☐ Import different sounds
+☐ Declare radius and switches
+
+
+Debug
+------------------
+☐ Optimize perfomance and code
+☐ Change controls
+☐ PivotPoint on Orbitcontrols to the relevant scene
+☐ Allow debug of each scene
+
+☐ Perfomance tips
+------------------
+☐ Remove animation on posed model
+☐ Check  notion for perfomance tips
+☐ Check three.js for perfomance tips
+
 
 Prioritized list
+------------------
 ☐ Lighting & Shadow
 ☐ Environment
 ☐ Scene 2
 ☐ Music / Sound
 
-Lights
-☐ Spotlights
-☐ Bloom Selective
 
-Environment
-☐ Fog
-☐ Tweaks to look realistic
-
-Sound
-☐ Import different sounds
-☐ Declare radius and switches
-
-☐ Debug and Tweaks
-☐ Optimize perfomance and code
-☐ Change controls
-☐ PivotPoint on Orbitcontrols to the relevant scene
-
-☐ Perfomance tips
-☐ Remove animation on posed model
-☐ Check  notion for perfomance tips
-☐ Check three.js for perfomance tips

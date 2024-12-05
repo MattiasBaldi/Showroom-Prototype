@@ -47,11 +47,29 @@ export default class Lights
         for (let i = 0; i < count; i++)
         {
 
-            //     constructor(color = 'grey', attenuation = 6, radiusBottom = 1, anglePower = 0.1, intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0)
-            this.spotLight = new VolumetricSpotLight('white', 5.3, 3.7, 0.1, 10, 5, 0.5, 1, 0)
+            // constructor(color = Color = 'grey', ConeRadius = 2, ConeHeight = 5, LightIntensity = 100)
+            this.spotLight = new VolumetricSpotLight()
             this.cone = this.spotLight.children[0]
             this.light = this.spotLight.children[1]
 
+            // Adjustable Params
+            // this.params =
+            // {
+            // ConeAttenuation: this.cone.material.uniforms.attenuation.value,
+            // ConeAnglePower: this.cone.material.uniforms.anglePower.value,
+            // ConeEdgeScale: this.cone.material.uniforms.edgeScale.value,
+            // ConeEdgeConstractPower: this.cone.material.uniforms.edgeConstractPower.value,
+            // LightIntensity: this.light.intensity,
+            // LightAngle:  this.light.angle,
+            // LightPenumbra: this.light.penumbra,
+            // LightDecay: this.light.decay
+            // }
+
+            console.log(this.spotLight.params)
+
+            // Adjustments
+            // this.params.ConeAttenuation = 10;
+            // this.params.ConeAnglePower = 1
 
             // Position X
             const gap = 10; 
@@ -59,8 +77,7 @@ export default class Lights
             this.spotLight.position.x = positionX;
             this.spotLight.children[0].material.uniforms.spotPosition.value.x = positionX;
 
-            // Position Y 
-
+            // Add this to the scene
             this.spotLights.push(this.spotLight)
             this.scene.add(this.spotLight)
         }
@@ -72,7 +89,6 @@ export default class Lights
             radiusBottom: this.spotLights[0].children[0].geometry.parameters.radiusBottom,
             attenuation: this.spotLights[0].children[0].material.uniforms.attenuation.value,
             anglePower: this.spotLights[0].children[0].material.uniforms.anglePower.value,
-            lightDistance: this.spotLights[0].children[1].distance,
             lightIntensity: this.spotLights[0].children[1].intensity,
             lightAngle: this.spotLights[0].children[1].angle,
             lightPenumbra: this.spotLights[0].children[1].penumbra,
@@ -88,24 +104,27 @@ export default class Lights
             .min(0)
             .max(20)
             .onChange((value) => {
-                // Update the radiusBottom value for all spotlights
-                this.spotLights.forEach((spotLight) => {
-                    const oldGeometry = spotLight.children[0].geometry;
-                    const newGeometry = oldGeometry.clone();
-                    newGeometry.parameters.radiusBottom = value;
-                    newGeometry.dispose(); // Dispose the old geometry
-                    spotLight.children[0].geometry = new THREE.CylinderGeometry(
-                        newGeometry.parameters.radiusTop,
-                        value,
-                        newGeometry.parameters.height,
-                        newGeometry.parameters.radialSegments
-                    );
+            // Update the radiusBottom value for all spotlights
+            this.spotLights.forEach((spotLight) => {
+                const oldGeometry = spotLight.children[0].geometry;
+                const newGeometry = oldGeometry.clone();
+                newGeometry.parameters.radiusBottom = value;
+                newGeometry.dispose(); // Dispose the old geometry
 
-                    // Rotate the spotlight so it is pointing down
-                    spotLight.children[0].rotation.x = -Math.PI / 0.5;
-                    spotLight.children[0].position.y = newGeometry.parameters.height / 2;                
-                });
+                spotLight.children[0].geometry = new THREE.CylinderGeometry(
+                newGeometry.parameters.radiusTop,
+                value,
+                newGeometry.parameters.height,
+                newGeometry.parameters.radialSegments
+                );
+
+                // Rotate the spotlight so it is pointing down
+                spotLight.children[0].rotation.x = -Math.PI / 0.5;
+                spotLight.children[0].position.y = newGeometry.parameters.height / 2;   
+                spotLight.position.y = 0;              
             });
+            });
+
 
         this.Volumetric
             .add(debugObject, 'attenuation')
@@ -130,19 +149,6 @@ export default class Lights
                 // Update the anglePower value for all spotlights
                 this.spotLights.forEach((spotLight) => {
                     spotLight.children[0].material.uniforms.anglePower.value = value;
-                });
-            });
-
-        this.Volumetric
-            .add(debugObject, 'lightDistance')
-            .name('Light Distance')
-            .step(0.001)
-            .min(0)
-            .max(10)
-            .onChange((value) => {
-                // Update the light distance for all spotlights
-                this.spotLights.forEach((spotLight) => {
-                    spotLight.children[1].distance = value;
                 });
             });
 
@@ -237,7 +243,6 @@ export default class Lights
             const targetObject = new THREE.Object3D();
             targetObject.position.copy(localPosition);
             this.scene.add(targetObject);
-        
             spotLight.target = targetObject;
         
             // Position the spotlight
@@ -245,7 +250,6 @@ export default class Lights
             spotLight.position.x += - 0.5 * (5 * (Math.random() * 1.2))
             spotLight.position.y += 5 * (Math.random() * 1.2)
             spotLight.position.z += - 0.5 * (5 * (Math.random() * 1.2))
-        
 
             // Helper
             const spotLightHelper = new THREE.SpotLightHelper(spotLight)

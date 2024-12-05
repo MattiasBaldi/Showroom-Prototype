@@ -3,7 +3,7 @@ import Experience from '../Experience.js'
 
 export default class VolumetricSpotLight {
 
-    constructor(color = 'grey', attenuation = 6, radiusBottom = 1, anglePower = 0.1 * Math.PI, intensity = 100, distance = 6, angle = 0.1 * Math.PI, penumbra = 1, decay = 0) {
+       constructor(color = 'white', coneRadius = 2, coneHeight = 5, lightIntensity = 500) {
         
         // Setup
         this.experience = new Experience()
@@ -14,21 +14,22 @@ export default class VolumetricSpotLight {
         this.width = this.sizes.width
 
         // Parameters
-        this.color = color;
-        this.attenuation = attenuation; 
-        this.anglePower = anglePower; 
-        this.radiusBottom = radiusBottom
-        this.distance = distance;
-        this.intensity = intensity;
-        this.angle = angle;
-        this.penumbra = penumbra;
-        this.decay = decay;
-    
+        this.color = color
+        this.coneRadius = coneRadius
+        this.coneHeight = coneHeight
+        this.lightIntensity = lightIntensity
         
-        // Position
-        this.positionX = 0;
-        this.positionY = 5;
-        this.positionZ = 0;
+        // Params
+        this.params = {
+            ConeAttenuation: this.material.uniforms.attenuation.value,
+            ConeAnglePower: this.material.uniforms.anglePower.value,
+            ConeEdgeScale: this.material.uniforms.edgeScale.value,
+            ConeEdgeConstractPower: this.material.uniforms.edgeConstractPower.value,
+            LightIntensity: this.spotLight.intensity,
+            LightAngle: this.spotLight.angle,
+            LightPenumbra: this.spotLight.penumbra,
+            LightDecay: this.spotLight.decay
+        }
 
         // Group
         this.group = new THREE.Group();
@@ -119,15 +120,15 @@ export default class VolumetricSpotLight {
     setMaterial() {
         this.material = new THREE.ShaderMaterial({
             uniforms: {
-                attenuation: { type: "f", value: this.attenuation },
-                anglePower: { type: "f", value: Math.cos(this.anglePower) },
+                attenuation: { type: "f", value: 1 },
+                anglePower: { type: "f", value: Math.cos(1) },
                 edgeScale: { type: "f", value: 20.0 }, // Adjust this value as needed
                 edgeConstractPower: { type: "f", value: 1.5 }, // Adjust this value as needed
                 cameraNear: { type: "f", value: this.camera.near },
                 cameraFar: { type: "f", value: this.camera.far },
                 screenWidth: { type: "f", value: this.sizes.width },
                 screenHeight: { type: "f", value: this.sizes.height },
-                spotPosition: { type: "v3", value: new THREE.Vector3(this.positionX, this.positionY, this.positionZ) },
+                spotPosition: { type: "v3", value: new THREE.Vector3(0, this.coneHeight, 0) },
                 tDepth: { type: "t", value: null }, // This should be set to the depth texture
                 lightColor: { type: "c", value: new THREE.Color(this.color) },
             },
@@ -143,8 +144,8 @@ export default class VolumetricSpotLight {
 
     setGeometry() {
         const radiusTop = 0.1;
-        const height = this.distance;
-        this.geometry = new THREE.CylinderGeometry(radiusTop, this.radiusBottom, height, 128, 20, true);
+        const height = this.coneHeight;
+        this.geometry = new THREE.CylinderGeometry(radiusTop, this.coneRadius, height, 128, 20, true);
         this.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, -this.geometry.parameters.height / 2, 0));
         this.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
         this.geometry.computeVertexNormals();
@@ -152,14 +153,15 @@ export default class VolumetricSpotLight {
 
     setCone() {
         this.mesh = new THREE.Mesh(this.geometry, this.material);
-        this.mesh.position.set(this.positionX, this.positionY, this.positionZ);
+        this.mesh.position.set(0, this.coneHeight, 0);
         this.mesh.rotation.x = Math.PI / 2; // Point downwards
         this.group.add(this.mesh);
     }
 
     setLight() {
-        this.spotLight = new THREE.SpotLight(this.color, this.intensity, 0, this.angle, this.penumbra, this.decay);
-        this.spotLight.position.set(this.positionX, this.positionY, this.positionZ);
+        const angle = Math.atan(this.coneRadius / this.coneHeight); // Calculate the angle
+        this.spotLight = new THREE.SpotLight(this.color, this.lightIntensity, 0, angle, 0.5, 0);
+        this.spotLight.position.set(0, this.coneHeight, 0);
         this.target = new THREE.Object3D();
         this.spotLight.target = this.target;
 
