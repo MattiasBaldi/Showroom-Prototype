@@ -36,6 +36,7 @@ export default class Lights
         // Setup
         this. setObjectSpotLight(4, this.scene_1.posedModel)
         this.setSpotlight(6)
+        this.setCatwalk(5, 10)
  
     }
 
@@ -254,9 +255,20 @@ export default class Lights
         }
     }
 
-    setCatwalk()
+    setCatwalk(count, gap)
     {
-        
+    for (let i = 0; i < count; i++) {
+        const spotLight = new THREE.SpotLight('white', 1000, 0, Math.PI * 0.1, 1, 2);
+        spotLight.position.z += i * gap;
+        spotLight.position.y = 5;
+        spotLight.target.position.set(spotLight.position.x, 0, spotLight.position.z);
+        this.scene.add(spotLight);
+        this.scene.add(spotLight.target);
+
+        // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+        // this.scene.add(spotLightHelper);
+    }
+
     }
 
     update(){
