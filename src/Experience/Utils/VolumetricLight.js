@@ -121,7 +121,7 @@ export default class VolumetricSpotLight {
             uniforms: {
                 attenuation: { type: "f", value: this.attenuation },
                 anglePower: { type: "f", value: Math.cos(this.anglePower) },
-                edgeScale: { type: "f", value: 50.0 }, // Adjust this value as needed
+                edgeScale: { type: "f", value: 20.0 }, // Adjust this value as needed
                 edgeConstractPower: { type: "f", value: 1.5 }, // Adjust this value as needed
                 cameraNear: { type: "f", value: this.camera.near },
                 cameraFar: { type: "f", value: this.camera.far },
@@ -147,7 +147,7 @@ export default class VolumetricSpotLight {
         this.geometry = new THREE.CylinderGeometry(radiusTop, this.radiusBottom, height, 128, 20, true);
         this.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, -this.geometry.parameters.height / 2, 0));
         this.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
-        // this.geometry.computeVertexNormals();
+        this.geometry.computeVertexNormals();
     }
 
     setCone() {
@@ -158,7 +158,7 @@ export default class VolumetricSpotLight {
     }
 
     setLight() {
-        this.spotLight = new THREE.SpotLight(this.color, this.intensity, this.distance, this.angle, this.penumbra, this.decay);
+        this.spotLight = new THREE.SpotLight(this.color, this.intensity, 0, this.angle, this.penumbra, this.decay);
         this.spotLight.position.set(this.positionX, this.positionY, this.positionZ);
         this.target = new THREE.Object3D();
         this.spotLight.target = this.target;

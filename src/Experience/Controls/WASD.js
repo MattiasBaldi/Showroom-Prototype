@@ -20,7 +20,7 @@ export default class WASD {
         this.direction = new THREE.Vector3();
 
         // Movement flags
-        this.moveSpeed =  1; 
+        this.moveSpeed =  0.5; 
         this.moveForward = false;
         this.moveBackward = false;
         this.moveLeft = false;

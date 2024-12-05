@@ -69,16 +69,16 @@ export default class Scene_1
         this.action = {};
 
         this.animation.walking = this.resource.animations[0];
-        this.animation.pose = this.resource.animations[1];
+        // this.animation.pose = this.resource.animations[1];
 
         this.animation.mixer.walking = new THREE.AnimationMixer(this.sceneModels);
-        this.animation.mixer.pose = new THREE.AnimationMixer(this.sceneModels);
+        // this.animation.mixer.pose = new THREE.AnimationMixer(this.sceneModels);
 
         this.action.walking = this.animation.mixer.walking.clipAction(this.animation.walking);
-        this.action.pose = this.animation.mixer.pose.clipAction(this.animation.pose);
+        // this.action.pose = this.animation.mixer.pose.clipAction(this.animation.pose);
 
         this.action.walking.play();
-        this.action.pose.play();
+        // this.action.pose.play();
     }
 
     updateMaterials()
@@ -256,7 +256,7 @@ export default class Scene_1
     update()
     {
             this.animation.mixer.walking.update(this.time.delta * 0.001); 
-            this.animation.mixer.pose.update(this.time.delta * 0.001); 
+            // this.animation.mixer.pose.update(this.time.delta * 0.001); 
             this.updateWalk()
             this.setFade()
             this.switch.update()
