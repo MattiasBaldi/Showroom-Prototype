@@ -114,36 +114,3 @@ export default class Environment
         }
 
     }
-
-
-//     // Tone mapping
-// // Tone mapping is a bit like color grading
-// // Reinhard is a bit like a 'raw' filed photo, with no color grading applied yet
-// renderer.toneMapping = THREE.ReinhardToneMapping
-// renderer.toneMappingExposure = 2; //Exposure like in a photography
-
-// gui.add(renderer, 'toneMapping', {
-//     No: THREE.NoToneMapping, 
-//     Linear: THREE.LinearToneMapping, 
-//     Reinhard: THREE.ReinhardToneMapping, 
-//     Cineon: THREE.CineonToneMapping, 
-//     ACESFilmic: THREE.ACESFilmicToneMapping
-// })
-
-// gui.add(renderer, 'toneMappingExposure').min(0).max(10).step(0.001); 
-
-
-// // AntiAliasing
-// // Aliasing determines the sharpness of the geometry, otherwise it creates a stair-like effect, where edges are creased
-// // It depends on the pixel ratio, but antialiasing solves it
-// // Set it to true in the renderer
-
-// // Physically accurates lighting 
-// renderer.useLegacyLights = false
-// gui.add(renderer, 'useLegacyLights')
-
-// //Shadows
-// // Environment maps cannot cast shadows
-// // So we add light that's similiar to the environment maps intensity and add shadows afterwards
-// renderer.shadowMap.type = THREE.PCFSoftShadowMap
-// renderer.shadowMap.enabled = true;

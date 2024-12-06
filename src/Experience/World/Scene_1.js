@@ -67,28 +67,26 @@ export default class Scene_1
     {
         this.animation = { mixer: {} };
         this.action = {};
-
         this.animation.walking = this.resource.animations[0];
-        // this.animation.pose = this.resource.animations[1];
-
         this.animation.mixer.walking = new THREE.AnimationMixer(this.sceneModels);
-        // this.animation.mixer.pose = new THREE.AnimationMixer(this.sceneModels);
-
         this.action.walking = this.animation.mixer.walking.clipAction(this.animation.walking);
-        // this.action.pose = this.animation.mixer.pose.clipAction(this.animation.pose);
-
         this.action.walking.play();
-        // this.action.pose.play();
     }
 
     updateMaterials()
     {
-        this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.01', metalness: '1',  emissive: 0x000000, // Emissive color
-            emissiveIntensity: 0 });
+        this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.01', metalness: '1'});
         this.bodyMaterial = new THREE.MeshStandardMaterial({color: 'white', roughness: '0.01'}); 
+
+        // Bloom on selected 
+        /*
+                this.bodyMaterial.emissive = new THREE.Color(0xffffff);
+                this.bodyMaterial.emissiveIntensity = 1000;
+                this.bodyMaterial.roughness = 0.01;
+        */
+
         this.animatedBody = this.animatedModel.children[0]
         this.posedBody = this.posedModel.children[1]
-
 
         //  Set all chrome except the bodies
          this.sceneModels.traverse((child) =>
@@ -106,6 +104,11 @@ export default class Scene_1
             }
             })
 
+    }
+
+    setBloom()
+    {
+        
     }
 
     setWalk()

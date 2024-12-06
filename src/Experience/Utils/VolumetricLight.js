@@ -120,21 +120,20 @@ export default class VolumetricSpotLight {
     setMaterial() {
         this.material = new THREE.ShaderMaterial({
             uniforms: {
-                attenuation: { type: "f", value: 1 },
-                anglePower: { type: "f", value: Math.cos(1) },
-                edgeScale: { type: "f", value: 20.0 }, // Adjust this value as needed
-                edgeConstractPower: { type: "f", value: 1.5 }, // Adjust this value as needed
-                cameraNear: { type: "f", value: this.camera.near },
-                cameraFar: { type: "f", value: this.camera.far },
-                screenWidth: { type: "f", value: this.sizes.width },
-                screenHeight: { type: "f", value: this.sizes.height },
-                spotPosition: { type: "v3", value: new THREE.Vector3(0, this.coneHeight, 0) },
-                tDepth: { type: "t", value: null }, // This should be set to the depth texture
-                lightColor: { type: "c", value: new THREE.Color(this.color) },
+            attenuation: { type: "f", value: 1 },
+            anglePower: { type: "f", value: Math.cos(1) },
+            edgeScale: { type: "f", value: 20.0 }, // Adjust this value as needed
+            edgeConstractPower: { type: "f", value: 1.5 }, // Adjust this value as needed
+            cameraNear: { type: "f", value: this.camera.near },
+            cameraFar: { type: "f", value: this.camera.far },
+            screenWidth: { type: "f", value: this.sizes.width },
+            screenHeight: { type: "f", value: this.sizes.height },
+            spotPosition: { type: "v3", value: new THREE.Vector3(0, this.coneHeight, 0) },
+            tDepth: { type: "t", value: null }, // This should be set to the depth texture
+            lightColor: { type: "c", value: new THREE.Color(this.color) },
             },
             vertexShader: this.vertexShader,
             fragmentShader: this.fragmentShader,
-            // side: THREE.BackSide,
             blending: THREE.AdditiveBlending,
             transparent: true,
             depthWrite: false,

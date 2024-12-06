@@ -1,20 +1,31 @@
 import * as THREE from 'three'
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { WebGLRenderer } from "three";
 import Experience from './Experience.js'
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader';
-import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass';
-import { GodRaysFakeSunShader, GodRaysDepthMaskShader, GodRaysCombineShader, GodRaysGenerateShader } from 'three/addons/shaders/GodRaysShader.js';
-import { RGBShiftShader } from 'three/examples/jsm/Addons.js';
-import { SMAAPass } from 'three/examples/jsm/Addons.js';
+import { BloomEffect, EffectComposer, EffectPass, RenderPass, GodRaysEffect } from "postprocessing";
+
+// Post Processing
+// import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+// import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+// import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+// import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+// import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+// import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader';
+// import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass';
+// import { GodRaysFakeSunShader, GodRaysDepthMaskShader, GodRaysCombineShader, GodRaysGenerateShader } from 'three/addons/shaders/GodRaysShader.js';
+// import { RGBShiftShader } from 'three/examples/jsm/Addons.js';
+// import { SMAAPass } from 'three/examples/jsm/Addons.js';
+// import { BokehPass } from 'three/addons/postprocessing/BokehPass.js';
+// import { BokehShader, BokehDepthShader } from 'three/addons/shaders/BokehShader2.js';
+
+
 
 export default class Renderer
 {
     constructor()
     {
+
+        console.log('test', GodRaysEffect)
+
         this.experience = new Experience()
         this.canvas = this.experience.canvas
         this.sizes = this.experience.sizes
@@ -33,66 +44,38 @@ export default class Renderer
         this.setInstance()
         this.resize()
 
+        console.log(BloomEffect);
+        console.log(EffectComposer);
+        console.log(EffectPass);
+        console.log(RenderPass);
+
         // Post Processing
         this.setComposer()
         // this.setBloomPass()
         // this.setFilmGrainPass()
         // this.setGodRayPass()
-        this.setAntiAliasingPass()
+        // this.setDepthOfField()
+        // this.testGodray()
+        // this.setAntiAliasingPass()
         // this.setRBGShiftPass()
-        this.setGammaCorrectionPass()
+        // this.setGammaCorrectionPass()
+        // this.setAdjustMents()
 
     }
 
     setInstance()
     {
-        this.instance = new THREE.WebGLRenderer({
+        this.instance = new WebGLRenderer({
             canvas: this.canvas,
-            antialias: true // Only works without a composer
+            powerPreference: "high-performance",
+            antialias: false,
+            stencil: false,
+            depth: true,
+            precision: "highp"
         })
 
-        this.instance.setSize(this.sizes.width, this.sizes.height)
-        this.instance.setPixelRatio(this.sizes.pixelRatio)
-
-        // // Tone Mapping
-        // this.instance.toneMapping = THREE.CineonToneMapping
-        // this.instance.toneMappingExposure = 1
-
-        // // Shadow Map
-        // this.instance.shadowMap.enabled = true
-        // this.instance.shadowMap.width = 512; // Sets the width of the shadow map
-        // this.instance.shadowMap.height = 512; // Sets the height of the shadow map
-        // this.instance.shadowMap.type = THREE.PCFSoftShadowMap
-
-        // // Shadow Map Bias
-        // this.instance.shadowMap.bias = 0; // Adjusts the bias to reduce shadow artifacts
-
-        // // Shadow Map Normal Offset
-        // this.instance.shadowMap.normalBias = 0; // Adjusts the normal bias to reduce shadow acne
-
-        // // Output Encoding
-        // this.instance.outputEncoding = THREE.sRGBEncoding; // Sets the output encoding to sRGB for more accurate color representation
-
-        // // Gamma Factor
-        // this.instance.gammaOutput = true; // Enables gamma correction for the output
-        // this.instance.gammaFactor = 2; // Sets the gamma factor for gamma correction
-
-        // //Debug
-        // if(this.debug.active)
-        // {
-        //     this.debugFolder.add
-        //     this.debugFolder.add(this.instance, 'toneMappingExposure').min(0).max(10).step(0.001).name('Tone Mapping Exposure')
-        //     this.debugFolder.add(this.instance.shadowMap, 'enabled').name('Shadows Enabled')
-        //     this.debugFolder.add(this.instance.shadowMap, 'bias').min(-0.01).max(0.01).step(0.0001).name('Shadow Bias')
-        //     this.debugFolder.add(this.instance.shadowMap, 'normalBias').min(0).max(0.1).step(0.001).name('Shadow Normal Bias')
-        //     this.debugFolder.add(this.instance, 'outputEncoding', {
-        //         LinearEncoding: THREE.LinearEncoding,
-        //         sRGBEncoding: THREE.sRGBEncoding
-        //     }).name('Output Encoding')
-        //     this.debugFolder.add(this.instance, 'gammaOutput').name('Gamma Output')
-        //     this.debugFolder.add(this.instance, 'gammaFactor').min(1).max(3).step(0.01).name('Gamma Factor')
-        // }
-
+        // Set toneMapping to NoToneMapping
+        this.instance.toneMapping = THREE.NoToneMapping;
     }
 
     resize()
@@ -105,141 +88,132 @@ export default class Renderer
 
         // Adding Composer
         this.composer = new EffectComposer(this.instance, this.renderTarget);
-        this.composer.setSize(this.sizes.width, this.sizes.height)
-        this.composer.setPixelRatio(this.sizes.pixelRatio)
 
-        // Adding RenderPass
+        // RenderPass
         this.renderPass = new RenderPass(this.scene, this.camera.instance);
         this.composer.addPass(this.renderPass);
 
-                // Tone Mapping
-                this.composer.toneMapping = THREE.CineonToneMapping
-                this.composer.toneMappingExposure = 1
+        // Bloom
+        this.composer.addPass(new EffectPass(this.camera.instance, new BloomEffect()));
 
-                // Shadow Map
-                // this.composer.shadowMap.enabled = true
-                // this.composer.shadowMap.width = 512; // Sets the width of the shadow map
-                // this.composer.shadowMap.height = 512; // Sets the height of the shadow map
-                // this.composer.shadowMap.type = THREE.PCFSoftShadowMap
+   		// Sun
+		const sunMaterial = new THREE.MeshBasicMaterial({
+			color: 0xffddaa,
+			transparent: true,
+			fog: false
+		});
 
-                // // Shadow Map Bias
-                // this.composer.shadowMap.bias = 0; // Adjusts the bias to reduce shadow artifacts
+		const sunGeometry = new THREE.SphereGeometry(0.75, 32, 32);
+		const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+        sun.position.y = 5;
+        this.scene.add(sun);
 
-                // // Shadow Map Normal Offset
-                // this.composer.shadowMap.normalBias = 0; // Adjusts the normal bias to reduce shadow acne
+        // // God ray
+        let gre = new GodRaysEffect(this.camera.instance, sun, {
+            height: 480,
+            kernelSize: 2,
+            density: 1,
+            decay: 0.9,
+            weight: 0.5,
+            exposure: 0.3,
+            samples: 20,
+            clampMax: 0.95,
+          });
 
-                // Output Encoding
-                this.composer.outputEncoding = THREE.sRGBEncoding; // Sets the output encoding to sRGB for more accurate color representation
+          this.composer.addPass(new EffectPass(this.camera.instance, gre));
 
-                // Gamma Factor
-                this.composer.gammaOutput = true; // Enables gamma correction for the output
-                this.composer.gammaFactor = 2; // Sets the gamma factor for gamma correction
 
-                // Debug
-                if(this.debug.active)
-                {
-                    this.debugFolder.add
-                    this.debugFolder.add(this.composer, 'toneMappingExposure').min(0).max(10).step(0.001).name('Tone Mapping Exposure')
-                    // this.debugFolder.add(this.composer.shadowMap, 'enabled').name('Shadows Enabled')
-                    // this.debugFolder.add(this.composer.shadowMap, 'bias').min(-0.01).max(0.01).step(0.0001).name('Shadow Bias')
-                    // this.debugFolder.add(this.composer.shadowMap, 'normalBias').min(0).max(0.1).step(0.001).name('Shadow Normal Bias')
-                    this.debugFolder.add(this.composer, 'outputEncoding', {
-                    LinearEncoding: THREE.LinearEncoding,
-                    sRGBEncoding: THREE.sRGBEncoding
-                    }).name('Output Encoding')
-                    this.debugFolder.add(this.composer, 'gammaOutput').name('Gamma Output')
-                    this.debugFolder.add(this.composer, 'gammaFactor').min(1).max(3).step(0.01).name('Gamma Factor')
-                }
+          
+
     }
 
     setBloomPass()
     {
         this.bloomPass = new UnrealBloomPass(
             new THREE.Vector2(this.sizes.width, this.sizes.height),
-            1, // strength
-            0.4, // radius
+            0.01, // strength
+            1.4, // radius
             0 // threshold
         );
 
 
-        // Log all meshes
-        let closestDistanceToModel = 999999999 // infinity
-        let meshes = []; 
+        // // Log all meshes
+        // let closestDistanceToModel = 999999999 // infinity
+        // let meshes = []; 
 
-        // Wait for resources
-        this.resources.on('ready', () => {   
-            this.scene.traverse((object) => {
-                console.log('Object:', object);
-                if (object.isMesh) {
-                    meshes.push(object);
-                    console.log('Mesh found:', object); 
-                }
-            });
-        });
+        // // Wait for resources
+        // this.resources.on('ready', () => {   
+        //     this.scene.traverse((object) => {
+        //         console.log('Object:', object);
+        //         if (object.isMesh) {
+        //             meshes.push(object);
+        //             console.log('Mesh found:', object); 
+        //         }
+        //     });
+        // });
 
 
-        // Looping through all meshes
-        for (let i = 0; i < looksMeshes.length; i++) {
-            const modelWorldPosition = looksMeshes[i].getWorldPosition(new THREE.Vector3())
-            const modelPositionXZ = new THREE.Vector2(modelWorldPosition.x, modelWorldPosition.z)
-            const distanceToModel = new THREE.Vector2(this.camera.instance.position.x, this.camera.instance.position.z).distanceTo(modelPositionXZ)
+    // // Looping through all meshes
+    // for (let i = 0; i < looksMeshes.length; i++) {
+    //     const modelWorldPosition = looksMeshes[i].getWorldPosition(new THREE.Vector3())
+    //     const modelPositionXZ = new THREE.Vector2(modelWorldPosition.x, modelWorldPosition.z)
+    //     const distanceToModel = new THREE.Vector2(this.camera.instance.position.x, this.camera.instance.position.z).distanceTo(modelPositionXZ)
+        
+    // if (distanceToModel < closestDistanceToModel) closestDistanceToModel = distanceToModel
+    // }
+
+    
+    // if (closestDistanceToModel <= postprocessingParams.distanceBloomAtenuation && closestDistanceToModel > postprocessingParams.closeDistanceBloom) {        
+    //     unrealBloomPass.threshold = postprocessingParams.threshold + (postprocessingParams.distanceBloomAtenuation - closestDistanceToModel) * Math.abs((postprocessingParams.threshold - postprocessingParams.closeThreshold) / (postprocessingParams.distanceBloomAtenuation - postprocessingParams.closeDistanceBloom))
+    //     unrealBloomPass.radius = postprocessingParams.radius + (postprocessingParams.distanceBloomAtenuation - closestDistanceToModel) * Math.abs((postprocessingParams.radius - postprocessingParams.closeRadius) / (postprocessingParams.distanceBloomAtenuation - postprocessingParams.closeDistanceBloom))
+    //     unrealBloomPass.strength = postprocessingParams.strength - (postprocessingParams.distanceBloomAtenuation - closestDistanceToModel) * Math.abs((postprocessingParams.strength - postprocessingParams.closeStrength) / (postprocessingParams.distanceBloomAtenuation - postprocessingParams.closeDistanceBloom))
+
+    // } 
+    // else if (closestDistanceToModel <= postprocessingParams.closeDistanceBloom) {
+    //     unrealBloomPass.threshold = postprocessingParams.closeThreshold
+    //     unrealBloomPass.radius = postprocessingParams.closeRadius
+    //     unrealBloomPass.strength = postprocessingParams.closeStrength
+    // } 
+    // else {
+    //     unrealBloomPass.threshold = postprocessingParams.threshold
+    //     unrealBloomPass.strength = postprocessingParams.strength
+    //     unrealBloomPass.radius = postprocessingParams.radius
+    // }
+
+
+    // if (this.debug.active) {
+    //     const debugObject = {
+    //         strength: this.bloomPass.strength,
+    //         radius: this.bloomPass.radius,
+    //         threshold: this.bloomPass.threshold
+    //     };
+
+    //             // Debug
+    //         this.bloomPass.strength = postprocessingParams.strength
+    //         this.bloomPass.radius = postprocessingParams.radius
+    //         this.bloomPass.threshold = postprocessingParams.threshold
             
-        if (distanceToModel < closestDistanceToModel) closestDistanceToModel = distanceToModel
-        }
-    
-        
-        if (closestDistanceToModel <= postprocessingParams.distanceBloomAtenuation && closestDistanceToModel > postprocessingParams.closeDistanceBloom) {        
-            unrealBloomPass.threshold = postprocessingParams.threshold + (postprocessingParams.distanceBloomAtenuation - closestDistanceToModel) * Math.abs((postprocessingParams.threshold - postprocessingParams.closeThreshold) / (postprocessingParams.distanceBloomAtenuation - postprocessingParams.closeDistanceBloom))
-            unrealBloomPass.radius = postprocessingParams.radius + (postprocessingParams.distanceBloomAtenuation - closestDistanceToModel) * Math.abs((postprocessingParams.radius - postprocessingParams.closeRadius) / (postprocessingParams.distanceBloomAtenuation - postprocessingParams.closeDistanceBloom))
-            unrealBloomPass.strength = postprocessingParams.strength - (postprocessingParams.distanceBloomAtenuation - closestDistanceToModel) * Math.abs((postprocessingParams.strength - postprocessingParams.closeStrength) / (postprocessingParams.distanceBloomAtenuation - postprocessingParams.closeDistanceBloom))
-    
-        } 
-        else if (closestDistanceToModel <= postprocessingParams.closeDistanceBloom) {
-            unrealBloomPass.threshold = postprocessingParams.closeThreshold
-            unrealBloomPass.radius = postprocessingParams.closeRadius
-            unrealBloomPass.strength = postprocessingParams.closeStrength
-        } 
-        else {
-            unrealBloomPass.threshold = postprocessingParams.threshold
-            unrealBloomPass.strength = postprocessingParams.strength
-            unrealBloomPass.radius = postprocessingParams.radius
-        }
+    //         bloomGUIFolder.add(postprocessingParams, 'enabled')
+    //         bloomGUIFolder.add(postprocessingParams, 'strength', 0, 2).name('bloom strenght far')
+    //         bloomGUIFolder.add(postprocessingParams, 'radius', 0, 2).name('bloom radius far')
+    //         bloomGUIFolder.add(postprocessingParams, 'threshold', 0, 2).name('bloom threshold far')
+    //         bloomGUIFolder.add(postprocessingParams, 'closeStrength', 0, 2).name('bloom strenght close')
+    //         bloomGUIFolder.add(postprocessingParams, 'closeRadius', 0, 2).name('bloom radius close')
+    //         bloomGUIFolder.add(postprocessingParams, 'closeThreshold', 0, 2).name('bloom threshold close')
+    //         bloomGUIFolder.add(postprocessingParams, 'distanceBloomAtenuation', 0, 50).name('bloom far distance')
+    //         bloomGUIFolder.add(postprocessingParams, 'closeDistanceBloom', 0, 10).name('bloom near distance')
 
-
-        // Debug
-        this.bloomPass.strength = postprocessingParams.strength
-        this.bloomPass.radius = postprocessingParams.radius
-        this.bloomPass.threshold = postprocessingParams.threshold
-        
-        bloomGUIFolder.add(postprocessingParams, 'enabled')
-        bloomGUIFolder.add(postprocessingParams, 'strength', 0, 2).name('bloom strenght far')
-        bloomGUIFolder.add(postprocessingParams, 'radius', 0, 2).name('bloom radius far')
-        bloomGUIFolder.add(postprocessingParams, 'threshold', 0, 2).name('bloom threshold far')
-        bloomGUIFolder.add(postprocessingParams, 'closeStrength', 0, 2).name('bloom strenght close')
-        bloomGUIFolder.add(postprocessingParams, 'closeRadius', 0, 2).name('bloom radius close')
-        bloomGUIFolder.add(postprocessingParams, 'closeThreshold', 0, 2).name('bloom threshold close')
-        bloomGUIFolder.add(postprocessingParams, 'distanceBloomAtenuation', 0, 50).name('bloom far distance')
-        bloomGUIFolder.add(postprocessingParams, 'closeDistanceBloom', 0, 10).name('bloom near distance')
-
-
-        if (this.debug.active) {
-            const debugObject = {
-                strength: this.bloomPass.strength,
-                radius: this.bloomPass.radius,
-                threshold: this.bloomPass.threshold
-            };
-
-            const bloomFolder = this.debugFolder.addFolder('BloomPass');
-            bloomFolder.add(debugObject, 'strength').name('Strength').step(0.001).min(0).max(1).onChange((value) => {
-                this.bloomPass.strength = value;
-            });
-            bloomFolder.add(debugObject, 'radius').name('Radius').step(0.01).min(0).max(1).onChange((value) => {
-                this.bloomPass.radius = value;
-            });
-            bloomFolder.add(debugObject, 'threshold').name('Threshold').step(0.01).min(0).max(1).onChange((value) => {
-                this.bloomPass.threshold = value;
-            });
-        }
+    //     const bloomFolder = this.debugFolder.addFolder('BloomPass');
+    //     bloomFolder.add(debugObject, 'strength').name('Strength').step(0.001).min(0).max(1).onChange((value) => {
+    //         this.bloomPass.strength = value;
+    //     });
+    //     bloomFolder.add(debugObject, 'radius').name('Radius').step(0.01).min(0).max(1).onChange((value) => {
+    //         this.bloomPass.radius = value;
+    //     });
+    //     bloomFolder.add(debugObject, 'threshold').name('Threshold').step(0.01).min(0).max(1).onChange((value) => {
+    //         this.bloomPass.threshold = value;
+    //     });
+    // }
 
         // Add this to the composer
         this.composer.addPass(this.bloomPass);
@@ -264,12 +238,29 @@ export default class Renderer
 
     }
 
-    setGodRayPass()
+    setDepthOfField()
     {
-        console.log(GodRaysFakeSunShader)
-        console.log(GodRaysDepthMaskShader)
-        console.log(GodRaysCombineShader)
-        console.log(GodRaysGenerateShader)
+        const bokeh = new BokehPass()
+        const bokehShader = new BokehShader()
+        const BokehDepthShader = new BokehDepthShader()
+
+        materialDepth = new THREE.ShaderMaterial( {
+            uniforms: depthShader.uniforms,
+            vertexShader: depthShader.vertexShader,
+            fragmentShader: depthShader.fragmentShader
+        } );
+
+        materialDepth.uniforms[ 'mNear' ].value = camera.near;
+        materialDepth.uniforms[ 'mFar' ].value = camera.far;
+
+
+        // Resize
+        postprocessing.rtTextureDepth.setSize( window.innerWidth, window.innerHeight );
+        postprocessing.rtTextureColor.setSize( window.innerWidth, window.innerHeight );
+
+        postprocessing.bokeh_uniforms[ 'textureWidth' ].value = window.innerWidth;
+        postprocessing.bokeh_uniforms[ 'textureHeight' ].value = window.innerHeight;
+
     }
 
     setAntiAliasingPass()
@@ -281,7 +272,7 @@ export default class Renderer
             600,
             {
 
-                samples: this.instance.getPixelRatio() === 1 ? 2 /* Adjust this value */ : 0
+                samples: this.instance.getPixelRatio() === 1 ? 5 /* Adjust this value */ : 0
             }
         )
 
@@ -314,13 +305,46 @@ export default class Renderer
         this.composer.addPass(this.gammaCorrectionPass);
     }
 
+    setAdjustMents()
+    {
+        // Tone Mapping
+        this.instance.toneMapping = THREE.CineonToneMapping
+        this.instance.toneMappingExposure = 100000000
+
+        // Shadow Map
+        this.instance.shadowMap.enabled = true
+        this.instance.shadowMap.width = 512; // Sets the width of the shadow map
+        this.instance.shadowMap.height = 512; // Sets the height of the shadow map
+        this.instance.shadowMap.type = THREE.PCFSoftShadowMap
+
+        // Shadow Map Bias
+        this.instance.shadowMap.bias = 0; // Adjusts the bias to reduce shadow artifacts
+
+        // Shadow Map Normal Offset
+        this.instance.shadowMap.normalBias = 0; // Adjusts the normal bias to reduce shadow acne
+
+        // Output Encoding
+        this.instance.outputEncoding = THREE.sRGBEncoding; // Sets the output encoding to sRGB for more accurate color representation
+
+        // Gamma Factor
+        this.instance.gammaOutput = true; // Enables gamma correction for the output
+        this.instance.gammaFactor = 2; // Sets the gamma factor for gamma correction
+    }
+
     update()
     {
-        // Standard Renderer
-        // this.instance.render(this.scene, this.camera.instance)  
+    
+        // this.instance.setRenderTarget(this.targetDepth); // God ray
+
+        // this.instance.render(this.scene, this.camera.instance);
+
+        // // God ray
+        // this.instance.setRenderTarget(this.targetGodRays);
+        // this.instance.render(this.scene, this.camera.instance);
+        // this.instance.setRenderTarget(null);         // Reset render target to null to render to the screen
 
         // Composer Renderer
-        this.composer.render()
+        this.composer.render();
     }
 }
 
