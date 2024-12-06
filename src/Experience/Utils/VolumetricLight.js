@@ -20,16 +20,16 @@ export default class VolumetricSpotLight {
         this.lightIntensity = lightIntensity
         
         // Params
-        this.params = {
-            ConeAttenuation: this.material.uniforms.attenuation.value,
-            ConeAnglePower: this.material.uniforms.anglePower.value,
-            ConeEdgeScale: this.material.uniforms.edgeScale.value,
-            ConeEdgeConstractPower: this.material.uniforms.edgeConstractPower.value,
-            LightIntensity: this.spotLight.intensity,
-            LightAngle: this.spotLight.angle,
-            LightPenumbra: this.spotLight.penumbra,
-            LightDecay: this.spotLight.decay
-        }
+        // this.params = {
+        //     ConeAttenuation: this.material.uniforms.attenuation.value,
+        //     ConeAnglePower: this.material.uniforms.anglePower.value,
+        //     ConeEdgeScale: this.material.uniforms.edgeScale.value,
+        //     ConeEdgeConstractPower: this.material.uniforms.edgeConstractPower.value,
+        //     LightIntensity: this.spotLight.intensity,
+        //     LightAngle: this.spotLight.angle,
+        //     LightPenumbra: this.spotLight.penumbra,
+        //     LightDecay: this.spotLight.decay
+        // }
 
         // Group
         this.group = new THREE.Group();

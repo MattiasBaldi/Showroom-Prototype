@@ -27,7 +27,7 @@ export default class Environment
         this.environmentMap = this.resources.items.blueStudio
         this.addGrid()
         this.setEnvironmentMap()
-        this.setEnvironemtTweaks()
+        this.addFloor()
         // this.setFog()
     }
 
@@ -74,6 +74,20 @@ export default class Environment
             this.scene.fog = new THREE.FogExp2('grey', 0.01)
         }
 
+        addFloor()
+        {
+        const floor = new THREE.Mesh
+        (
+            new THREE.PlaneGeometry(1000, 1000),
+            new THREE.MeshStandardMaterial({ color: 'black' })
+        )
+    
+        floor.rotation.x = Math.PI * - 0.5
+        floor.receiveShadow = true; // Ensure the floor receives shadows
+        this.scene.add(floor)
+        }
+    
+
         addGrid()
         {
             // Grid Helper 
@@ -97,90 +111,6 @@ export default class Environment
             else {this.scene.remove(this.gridHelper) } 
             })
             }
-        }
-
-        setEnvironemtTweaks()
-        {
-            // Tonemapping
-            this.renderer.toneMapping = THREE.ReinhardToneMapping
-            this.renderer.toneMappingExposure = 0.5;
-
-            // Antialiasing
-            this.renderer.antialias = true;
-
-            console.log('renderer', this.renderer.instance)
-
-            // Legacy light
-            this.renderer.useLegacyLights = false
-
-            // Shadows
-            this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-            this.renderer.shadowMap.enabled = true;
-
-            if (this.debug.active)
-            {
-                const debugObject = 
-                {
-                    toneMapping: this.renderer.toneMapping, 
-                    toneMappingExposure: this.renderer.toneMappingExposure, 
-                    legacyLights: this.renderer.useLegacyLights,
-                    // shadowMap: this.renderer.shadowMap.enabled
-                }
-
-                this.debugFolder
-                .add(this.renderer, 'toneMapping', {
-                    No: THREE.NoToneMapping, 
-                    Linear: THREE.LinearToneMapping, 
-                    Reinhard: THREE.ReinhardToneMapping, 
-                    Cineon: THREE.CineonToneMapping, 
-                    ACESFilmic: THREE.ACESFilmicToneMapping
-                })
-                .name('Tone Mapping')
-                .onChange((value) => {
-                    console.log(this.renderer.toneMapping)
-                    this.renderer.toneMapping = Number(value);
-                    console.log(this.renderer.toneMapping)
-                });
-
-                this.debugFolder
-                .add(this.renderer, 'toneMappingExposure')
-                .min(0)
-                .max(10)
-                .step(0.001)
-                .name('Tone Mapping Exposure')
-                .onChange((value) => {
-                    this.renderer.toneMappingExposure = value;
-                });
-
-                this.debugFolder
-                .add(this.renderer, 'useLegacyLights')
-                .name('Legacy Lights')
-                .onChange((value) => {
-                    this.renderer.useLegacyLights = value;
-                });
-
-                this.debugFolder
-                .add(this.renderer.shadowMap, 'enabled')
-                .name('Shadows')
-                .onChange((value) => {
-                    this.renderer.shadowMap.enabled = value;
-                });
-
-                this.debugFolder
-                .add(this.renderer, 'antialias')
-                .name('Antialiasing')
-                .onChange((value) => {
-                    this.renderer.antialias = value;
-                });
-
-
-            }
-
-        }
-
-        update()
-        {
-            this.renderer.update()
         }
 
     }

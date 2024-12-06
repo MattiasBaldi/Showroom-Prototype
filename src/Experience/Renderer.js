@@ -7,6 +7,9 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader';
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass';
+import { GodRaysFakeSunShader, GodRaysDepthMaskShader, GodRaysCombineShader, GodRaysGenerateShader } from 'three/addons/shaders/GodRaysShader.js';
+import { RGBShiftShader } from 'three/examples/jsm/Addons.js';
+import { SMAAPass } from 'three/examples/jsm/Addons.js';
 
 export default class Renderer
 {
@@ -20,40 +23,24 @@ export default class Renderer
         this.debug = this.experience.debug
         this.resources = this.experience.resources
 
-        this.setInstance()
-        this.instance.autoClear = false;
-
         //Debug
         if(this.debug.active)
         {
             this.debugFolder = this.debug.ui.addFolder('Post Processing')
         }
 
-        //Param
-        this.postprocessingParams = {
-            enabled: true,
-            threshold: 0.05,
-            closeThreshold: 0.7,
-            strength: 0.82,
-            closeStrength: 0.28,
-            radius: 0.2,
-            closeRadius: 1.2,
-            distanceBloomAtenuation: 10,
-            closeDistanceBloom: 5.5,
-            filmGrainIntensity: 0.4,
-            grayscale: false
-        }
+        // Setup
+        this.setInstance()
+        this.resize()
 
-
-        // Log all meshes
-        // Ensure objects are added to the scene before traversal
-   
-    
-
-        // Post processing
+        // Post Processing
         this.setComposer()
-        // this.setFilmGrain()
-        // this.setBloom()
+        // this.setBloomPass()
+        // this.setFilmGrainPass()
+        // this.setGodRayPass()
+        this.setAntiAliasingPass()
+        // this.setRBGShiftPass()
+        this.setGammaCorrectionPass()
 
     }
 
@@ -61,17 +48,51 @@ export default class Renderer
     {
         this.instance = new THREE.WebGLRenderer({
             canvas: this.canvas,
-            antialias: true
+            antialias: true // Only works without a composer
         })
-        
-        this.instance.toneMapping = THREE.CineonToneMapping
-        this.instance.toneMappingExposure = 1.75
-        this.instance.shadowMap.enabled = true
-        this.instance.shadowMap.type = THREE.PCFSoftShadowMap
-        this.instance.antialias = true;
-        this.instance.setClearColor('#211d20')
+
         this.instance.setSize(this.sizes.width, this.sizes.height)
         this.instance.setPixelRatio(this.sizes.pixelRatio)
+
+        // // Tone Mapping
+        // this.instance.toneMapping = THREE.CineonToneMapping
+        // this.instance.toneMappingExposure = 1
+
+        // // Shadow Map
+        // this.instance.shadowMap.enabled = true
+        // this.instance.shadowMap.width = 512; // Sets the width of the shadow map
+        // this.instance.shadowMap.height = 512; // Sets the height of the shadow map
+        // this.instance.shadowMap.type = THREE.PCFSoftShadowMap
+
+        // // Shadow Map Bias
+        // this.instance.shadowMap.bias = 0; // Adjusts the bias to reduce shadow artifacts
+
+        // // Shadow Map Normal Offset
+        // this.instance.shadowMap.normalBias = 0; // Adjusts the normal bias to reduce shadow acne
+
+        // // Output Encoding
+        // this.instance.outputEncoding = THREE.sRGBEncoding; // Sets the output encoding to sRGB for more accurate color representation
+
+        // // Gamma Factor
+        // this.instance.gammaOutput = true; // Enables gamma correction for the output
+        // this.instance.gammaFactor = 2; // Sets the gamma factor for gamma correction
+
+        // //Debug
+        // if(this.debug.active)
+        // {
+        //     this.debugFolder.add
+        //     this.debugFolder.add(this.instance, 'toneMappingExposure').min(0).max(10).step(0.001).name('Tone Mapping Exposure')
+        //     this.debugFolder.add(this.instance.shadowMap, 'enabled').name('Shadows Enabled')
+        //     this.debugFolder.add(this.instance.shadowMap, 'bias').min(-0.01).max(0.01).step(0.0001).name('Shadow Bias')
+        //     this.debugFolder.add(this.instance.shadowMap, 'normalBias').min(0).max(0.1).step(0.001).name('Shadow Normal Bias')
+        //     this.debugFolder.add(this.instance, 'outputEncoding', {
+        //         LinearEncoding: THREE.LinearEncoding,
+        //         sRGBEncoding: THREE.sRGBEncoding
+        //     }).name('Output Encoding')
+        //     this.debugFolder.add(this.instance, 'gammaOutput').name('Gamma Output')
+        //     this.debugFolder.add(this.instance, 'gammaFactor').min(1).max(3).step(0.01).name('Gamma Factor')
+        // }
+
     }
 
     resize()
@@ -81,14 +102,57 @@ export default class Renderer
     }
 
     setComposer() {
-        this.composer = new EffectComposer(this.instance);
+
+        // Adding Composer
+        this.composer = new EffectComposer(this.instance, this.renderTarget);
+        this.composer.setSize(this.sizes.width, this.sizes.height)
+        this.composer.setPixelRatio(this.sizes.pixelRatio)
+
+        // Adding RenderPass
         this.renderPass = new RenderPass(this.scene, this.camera.instance);
         this.composer.addPass(this.renderPass);
-        this.outputPass = new OutputPass();
-        this.composer.addPass(this.outputPass);
+
+                // Tone Mapping
+                this.composer.toneMapping = THREE.CineonToneMapping
+                this.composer.toneMappingExposure = 1
+
+                // Shadow Map
+                // this.composer.shadowMap.enabled = true
+                // this.composer.shadowMap.width = 512; // Sets the width of the shadow map
+                // this.composer.shadowMap.height = 512; // Sets the height of the shadow map
+                // this.composer.shadowMap.type = THREE.PCFSoftShadowMap
+
+                // // Shadow Map Bias
+                // this.composer.shadowMap.bias = 0; // Adjusts the bias to reduce shadow artifacts
+
+                // // Shadow Map Normal Offset
+                // this.composer.shadowMap.normalBias = 0; // Adjusts the normal bias to reduce shadow acne
+
+                // Output Encoding
+                this.composer.outputEncoding = THREE.sRGBEncoding; // Sets the output encoding to sRGB for more accurate color representation
+
+                // Gamma Factor
+                this.composer.gammaOutput = true; // Enables gamma correction for the output
+                this.composer.gammaFactor = 2; // Sets the gamma factor for gamma correction
+
+                // Debug
+                if(this.debug.active)
+                {
+                    this.debugFolder.add
+                    this.debugFolder.add(this.composer, 'toneMappingExposure').min(0).max(10).step(0.001).name('Tone Mapping Exposure')
+                    // this.debugFolder.add(this.composer.shadowMap, 'enabled').name('Shadows Enabled')
+                    // this.debugFolder.add(this.composer.shadowMap, 'bias').min(-0.01).max(0.01).step(0.0001).name('Shadow Bias')
+                    // this.debugFolder.add(this.composer.shadowMap, 'normalBias').min(0).max(0.1).step(0.001).name('Shadow Normal Bias')
+                    this.debugFolder.add(this.composer, 'outputEncoding', {
+                    LinearEncoding: THREE.LinearEncoding,
+                    sRGBEncoding: THREE.sRGBEncoding
+                    }).name('Output Encoding')
+                    this.debugFolder.add(this.composer, 'gammaOutput').name('Gamma Output')
+                    this.debugFolder.add(this.composer, 'gammaFactor').min(1).max(3).step(0.01).name('Gamma Factor')
+                }
     }
 
-    setBloom()
+    setBloomPass()
     {
         this.bloomPass = new UnrealBloomPass(
             new THREE.Vector2(this.sizes.width, this.sizes.height),
@@ -182,7 +246,7 @@ export default class Renderer
 
     }
 
-    setFilmGrain()
+    setFilmGrainPass()
     {
         // Film grain
         const effectFilm = new FilmPass( 0.2, false )
@@ -200,10 +264,63 @@ export default class Renderer
 
     }
 
+    setGodRayPass()
+    {
+        console.log(GodRaysFakeSunShader)
+        console.log(GodRaysDepthMaskShader)
+        console.log(GodRaysCombineShader)
+        console.log(GodRaysGenerateShader)
+    }
+
+    setAntiAliasingPass()
+    {
+        // AntiAlis Setup
+        this.renderTarget = new THREE.WebGLRenderTarget
+        (
+            800,
+            600,
+            {
+
+                samples: this.instance.getPixelRatio() === 1 ? 2 /* Adjust this value */ : 0
+            }
+        )
+
+
+        // AntiAliasing Pass
+        if(this.instance.getPixelRatio === 1 && !this.instance.capabilities.isWebGL2)
+            {
+                this.SMAAPass = new SMAAPass()
+                this.composer.addPass(this.SMAAPass)    
+            }
+    
+    }
+
+    setRBGShiftPass()
+    {
+/* 
+    The RGB shift effect makes the image look like the red, green, and blue colors are slightly separated or misaligned. 
+    This creates a visual distortion that can make the scene look more dynamic or give it a "glitchy" appearance. 
+    It's often used in visual effects to add a sense of motion or to create a retro or sci-fi look.
+*/        
+
+        this.RGBShiftShader = new RGBShiftShader()
+        this.composer.addPass(this.RGBShiftShader) 
+    }
+
+    setGammaCorrectionPass()
+    {
+        // RGB Correction
+        this.gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+        this.composer.addPass(this.gammaCorrectionPass);
+    }
+
     update()
     {
+        // Standard Renderer
+        // this.instance.render(this.scene, this.camera.instance)  
+
+        // Composer Renderer
         this.composer.render()
-        // this.instance.render(this.scene, this.camera.instance)
     }
 }
 

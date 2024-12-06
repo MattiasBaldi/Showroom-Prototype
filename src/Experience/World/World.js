@@ -26,22 +26,8 @@ export default class World
             this.teleportation = new Teleportation()
             this.environment = new Environment()
             this.lights = new Lights()
-            this.addFloor()
         })
 
-    }
-
-    addFloor()
-    {
-    const floor = new THREE.Mesh
-    (
-        new THREE.PlaneGeometry(1000, 1000),
-        new THREE.MeshStandardMaterial({ color: 'black' })
-    )
-
-    floor.rotation.x = Math.PI * - 0.5
-    floor.receiveShadow = true; // Ensure the floor receives shadows
-    this.scene.add(floor)
     }
 
 update()
