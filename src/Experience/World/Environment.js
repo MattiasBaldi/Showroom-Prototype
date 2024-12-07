@@ -28,7 +28,7 @@ export default class Environment
         this.addGrid()
         this.setEnvironmentMap()
         this.addFloor()
-        // this.setFog()
+        this.setFog()
     }
 
         setEnvironmentMap()
@@ -72,6 +72,42 @@ export default class Environment
         setFog()
         {
             this.scene.fog = new THREE.FogExp2('grey', 0.01)
+            
+            if(this.debug.active)
+            {
+
+                const debugObject =
+                 {
+                    fogActive: true,
+                    color: this.scene.fog.color, 
+                    density: this.scene.fog.density
+
+                }
+                this.debugFolder
+                .add(debugObject, 'fogActive')
+                .name('Fog Active')
+                .onChange((value) => {
+                    if (value) {
+                        this.scene.fog = new THREE.FogExp2(debugObject.color, debugObject.density);
+                    } else {
+                        this.scene.fog = null;
+                    }
+                })
+
+                this.debugFolder
+                .addColor(debugObject, 'color')
+                .name('Color')
+                .onChange((value) => { this.scene.fog.color.set(value) })
+
+                this.debugFolder
+                .add(debugObject, 'density')
+                .name('Density')
+                .onChange((value) => { this.scene.fog.density = value })
+                .step(0.001)
+                .max(0.1)
+                .min(0.001);
+
+            }
         }
 
         addFloor()
