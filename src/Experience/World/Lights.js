@@ -48,26 +48,23 @@ export default class Lights
         {
 
             // constructor(color = Color = 'grey', ConeRadius = 2, ConeHeight = 5, LightIntensity = 100)
-            this.spotLight = new VolumetricSpotLight()
+            this.spotLight = new VolumetricSpotLight('white', 2.8, 10, 1000)
+            
+            //Adjust cone
             this.cone = this.spotLight.children[0]
+            this.coneUniforms = this.cone.material.uniforms
+            this.coneUniforms.attenuation.value = 10.5;
+            this.coneUniforms.anglePower.value = 5;
+            this.coneUniforms.edgeScale.value = 0.5; // Adjust this value as needed
+            this.coneUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
+
+            // Adjust light
             this.light = this.spotLight.children[1]
+            this.light.intensity = 50;
+            // this.light.angle = Math.PI * 0.1;
+            this.light.penumbra = 1;
+            this.light.decay = 1.5;
 
-            // Adjustable Params
-            // this.params =
-            // {
-            // ConeAttenuation: this.cone.material.uniforms.attenuation.value,
-            // ConeAnglePower: this.cone.material.uniforms.anglePower.value,
-            // ConeEdgeScale: this.cone.material.uniforms.edgeScale.value,
-            // ConeEdgeConstractPower: this.cone.material.uniforms.edgeConstractPower.value,
-            // LightIntensity: this.light.intensity,
-            // LightAngle:  this.light.angle,
-            // LightPenumbra: this.light.penumbra,
-            // LightDecay: this.light.decay
-            // }
-
-            // Adjustments
-            // this.params.ConeAttenuation = 10;
-            // this.params.ConeAnglePower = 1
 
             // Position X
             const gap = 10; 
@@ -92,9 +89,37 @@ export default class Lights
             lightPenumbra: this.spotLights[0].children[1].penumbra,
             lightDecay: this.spotLights[0].children[1].decay,
             edgeScale: this.spotLights[0].children[0].material.uniforms.edgeScale.value, // Adjust this value as needed
-            edgeConstractPower: this.spotLights[0].children[0].material.uniforms.edgeConstractPower.value // Adjust this value as needed
+            edgeConstractPower: this.spotLights[0].children[0].material.uniforms.edgeConstractPower.value, // Adjust this value as needed
+            height: 10 // Assign a default value to height
         };
 
+            this.Volumetric
+                .add(debugObject, 'height')
+                .name('Height')
+                .step(0.1)
+                .min(0)
+                .max(20)
+                .onChange((value) => {
+                // Update the height for all spotlights
+                this.spotLights.forEach((spotLight) => {
+                    const oldGeometry = spotLight.children[0].geometry;
+                    const newGeometry = oldGeometry.clone();
+                    newGeometry.parameters.height = value;
+                    newGeometry.dispose(); // Dispose the old geometry
+
+                    spotLight.children[0].geometry = new THREE.CylinderGeometry(
+                    newGeometry.parameters.radiusTop,
+                    newGeometry.parameters.radiusBottom,
+                    value,
+                    newGeometry.parameters.radialSegments
+                    );
+
+                    // Rotate the spotlight so it is pointing down
+                    spotLight.children[0].rotation.x = -Math.PI / 0.5;
+                    spotLight.children[0].position.y = value / 2;
+                    spotLight.position.y = 0;
+                });
+                });
         this.Volumetric
             .add(debugObject, 'radiusBottom')
             .name('radiusBottom')

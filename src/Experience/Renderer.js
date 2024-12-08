@@ -3,7 +3,7 @@ import { WebGLRenderer } from "three";
 import Experience from './Experience.js'
 import { KernelSize, ShaderPass, CopyMaterial, EdgeDetectionMode, TextureEffect, SMAAEffect, SMAAImageLoader, SMAAPreset, SepiaEffect, PredicationMode,  LookupTexture3D, LUT3DEffect, BrightnessContrastEffect, ColorAverageEffect, HueSaturationEffect, ColorDepthEffect, BlendFunction, BloomEffect, SelectiveBloomEffect, EffectComposer, EffectPass, RenderPass, GodRaysEffect, ToneMappingMode, ToneMappingEffect, DepthOfFieldEffect, VignetteEffect } from "postprocessing";
 import { HalfFloatType } from "three";
-
+import Scene_1 from './World/Scene_1.js';
 
 export default class Renderer
 {
@@ -12,6 +12,7 @@ export default class Renderer
 
         this.experience = new Experience()
         this.canvas = this.experience.canvas
+        this.world = this.experience.world
         this.sizes = this.experience.sizes
         this.scene = this.experience.scene
         this.resources = this.experience.resources
@@ -103,6 +104,7 @@ export default class Renderer
             EdgeDetectionMode.COLOR
         );
 
+        // 
         smaaEffect.edgeDetectionMaterial.setEdgeDetectionThreshold(0.02);
         smaaEffect.edgeDetectionMaterial.setPredicationMode(PredicationMode.DEPTH);
         smaaEffect.edgeDetectionMaterial.setPredicationThreshold(0.002);
@@ -267,7 +269,7 @@ export default class Renderer
 
     }
 
-    setBloom()
+    setBloom(object)
     {
 
         // Bloom
@@ -293,9 +295,11 @@ export default class Renderer
         clone.position.set(0, 5, 0)
         this.scene.add(sun, clone)
 
+
         // Set selected objects
         this.bloom.selection.add(sun);
         this.bloom.selection.add(clone)
+        // this.bloom.selection.add(object)
 
         // Init
         this.composer.addPass(new EffectPass(this.camera.instance, this.bloom));

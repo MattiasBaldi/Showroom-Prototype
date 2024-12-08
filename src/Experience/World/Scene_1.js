@@ -106,7 +106,7 @@ export default class Scene_1
     {
         this.walkAxis = 'z'; 
         this.walkSpeed = 1;
-        this.walkStart = 0;
+        this.walkStart = 5;
         this.walkEnd = 60;
         this.length = null
 

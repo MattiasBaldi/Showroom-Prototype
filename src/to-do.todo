@@ -59,13 +59,13 @@ PostProcessing
 ☐ Add Debug: Gods of ray
 ✔ Add Debug: ToneMapping @done (8.12.2024, 01.48.31)
 ✔ Add Blendmodes @done (8.12.2024, 02.29.49)
-☐ Figure out how selected bloom works
+☐ Learn Selective Bloom
+☐ Learn GodRays
 
 ☐ Debug: ToneMapping
 ☐ Debug: Bloom
 ☐ Debug: Color
 ☐ Debug: Antialiasing
-
 
 Environment
 -----------

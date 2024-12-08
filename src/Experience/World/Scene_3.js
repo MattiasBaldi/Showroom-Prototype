@@ -25,7 +25,8 @@ export default class Scene_3 {
         this.sceneModels = this.resource.scene
         this.setScene()
         this.updateMaterials()
-        this.switch = new Switch(this.table, 0.1, 1)
+
+        this.switch = new Switch(this.room, 1, 10)
     }
 
     setScene()
