@@ -36,7 +36,7 @@ export default class Renderer
         this.setComposer()
         // this.setAntiAliasing()
         this.setToneMapping()
-        // this.setBloom()
+        // this.setSelectiveBloom()
         // this.setDepthOfField()
         // this.setColor()
         // this.setGodRays()
@@ -96,98 +96,12 @@ export default class Renderer
 
     setAntiAliasing()
     {
-        // Passes
-        const smaaEffect = new SMAAEffect(
-            assets.get.smaaSearch,
-            assets.get.items.smaaArea,
-            SMAAPreset.HIGH,
-            EdgeDetectionMode.COLOR
-        );
-
-        // 
-        smaaEffect.edgeDetectionMaterial.setEdgeDetectionThreshold(0.02);
-        smaaEffect.edgeDetectionMaterial.setPredicationMode(PredicationMode.DEPTH);
-        smaaEffect.edgeDetectionMaterial.setPredicationThreshold(0.002);
-        smaaEffect.edgeDetectionMaterial.setPredicationScale(1.0);
-
-        const edgesTextureEffect = new TextureEffect({
-            blendFunction: BlendFunction.SKIP,
-            texture: smaaEffect.renderTargetEdges.texture
-        });
-
-        const weightsTextureEffect = new TextureEffect({
-            blendFunction: BlendFunction.SKIP,
-            texture: smaaEffect.renderTargetWeights.texture
-        });
-
-        this.SMAAcopyPass = new ShaderPass(new CopyMaterial());
-
-        this.SMAAeffectPass = new EffectPass(
-            this.camera.instance,
-            this.smaaEffect,
-            this.edgesTextureEffect,
-            this.weightsTextureEffect
-        );
-
-
-        this.copyPass.setEnabled(false);
-        this.copyPass.renderToScreen = true;
-        this.effectPass.renderToScreen = true;
-
-        this.composer.addPass(this.SMAAcopyPass);
-        this.composer.addPass(this.SMAAeffectPass);
-
-        // Debug
-        if (this.debug.active)
-        {
-            const params = {
-                "antialiasing": 1,
-                "smaa": {
-                    "preset": SMAAPreset.HIGH,
-                    "opacity": this.smaaEffect.blendMode.opacity.value,
-                    "blend mode": this.smaaEffect.blendMode.blendFunction
-                },
-                "edgeDetection": {
-                    "threshold": this.smaaEffect.edgeDetectionMaterial.uniforms.edgeDetectionThreshold.value
-                },
-                "predication": {
-                    "threshold": this.smaaEffect.edgeDetectionMaterial.uniforms.predicationThreshold.value,
-                    "scale": this.smaaEffect.edgeDetectionMaterial.uniforms.predicationScale.value
-                }
-            };
-
-            const antiAliasingFolder = this.debugFolder.addFolder('Anti Aliasing');
-            antiAliasingFolder.close();
-
-            antiAliasingFolder.add(params.smaa, "preset", SMAAPreset).onChange((value) => {
-                this.smaaEffect.applyPreset(Number(value));
-            });
-
-            let subfolder = antiAliasingFolder.addFolder("Edge Detection");
-
-            subfolder.add(params.edgeDetection, "threshold", 0.0, 0.5, 0.0001).onChange((value) => {
-                this.smaaEffect.edgeDetectionMaterial.edgeDetectionThreshold = Number(value);
-            });
-
-            subfolder = antiAliasingFolder.addFolder("Predicated Thresholding");
-
-            subfolder.add(params.predication, "threshold", 0.0, 0.5, 0.0001).onChange((value) => {
-                this.smaaEffect.edgeDetectionMaterial.predicationThreshold = Number(value);
-            });
-
-            subfolder.add(params.predication, "scale", 1.0, 5.0, 0.01).onChange((value) => {
-                this.smaaEffect.edgeDetectionMaterial.predicationScale = Number(value);
-            });
-
-            antiAliasingFolder.add(params.smaa, "opacity", 0.0, 1.0, 0.01).onChange((value) => {
-                this.smaaEffect.blendMode.opacity.value = value;
-            });
-
-            antiAliasingFolder.add(params.smaa, "blend mode", BlendFunction).onChange((value) => {
-                this.smaaEffect.blendMode.blendFunction = Number(value);
-            });
+        
+        /*
+            https://pmndrs.github.io/postprocessing/public/demo/#antialiasing
+        */
+        
     }
-}
  
     setToneMapping()
     {
@@ -269,7 +183,7 @@ export default class Renderer
 
     }
 
-    setBloom(object)
+    setSelectiveBloom(object)
     {
 
         // Bloom
@@ -289,17 +203,8 @@ export default class Renderer
         // Settings
         this.bloom.ignoreBackground = true; 
 
-        // Test objects
-        const sun = new THREE.Mesh(new THREE.SphereGeometry(0.75, 32, 32), new THREE.MeshBasicMaterial({color: 'white'}));
-        const clone = sun.clone()
-        clone.position.set(0, 5, 0)
-        this.scene.add(sun, clone)
-
-
         // Set selected objects
-        this.bloom.selection.add(sun);
-        this.bloom.selection.add(clone)
-        // this.bloom.selection.add(object)
+        this.bloom.selection.add(object)
 
         // Init
         this.composer.addPass(new EffectPass(this.camera.instance, this.bloom));

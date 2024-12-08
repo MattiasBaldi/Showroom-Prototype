@@ -9,6 +9,7 @@ export default class Scene_1
         this.experience  = new Experience()
         this.scene = this.experience.scene
         this.camera = this.experience.camera
+        this.renderer = this.experience.renderer
         this.controls = this.camera.controls
         this.resources = this.experience.resources
         this.time = this.experience.time
@@ -28,7 +29,9 @@ export default class Scene_1
         this.sceneModels = this.resource.scene
         this.animatedModel = this.sceneModels.children[0]
         this.posedModel = this.sceneModels.children[1]
-        this.radius = 5; 
+        this.animatedBody = this.animatedModel.children[0]
+        this.posedBody = this.posedModel.children[1]
+
 
         // Call actions
         this.setScene()
@@ -37,7 +40,12 @@ export default class Scene_1
         this.setWalk()
         this.setFade()
 
+        // Switch
         this.switch = new Switch(this.posedBody, 2, 10)
+
+
+        // Bloom
+        this.renderer.setSelectiveBloom(this.posedBody)
     }
 
     setScene()
@@ -75,14 +83,6 @@ export default class Scene_1
     {
         this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.01', metalness: '1'});
         this.bodyMaterial = new THREE.MeshStandardMaterial({color: 'white', roughness: '0.01'}); 
-
-        // Bloom on selected 
-        
-    
-        
-
-        this.animatedBody = this.animatedModel.children[0]
-        this.posedBody = this.posedModel.children[1]
 
         //  Set all chrome except the bodies
          this.sceneModels.traverse((child) =>

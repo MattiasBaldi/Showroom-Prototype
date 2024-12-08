@@ -15,7 +15,7 @@ export default class Lights
     constructor()
     {
         this.experience = new Experience()
-        this.renderer = this.experience.renderer.instance
+        this.renderer = this.experience.renderer
         this.resources = this.experience.resources
         this.world = this.experience.world
         this.debug = this.experience.debug
@@ -26,17 +26,21 @@ export default class Lights
 
         // Debug
         if (this.debug.active) {
-
-            // Ensure this.debugFolder is initialized
-            this.debugFolder = this.debug.ui.addFolder('Lights');            
-            this.Volumetric = this.debugFolder.addFolder('Volumetric Lights');
-            this.debugFolder.close()
+        this.debugFolder = this.debug.ui.addFolder('Lights');            
+        this.Volumetric = this.debugFolder.addFolder('Volumetric Lights');
+        this.debugFolder.close()
         }
 
+
+
         // Setup
-        this. setObjectSpotLight(4, this.scene_1.posedModel)
+        this.bloomGroup = new THREE.Group()
+        this.setObjectSpotLight(4, this.scene_1.posedModel)
         this.setSpotlight(6)
         this.setCatwalk(5, 10)
+
+        // Bloom
+        this.renderer.setSelectiveBloom(this.bloomGroup)
  
     }
 
@@ -74,10 +78,9 @@ export default class Lights
 
             // Add this to the scene
             this.spotLights.push(this.spotLight)
+            this.bloomGroup.add(this.spotLight)
             this.scene.add(this.spotLight)
         }
-
-//geometry.parameters.thetaLength, //geometry.parameters.thetastart, //this.spotLight.children[0].material.uniforms.spotPosition
 
     if (this.debug.active) {
         const debugObject = {
@@ -278,6 +281,7 @@ export default class Lights
             const spotLightHelper = new THREE.SpotLightHelper(spotLight)
 
             this.scene.add(spotLight);
+            this.bloomGroup.add(spotLight)
             // this.scene.add(spotLightHelper);
         }
     }
@@ -289,8 +293,13 @@ export default class Lights
         spotLight.position.z += i * gap;
         spotLight.position.y = 5;
         spotLight.target.position.set(spotLight.position.x, 0, spotLight.position.z);
+
+
+        this.bloomGroup.add(spotLight)
         this.scene.add(spotLight);
         this.scene.add(spotLight.target);
+
+
 
         // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
         // this.scene.add(spotLightHelper);
