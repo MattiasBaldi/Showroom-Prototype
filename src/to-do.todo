@@ -17,15 +17,19 @@ Scene_2
 ☐ Arts
 
 Controls / W-A-S-D Movement
+-------
 ✔ Controls @done (27.11.2024, 19.15.40)
 ✔ Create W-A-S-D file and import PointerLockControls in there @done (3.12.2024, 15.51.36)
+☐ Fix movement controls and speed
 ☐ Debug
 
 Switch
+-------
 ✔ Orbit position is weird for some objects @done (3.12.2024, 15.51.16)
 ☐ Set geometry origin as true pivotPoint (Issue being that, the max zoom, doesnt match the togggle radius), height parameter needs to be removed
 
 Teleportation
+-------
 ✔ Create .js File @done (28.11.2024, 21.03.09)
 ✔ Set each model destination @done (28.11.2024, 22.01.21)
 ✔ Update controls @done (28.11.2024, 22.01.21)
@@ -48,12 +52,25 @@ Shadow
 
 PostProcessing
 -----------
+✔ Add Debug: DOF @done (7.12.2024, 23.43.37)
+✔ Add Debug: Bloom @done (8.12.2024, 02.29.26)
+☐ Add Debug: Color
+☐ Add Debug: Antialiasing
+☐ Add Debug: Gods of ray
+✔ Add Debug: ToneMapping @done (8.12.2024, 01.48.31)
+✔ Add Blendmodes @done (8.12.2024, 02.29.49)
+☐ Figure out how selected bloom works
+
+☐ Debug: ToneMapping
+☐ Debug: Bloom
+☐ Debug: Color
+☐ Debug: Antialiasing
+
 
 Environment
 -----------
 ☐ Fog
 ☐ Tweaks to look realistic
-
 
 
 Sound
@@ -68,6 +85,7 @@ Debug
 ☐ Change controls
 ☐ PivotPoint on Orbitcontrols to the relevant scene
 ☐ Allow debug of each scene
+
 
 ☐ Perfomance tips
 ------------------

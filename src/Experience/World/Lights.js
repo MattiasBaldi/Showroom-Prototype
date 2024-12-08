@@ -30,7 +30,7 @@ export default class Lights
             // Ensure this.debugFolder is initialized
             this.debugFolder = this.debug.ui.addFolder('Lights');            
             this.Volumetric = this.debugFolder.addFolder('Volumetric Lights');
-            // this.debugFolder.close()
+            this.debugFolder.close()
         }
 
         // Setup
@@ -64,8 +64,6 @@ export default class Lights
             // LightPenumbra: this.light.penumbra,
             // LightDecay: this.light.decay
             // }
-
-            console.log(this.spotLight.params)
 
             // Adjustments
             // this.params.ConeAttenuation = 10;
@@ -157,7 +155,7 @@ export default class Lights
             .name('Light Intensity')
             .step(0.001)
             .min(0)
-            .max(10)
+            .max(1000)
             .onChange((value) => {
                 // Update the light intensity for all spotlights
                 this.spotLights.forEach((spotLight) => {

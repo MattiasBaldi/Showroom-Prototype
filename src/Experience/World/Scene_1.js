@@ -38,8 +38,6 @@ export default class Scene_1
         this.setFade()
 
         this.switch = new Switch(this.posedBody, 2, 10)
-
-
     }
 
     setScene()
@@ -79,11 +77,9 @@ export default class Scene_1
         this.bodyMaterial = new THREE.MeshStandardMaterial({color: 'white', roughness: '0.01'}); 
 
         // Bloom on selected 
-        /*
-                this.bodyMaterial.emissive = new THREE.Color(0xffffff);
-                this.bodyMaterial.emissiveIntensity = 1000;
-                this.bodyMaterial.roughness = 0.01;
-        */
+        
+    
+        
 
         this.animatedBody = this.animatedModel.children[0]
         this.posedBody = this.posedModel.children[1]
@@ -104,11 +100,6 @@ export default class Scene_1
             }
             })
 
-    }
-
-    setBloom()
-    {
-        
     }
 
     setWalk()

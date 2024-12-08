@@ -20,7 +20,7 @@ export default class Environment
         if(this.debug.active)
         {
             this.debugFolder = this.debug.ui.addFolder('Environment')
-            // this.debugFolder.close()
+            this.debugFolder.close()
         }
 
         //Setup
@@ -71,21 +71,20 @@ export default class Environment
 
         setFog()
         {
-            this.scene.fog = new THREE.FogExp2('grey', 0.01)
+            this.scene.fog = null; // Ensure fog is deactivated initially
             
             if(this.debug.active)
             {
-
                 const debugObject =
                  {
-                    fogActive: true,
-                    color: this.scene.fog.color, 
-                    density: this.scene.fog.density
-
+                    fogActive: false, // Set initial state to false
+                    color: new THREE.Color('grey'), 
+                    density: 0.01
                 }
+
                 this.debugFolder
                 .add(debugObject, 'fogActive')
-                .name('Fog Active')
+                .name('Fog')
                 .onChange((value) => {
                     if (value) {
                         this.scene.fog = new THREE.FogExp2(debugObject.color, debugObject.density);
@@ -97,16 +96,23 @@ export default class Environment
                 this.debugFolder
                 .addColor(debugObject, 'color')
                 .name('Color')
-                .onChange((value) => { this.scene.fog.color.set(value) })
+                .onChange((value) => { 
+                    if (this.scene.fog) {
+                        this.scene.fog.color.set(value);
+                    }
+                })
 
                 this.debugFolder
                 .add(debugObject, 'density')
                 .name('Density')
-                .onChange((value) => { this.scene.fog.density = value })
+                .onChange((value) => { 
+                    if (this.scene.fog) {
+                        this.scene.fog.density = value;
+                    }
+                })
                 .step(0.001)
                 .max(0.1)
                 .min(0.001);
-
             }
         }
 
@@ -123,7 +129,6 @@ export default class Environment
         this.scene.add(floor)
         }
     
-
         addGrid()
         {
             // Grid Helper 
