@@ -1,12 +1,14 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
 import Switch from '../Controls/Switch.js'
+import PositionalAudio from '../Utils/PositionalAudio.js'
 
 export default class Scene_2
 {
     constructor()
     {
         this.experience = new Experience()
+        this.renderer = this.experience.renderer
         this.scene = this.experience.scene
         this.time = this.experience.time
         this.debug = this.experience.debug
@@ -22,6 +24,13 @@ export default class Scene_2
         this.setScene()
         this.createBox()
 
+
+        this.renderer.setSelectiveBloom(this.box)
+
+        // Audio
+        // this.audio = new PositionalAudio('Test_big', this.sceneGroup, 1)
+
+        // Switch
         this.switch = new Switch(this.sceneGroup, 0, 10)
     }
 

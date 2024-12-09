@@ -40,7 +40,7 @@ export default class Lights
         this.setCatwalk(5, 10)
 
         // Bloom
-        this.renderer.setSelectiveBloom(this.bloomGroup)
+        // this.renderer.setSelectiveBloom(this.spotLight)
  
     }
 
