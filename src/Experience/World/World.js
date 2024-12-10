@@ -12,25 +12,28 @@ export default class World
     constructor()
     {
         this.experience = new Experience(); 
+        this.renderer = this.experience.renderer
         this.scene = this.experience.scene;
         this.resources = this.experience.resources
         this.debug = this.experience.debug
+        this.camera = this.experience.camera.instance
 
         // Wait for resources
         this.resources.on('ready', () =>
         {   
             // Setup
+            this.camera.position.set(0, 1, 50)
             this.scene_3 = new Scene_3()
             this.scene_2 = new Scene_2()
             this.scene_1 = new Scene_1()
             this.teleportation = new Teleportation()
-            this.environment = new Environment()
             this.lights = new Lights()
+            this.environment = new Environment()
         })
 
     }
 
-update()
+    update()
     {
         if(this.scene_3)
         {
@@ -51,5 +54,5 @@ update()
         {
             this.lights.update()
         } 
-}
+    }
 }

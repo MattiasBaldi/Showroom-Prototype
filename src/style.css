@@ -45,3 +45,17 @@
     height: 100%; 
     color: white; 
 }
+
+#mobile-blocker
+{
+    position: absolute; 
+    width: 100vw; 
+    height: 100vh; 
+    background-color: black; 
+}
+
+@media (min-width: 1024px) {
+ #mobile-blocker {
+        display: none !important;
+    }
+}

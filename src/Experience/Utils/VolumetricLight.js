@@ -8,6 +8,7 @@ export default class VolumetricSpotLight {
         // Setup
         this.experience = new Experience()
         this.debug = this.experience.debug
+        this.renderer = this.experience.renderer
         this.camera = this.experience.camera.instance
         this.sizes = this.experience.sizes
         this.height = this.sizes.height
@@ -18,18 +19,6 @@ export default class VolumetricSpotLight {
         this.coneRadius = coneRadius
         this.coneHeight = coneHeight
         this.lightIntensity = lightIntensity
-        
-        // Params
-        // this.params = {
-        //     ConeAttenuation: this.material.uniforms.attenuation.value,
-        //     ConeAnglePower: this.material.uniforms.anglePower.value,
-        //     ConeEdgeScale: this.material.uniforms.edgeScale.value,
-        //     ConeEdgeConstractPower: this.material.uniforms.edgeConstractPower.value,
-        //     LightIntensity: this.spotLight.intensity,
-        //     LightAngle: this.spotLight.angle,
-        //     LightPenumbra: this.spotLight.penumbra,
-        //     LightDecay: this.spotLight.decay
-        // }
 
         // Group
         this.group = new THREE.Group();
@@ -63,6 +52,9 @@ export default class VolumetricSpotLight {
             varying vec3 vNormal;
             varying vec3 vWorldPosition;
             uniform vec3 lightColor;
+            uniform float intensity;
+            uniform vec3 emissiveColor;
+            uniform float emissiveIntensity;
             uniform vec3 spotPosition;
             uniform float attenuation;
             uniform float anglePower;
@@ -111,6 +103,9 @@ export default class VolumetricSpotLight {
 
                 intensity = intensity * edgeIntensity;
 
+                // Calculate emissive color
+                vec3 emissive = emissiveColor * emissiveIntensity;
+
                 // final color
                 gl_FragColor = vec4(lightColor, intensity);
             }
@@ -120,25 +115,26 @@ export default class VolumetricSpotLight {
     setMaterial() {
         this.material = new THREE.ShaderMaterial({
             uniforms: {
-            attenuation: { type: "f", value: 1 },
-            anglePower: { type: "f", value: Math.cos(1) },
-            edgeScale: { type: "f", value: 20.0 }, // Adjust this value as needed
-            edgeConstractPower: { type: "f", value: 1.5 }, // Adjust this value as needed
-            cameraNear: { type: "f", value: this.camera.near },
-            cameraFar: { type: "f", value: this.camera.far },
-            screenWidth: { type: "f", value: this.sizes.width },
-            screenHeight: { type: "f", value: this.sizes.height },
-            spotPosition: { type: "v3", value: new THREE.Vector3(0, this.coneHeight, 0) },
-            tDepth: { type: "t", value: null }, // This should be set to the depth texture
-            lightColor: { type: "c", value: new THREE.Color(this.color) },
+                attenuation: { type: "f", value: 1 },
+                anglePower: { type: "f", value: Math.cos(1) },
+                edgeScale: { type: "f", value: 20.0 }, // Adjust this value as needed
+                edgeConstractPower: { type: "f", value: 1.5 }, // Adjust this value as needed
+                cameraNear: { type: "f", value: this.camera.near },
+                cameraFar: { type: "f", value: this.camera.far },
+                screenWidth: { type: "f", value: this.sizes.width },
+                screenHeight: { type: "f", value: this.sizes.height },
+                spotPosition: { type: "v3", value: new THREE.Vector3(0, this.coneHeight, 0) },
+                tDepth: { type: "t", value: null }, // This should be set to the depth texture
+                lightColor: { type: "c", value: new THREE.Color(this.color) },
+                emissiveColor: { type: "c", value: new THREE.Color(0x000000) }, // Default emissive color
+                emissiveIntensity: { type: "f", value: 1.0 } // Default emissive intensity
             },
             vertexShader: this.vertexShader,
             fragmentShader: this.fragmentShader,
             blending: THREE.AdditiveBlending,
             transparent: true,
-            depthWrite: false,
+            depthWrite: false
         });
-
     }
 
     setGeometry() {

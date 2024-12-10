@@ -24,6 +24,7 @@ export default class PositionalAudio {
                 sound.setMaxDistance(distance);
                 sound.setRolloffFactor(distance)
                 sound.play();
+                sound.setLoop(true);
                 object.add(sound);
             },
             undefined,
@@ -35,3 +36,4 @@ export default class PositionalAudio {
         object.add(sound);
     }
 }
+

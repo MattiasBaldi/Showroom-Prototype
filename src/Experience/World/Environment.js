@@ -1,8 +1,4 @@
 import Experience from '../Experience.js'
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import * as THREE from 'three'
 
 
@@ -12,9 +8,9 @@ export default class Environment
     {
         this.experience = new Experience()
         this.scene = this.experience.scene
+        this.renderer = this.experience.renderer
         this.resources = this.experience.resources
         this.debug = this.experience.debug
-        this.renderer = this.experience.renderer.instance
 
         // Debug
         if(this.debug.active)
@@ -121,12 +117,12 @@ export default class Environment
         const floor = new THREE.Mesh
         (
             new THREE.PlaneGeometry(1000, 1000),
-            new THREE.MeshStandardMaterial({ color: 'black' })
+            new THREE.MeshStandardMaterial({ color: 'black', emissive: new THREE.Color(0x000000) })
         )
     
         floor.rotation.x = Math.PI * - 0.5
-        floor.receiveShadow = true; // Ensure the floor receives shadows
         this.scene.add(floor)
+        
         }
     
         addGrid()

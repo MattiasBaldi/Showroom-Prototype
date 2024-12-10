@@ -54,29 +54,28 @@ PostProcessing
 -----------
 ✔ Add Debug: DOF @done (7.12.2024, 23.43.37)
 ✔ Add Debug: Bloom @done (8.12.2024, 02.29.26)
-☐ Add Debug: Color
-☐ Add Debug: Antialiasing
-☐ Add Debug: Gods of ray
+✔ Add Debug: Color @done (9.12.2024, 20.06.19)
+✔ Add Debug: Antialiasing @done (9.12.2024, 20.06.19)
+✔ Add Debug: Gods of ray @done (9.12.2024, 20.06.20)
 ✔ Add Debug: ToneMapping @done (8.12.2024, 01.48.31)
 ✔ Add Blendmodes @done (8.12.2024, 02.29.49)
-☐ Learn Selective Bloom
+☐ Add Selective Bloom to lights
+☐ Learn how to merge Selective bloom
 ☐ Learn GodRays
 
-☐ Debug: ToneMapping
-☐ Debug: Bloom
-☐ Debug: Color
-☐ Debug: Antialiasing
 
 Environment
 -----------
 ☐ Fog
 ☐ Tweaks to look realistic
 
-
 Sound
 ------------------
-☐ Import different sounds
-☐ Declare radius and switches
+✔ Import different sounds @done (9.12.2024, 16.25.45)
+✔ Declare radius and switches @done (9.12.2024, 16.25.47)
+☐ Fix distances
+☐ Fix loader in shared loader thing
+☐ Loop
 
 
 Debug
@@ -85,6 +84,11 @@ Debug
 ☐ Change controls
 ☐ PivotPoint on Orbitcontrols to the relevant scene
 ☐ Allow debug of each scene
+☐ Bloom
+☐ ToneMapping
+☐ Lights
+☐ Shadows
+☐ Godrays
 
 
 ☐ Perfomance tips
@@ -102,3 +106,8 @@ Prioritized list
 ☐ Music / Sound
 
 
+
+☐ Debug: ToneMapping
+☐ Debug: Bloom
+☐ Debug: Color
+☐ Debug: Antialiasing

@@ -6,8 +6,6 @@ export default class WASD {
     constructor(camera, canvas)
     {
 
-        console.log('Wasd class called')
-
         this.experience = new Experience()
         this.scene = this.experience.scene
         this.debug = this.experience.debug
@@ -42,7 +40,6 @@ export default class WASD {
                 await new Promise((resolve) => {
                 this.PointerLockControls.addEventListener('lock', resolve, { once: true });
                 this.PointerLockControls.lock();
-                console.log('Clicking fullscreen and locks')
                 });
 
                 if (!document.fullscreenElement) {
@@ -61,22 +58,7 @@ export default class WASD {
             // When I click the blocker, the controls are locked
             this.blocker.addEventListener('click', () => {
                 this.PointerLockControls.lock();
-                console.log('Clicking blocker and controls lock')
             });
-
-            // // When I unlock the controls, the display appears
-            // this.PointerLockControls.addEventListener('unlock', () => {
-            //     this.blocker.style.display = 'block'
-            //     console.log('Unlocked therefore blocker shows')
-            // });
-
-
-            // // When I lock the controls, the display dissapears
-            // this.PointerLockControls.addEventListener('lock', () => {
-            //     this.blocker.style.display = 'none'
-            //     console.log('Locked therefore blocker dissapears')
-            // });
-
 
     }
 

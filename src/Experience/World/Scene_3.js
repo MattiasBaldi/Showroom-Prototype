@@ -7,6 +7,7 @@ export default class Scene_3 {
     constructor()
     {
         this.experience = new Experience()
+        this.renderer = this.experience.renderer
         this.camera = this.experience.camera
         this.scene = this.experience.scene
         this.time = this.experience.time
@@ -27,6 +28,9 @@ export default class Scene_3 {
         this.updateMaterials()
 
         this.switch = new Switch(this.room, 1, 10)
+
+        // Bloom
+        // this.renderer.setSelectiveBloom(this.table)
     }
 
     setScene()

@@ -24,14 +24,15 @@ export default class Scene_2
         this.setScene()
         this.createBox()
 
-
-        this.renderer.setSelectiveBloom(this.box)
-
         // Audio
         // this.audio = new PositionalAudio('Test_big', this.sceneGroup, 1)
 
         // Switch
         this.switch = new Switch(this.sceneGroup, 0, 10)
+
+        //bloom
+        // this.renderer.setSelectiveBloom(this.box)
+
     }
 
     setScene()

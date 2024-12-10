@@ -65,7 +65,6 @@ export default class Controls {
     
         if (this.OrbitControls) 
         {
-        console.log('Fullscreen')
         setFullscreen();  
         }
         else if (this.wasd)
@@ -80,7 +79,6 @@ export default class Controls {
             }
         
             setFullscreen()  // Remove blocker once locked
-            console.log('Blocker removed');
         };
         
         waitforPointerLock();
@@ -112,9 +110,7 @@ export default class Controls {
         {
             if(this.OrbitControls)
             {
-                console.log('Not locked controls')
                 blocker.style.display = 'none'
-                console.log('Blocker removed')
             }
 
             else if (this.wasd) 
@@ -129,7 +125,6 @@ export default class Controls {
                     }
                 
                     blocker.style.display = 'none';  // Remove blocker once locked
-                    console.log('Blocker removed');
                 };
                 
                 waitforPointerLock();

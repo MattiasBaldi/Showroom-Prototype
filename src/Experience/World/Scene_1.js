@@ -41,15 +41,13 @@ export default class Scene_1
         this.setFade()
 
         // Switch
-        // this.switch = new Switch(this.posedBody, 2, 10)
-
+        this.switch = new Switch(this.posedBody, 2, 10)
 
         // Audio
         this.audio = new PositionalAudio('Test_small', this.posedBody, 1)
-        console.log(this.audio)
 
         // Bloom
-        // this.renderer.setSelectiveBloom(this.posedBody)
+        this.renderer.setSelectiveBloom(this.posedBody)
     }
 
     setScene()
@@ -227,6 +225,7 @@ export default class Scene_1
                 new THREE.PlaneGeometry(this.walkLength, 1),
                 new THREE.MeshBasicMaterial({color: 'white'})
             )
+
             this.catwalk.rotation.x = Math.PI * 0.5; 
             this.catwalk.rotation.z = Math.PI * 0.5;
             this.catwalk.position.z = this.walkStart/2
@@ -254,7 +253,6 @@ export default class Scene_1
     update()
     {
             this.animation.mixer.walking.update(this.time.delta * 0.001); 
-            // this.animation.mixer.pose.update(this.time.delta * 0.001); 
             this.updateWalk()
             this.setFade()
             this.switch.update()

@@ -1,14 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js'
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
-import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js'
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
-import { FilmPass } from 'three/addons/postprocessing/FilmPass.js'
 import VolumetricSpotLight from '../Utils/VolumetricLight.js'
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 export default class Lights 
 {
@@ -31,16 +23,10 @@ export default class Lights
         this.debugFolder.close()
         }
 
-
-
         // Setup
-        this.bloomGroup = new THREE.Group()
         this.setObjectSpotLight(4, this.scene_1.posedModel)
         this.setSpotlight(6)
-        this.setCatwalk(5, 10)
-
-        // Bloom
-        // this.renderer.setSelectiveBloom(this.spotLight)
+        this.setCatwalk(4, 20)
  
     }
 
@@ -61,14 +47,14 @@ export default class Lights
             this.coneUniforms.anglePower.value = 5;
             this.coneUniforms.edgeScale.value = 0.5; // Adjust this value as needed
             this.coneUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
+            this.coneUniforms.emissiveIntensity = 100
 
             // Adjust light
             this.light = this.spotLight.children[1]
-            this.light.intensity = 50;
+            this.light.intensity = 1000;
             // this.light.angle = Math.PI * 0.1;
             this.light.penumbra = 1;
             this.light.decay = 1.5;
-
 
             // Position X
             const gap = 10; 
@@ -78,7 +64,6 @@ export default class Lights
 
             // Add this to the scene
             this.spotLights.push(this.spotLight)
-            this.bloomGroup.add(this.spotLight)
             this.scene.add(this.spotLight)
         }
 
@@ -123,6 +108,7 @@ export default class Lights
                     spotLight.position.y = 0;
                 });
                 });
+
         this.Volumetric
             .add(debugObject, 'radiusBottom')
             .name('radiusBottom')
@@ -281,7 +267,6 @@ export default class Lights
             const spotLightHelper = new THREE.SpotLightHelper(spotLight)
 
             this.scene.add(spotLight);
-            this.bloomGroup.add(spotLight)
             // this.scene.add(spotLightHelper);
         }
     }
@@ -289,18 +274,32 @@ export default class Lights
     setCatwalk(count, gap)
     {
     for (let i = 0; i < count; i++) {
-        const spotLight = new THREE.SpotLight('white', 1000, 0, Math.PI * 0.1, 1, 2);
+
+        // Light
+        const spotLight = new VolumetricSpotLight('white', 2.8, 10, 100)
+
+        // Position
         spotLight.position.z += i * gap;
-        spotLight.position.y = 5;
-        spotLight.target.position.set(spotLight.position.x, 0, spotLight.position.z);
+        spotLight.children[0].material.uniforms.spotPosition.value.z += i * gap;
 
+        // Cone settings
+        const cone = spotLight.children[0]
+        const spotLightConeUniforms = cone.material.uniforms
 
-        this.bloomGroup.add(spotLight)
+        spotLightConeUniforms.attenuation.value = 10.5;
+        spotLightConeUniforms.anglePower.value = 5;
+        spotLightConeUniforms.edgeScale.value = 0.5; // Adjust this value as needed
+        spotLightConeUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
+        spotLightConeUniforms.emissiveIntensity = 100
+
+        // Light settings
+        const light = spotLight.children[1]
+        // light.angle = Math.PI * 0.1;
+
         this.scene.add(spotLight);
-        this.scene.add(spotLight.target);
 
 
-
+        // Helper
         // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
         // this.scene.add(spotLightHelper);
     }
