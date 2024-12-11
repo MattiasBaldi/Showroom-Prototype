@@ -7,6 +7,7 @@ import World from './World/World.js'
 import Resources from './Utils/Resources.js'
 import sources from  './Sources.js'
 import Debug from './Utils/Debug.js'
+import Microphone from './Microphone.js'
 
 let instance = null; 
 
@@ -38,6 +39,7 @@ export default class Experience
         this.resources = new Resources(sources)
         this.renderer = new Renderer(this)
         this.world = new World()
+        this.microphone = new Microphone()
 
 
         // Sizes resize event

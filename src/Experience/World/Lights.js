@@ -267,7 +267,7 @@ export default class Lights
             const spotLightHelper = new THREE.SpotLightHelper(spotLight)
 
             this.scene.add(spotLight);
-            this.scene.add(spotLightHelper);
+            // this.scene.add(spotLightHelper);
         }
     }
 
