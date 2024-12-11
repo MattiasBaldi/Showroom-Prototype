@@ -129,7 +129,7 @@ export default class Microphone
         // Retrieve audio data
         this.analyserNode.getByteFrequencyData(this.byteFrequencyData)
         this.analyserNode.getFloatTimeDomainData(this.floatTimeDomainData)
-        
+
         this.volume = this.getVolume()
         this.levels = this.getLevels()
 

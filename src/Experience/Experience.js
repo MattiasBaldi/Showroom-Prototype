@@ -41,7 +41,6 @@ export default class Experience
         this.world = new World()
         this.microphone = new Microphone()
 
-
         // Sizes resize event
         this.sizes.on('resize', () =>
         {
@@ -66,6 +65,7 @@ export default class Experience
         this.camera.update()
         this.world.update()
         this.renderer.update()
+        this.microphone.update()
     }
 
     destroy()

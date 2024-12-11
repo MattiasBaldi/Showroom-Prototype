@@ -24,7 +24,6 @@ export default class Environment
         this.addGrid()
         this.setEnvironmentMap()
         this.addFloor()
-        this.setFog()
     }
 
         setEnvironmentMap()

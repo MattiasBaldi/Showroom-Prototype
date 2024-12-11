@@ -8,6 +8,7 @@ export default class Sphere
     constructor()
     {
         this.experience = new Experience()
+        this.renderer = this.experience.renderer
         this.debug = this.experience.debug
         this.scene = this.experience.scene
         this.time = this.experience.time
@@ -16,16 +17,13 @@ export default class Sphere
         this.timeFrequency = 0.0003
         this.elapsedTime = 0
 
-        // if(this.debug.active)
-        // {
-        //     this.debugFolder = this.debug.ui.addFolder('sphere');        
+        if(this.debug.active)
+        {
+            this.debugFolder = this.debug.ui.addFolder('sphere');        
 
-        //     this.debugFolder.addInput(
-        //         this,
-        //         'timeFrequency',
-        //         { min: 0, max: 0.001, step: 0.000001 }
-        //     )
-        // }
+            this.debugFolder
+            .add(this,'timeFrequency').min(0).max(0.001).step(0.000001)
+        }
         
         this.setVariations()
         this.setGeometry()
@@ -33,6 +31,9 @@ export default class Sphere
         this.setOffset()
         this.setMaterial()
         this.setMesh()
+        this.setBloom()
+        this.debugPosition()
+
     }
 
     setVariations()
@@ -125,7 +126,7 @@ export default class Sphere
         this.lights.a.intensity = 1.85
 
         this.lights.a.color = {}
-        this.lights.a.color.value = '#ff3e00'
+        this.lights.a.color.value = 'red'
         this.lights.a.color.instance = new THREE.Color(this.lights.a.color.value)
 
         this.lights.a.spherical = new THREE.Spherical(1, 0.615, 2.049)
@@ -136,68 +137,52 @@ export default class Sphere
         this.lights.b.intensity = 1.4
 
         this.lights.b.color = {}
-        this.lights.b.color.value = '#0063ff'
+        this.lights.b.color.value = 'black'
         this.lights.b.color.instance = new THREE.Color(this.lights.b.color.value)
 
         this.lights.b.spherical = new THREE.Spherical(1, 2.561, - 1.844)
 
-        // Debug
-        // if(this.debug.active)
-        // {
-        //     for(const _lightName in this.lights)
-        //     {
-        //         const light = this.lights[_lightName]
-                
-        //         const debugFolder = this.debugFolder.addFolder({
-        //             title: _lightName,
-        //             expanded: true
-        //         })
+        if(this.debug.active)
+        {
+            for(const _lightName in this.lights)
+            {
+            const light = this.lights[_lightName]
+            
+            const debugFolder = this.debugFolder.addFolder(_lightName)
+            debugFolder.close()
 
-        //         debugFolder
-        //             .addInput(
-        //                 light.color,
-        //                 'value',
-        //                 { view: 'color', label: 'color' }
-        //             )
-        //             .on('change', () =>
-        //             {
-        //                 light.color.instance.set(light.color.value)
-        //             })
+            debugFolder
+                .addColor(light.color, 'value')
+                .name('color')
+                .onChange(() =>
+                {
+                light.color.instance.set(light.color.value)
+                })
 
-        //         debugFolder
-        //             .addInput(
-        //                 light,
-        //                 'intensity',
-        //                 { min: 0, max: 10 }
-        //             )
-        //             .on('change', () =>
-        //             {
-        //                 this.material.uniforms[`uLight${_lightName.toUpperCase()}Intensity`].value = light.intensity
-        //             })
+            debugFolder
+                .add(light, 'intensity', 0, 10)
+                .onChange(() =>
+                {
+                this.material.uniforms[`uLight${_lightName.toUpperCase()}Intensity`].value = light.intensity
+                })
 
-        //         debugFolder
-        //             .addInput(
-        //                 light.spherical,
-        //                 'phi',
-        //                 { label: 'phi', min: 0, max: Math.PI, step: 0.001 }
-        //             )
-        //             .on('change', () =>
-        //             {
-        //                 this.material.uniforms[`uLight${_lightName.toUpperCase()}Position`].value.setFromSpherical(light.spherical)
-        //             })
+            debugFolder
+                .add(light.spherical, 'phi', 0, Math.PI, 0.001)
+                .name('phi')
+                .onChange(() =>
+                {
+                this.material.uniforms[`uLight${_lightName.toUpperCase()}Position`].value.setFromSpherical(light.spherical)
+                })
 
-        //         debugFolder
-        //             .addInput(
-        //                 light.spherical,
-        //                 'theta',
-        //                 { label: 'theta', min: - Math.PI, max: Math.PI, step: 0.001 }
-        //             )
-        //             .on('change', () =>
-        //             {
-        //                 this.material.uniforms.uLightAPosition.value.setFromSpherical(light.spherical)
-        //             })
-        //     }
-        // }
+            debugFolder
+                .add(light.spherical, 'theta', -Math.PI, Math.PI, 0.001)
+                .name('theta')
+                .onChange(() =>
+                {
+                this.material.uniforms[`uLight${_lightName.toUpperCase()}Position`].value.setFromSpherical(light.spherical)
+                })
+            }
+        }
     }
 
     setOffset()
@@ -220,11 +205,11 @@ export default class Sphere
             uniforms:
             {
                 uLightAColor: { value: this.lights.a.color.instance },
-                uLightAPosition: { value: new THREE.Vector3(1, 1, 0) },
+                uLightAPosition: { value: new THREE.Vector3(1, 100, 0) },
                 uLightAIntensity: { value: this.lights.a.intensity },
 
                 uLightBColor: { value: this.lights.b.color.instance },
-                uLightBPosition: { value: new THREE.Vector3(- 1, - 1, 0) },
+                uLightBPosition: { value: new THREE.Vector3(- 1, - 100, 0) },
                 uLightBIntensity: { value: this.lights.b.intensity },
 
                 uSubdivision: { value: new THREE.Vector2(this.geometry.parameters.widthSegments, this.geometry.parameters.heightSegments) },
@@ -240,12 +225,14 @@ export default class Sphere
                 uFresnelMultiplier: { value: 3.587 },
                 uFresnelPower: { value: 1.793 },
 
-                uTime: { value: 0 }
+                uTime: { value: 0 },
+
             },
             defines:
             {
                 USE_TANGENT: ''
             },
+
             vertexShader: vertexShader,
             fragmentShader: fragmentShader
         })
@@ -253,56 +240,77 @@ export default class Sphere
         this.material.uniforms.uLightAPosition.value.setFromSpherical(this.lights.a.spherical)
         this.material.uniforms.uLightBPosition.value.setFromSpherical(this.lights.b.spherical)
         
-        // if(this.debug)
-        // {
-        //     this.debugFolder.addInput(
-        //         this.material.uniforms.uDistortionFrequency,
-        //         'value',
-        //         { label: 'uDistortionFrequency', min: 0, max: 10, step: 0.001 }
-        //     )
+        if(this.debug.active)
+        {
+            this.debugFolder.add(
+                this.material.uniforms.uDistortionFrequency,
+                'value').name('uDistortionFrequency').min(0).max(10).step(0.001)
             
-        //     this.debugFolder.addInput(
-        //         this.material.uniforms.uDistortionStrength,
-        //         'value',
-        //         { label: 'uDistortionStrength', min: 0, max: 10, step: 0.001 }
-        //     )
             
-        //     this.debugFolder.addInput(
-        //         this.material.uniforms.uDisplacementFrequency,
-        //         'value',
-        //         { label: 'uDisplacementFrequency', min: 0, max: 5, step: 0.001 }
-        //     )
-            
-        //     this.debugFolder.addInput(
-        //         this.material.uniforms.uDisplacementStrength,
-        //         'value',
-        //         { label: 'uDisplacementStrength', min: 0, max: 1, step: 0.001 }
-        //     )
-            
-        //     this.debugFolder.addInput(
-        //         this.material.uniforms.uFresnelOffset,
-        //         'value',
-        //         { label: 'uFresnelOffset', min: - 2, max: 2, step: 0.001 }
-        //     )
-            
-        //     this.debugFolder.addInput(
-        //         this.material.uniforms.uFresnelMultiplier,
-        //         'value',
-        //         { label: 'uFresnelMultiplier', min: 0, max: 5, step: 0.001 }
-        //     )
-            
-        //     this.debugFolder.addInput(
-        //         this.material.uniforms.uFresnelPower,
-        //         'value',
-        //         { label: 'uFresnelPower', min: 0, max: 5, step: 0.001 }
-        //     )
-        // }
+            this.debugFolder
+                .add(this.material.uniforms.uDistortionStrength, 'value')
+                .name('uDistortionStrength')
+                .min(0)
+                .max(10)
+                .step(0.001)
+
+            this.debugFolder
+                .add(this.material.uniforms.uDisplacementFrequency, 'value')
+                .name('uDisplacementFrequency')
+                .min(0)
+                .max(5)
+                .step(0.001)
+
+            this.debugFolder
+                .add(this.material.uniforms.uDisplacementStrength, 'value')
+                .name('uDisplacementStrength')
+                .min(0)
+                .max(1)
+                .step(0.001)
+
+            this.debugFolder
+                .add(this.material.uniforms.uFresnelOffset, 'value')
+                .name('uFresnelOffset')
+                .min(-2)
+                .max(2)
+                .step(0.001)
+
+            this.debugFolder
+                .add(this.material.uniforms.uFresnelMultiplier, 'value')
+                .name('uFresnelMultiplier')
+                .min(0)
+                .max(5)
+                .step(0.001)
+
+            this.debugFolder
+                .add(this.material.uniforms.uFresnelPower, 'value')
+                .name('uFresnelPower')
+                .min(0)
+                .max(5)
+                .step(0.001)
+        }
     }
 
     setMesh()
     {
         this.mesh = new THREE.Mesh(this.geometry, this.material)
-        this.scene.add(this.mesh)
+        this.scene.add(this.mesh) // Add mesh to the group
+    }
+
+    setBloom()
+    {
+        this.renderer.setSelectiveBloom(this.mesh)
+    }
+
+    debugPosition()
+    {
+        if (this.debug.active) {
+
+            const debugFolder = this.debugFolder.addFolder('Position')
+            debugFolder.add(this.mesh.position, 'x').min(-10).max(10).step(0.01).name('positionX')
+            debugFolder.add(this.mesh.position, 'y').min(-10).max(10).step(0.01).name('positionY')
+            debugFolder.add(this.mesh.position, 'z').min(-10).max(10).step(0.01).name('positionZ')
+        }
     }
 
     update()
