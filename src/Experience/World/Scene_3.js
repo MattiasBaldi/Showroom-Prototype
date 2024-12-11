@@ -38,7 +38,7 @@ export default class Scene_3 {
         this.sceneGroup = new THREE.Group()
         this.sceneGroup.add(this.sceneModels)
         this.scene.add(this.sceneGroup)
-        this.sceneGroup.position.x = 50
+        this.sceneGroup.position.x = 100
         this.sceneGroup.scale.setScalar(1)
 
         // Debug

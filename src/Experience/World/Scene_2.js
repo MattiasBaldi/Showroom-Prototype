@@ -38,7 +38,7 @@ export default class Scene_2
     setScene()
     {
     this.sceneGroup = new THREE.Group(); 
-    this.sceneGroup.position.x = -50; 
+    this.sceneGroup.position.x = -100; 
     this.sceneGroup.scale.setScalar(0.6)
     this.scene.add(this.sceneGroup)
 

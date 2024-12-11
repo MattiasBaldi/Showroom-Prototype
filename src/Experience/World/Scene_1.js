@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import Experience from '../Experience.js'
 import Switch from '../Controls/Switch.js'
 import PositionalAudio from '../Utils/PositionalAudio.js'
+import { TetrahedralUpscaler } from 'postprocessing'
 
 export default class Scene_1
 {
@@ -107,9 +108,10 @@ export default class Scene_1
     setWalk()
     {
         this.walkAxis = 'z'; 
-        this.walkSpeed = 1;
-        this.walkStart = 5;
-        this.walkEnd = 60;
+        this.walkSpeed = 0.7;
+        this.action.walking.timeScale = 0.8; 
+        this.walkStart = 70;
+        this.walkEnd = 250;
         this.length = null
 
         // Debug
@@ -139,7 +141,7 @@ export default class Scene_1
                   }
           }
         })
-            
+
 
         this.animationFolder
         .add(debugObject, 'walkStart')
@@ -153,7 +155,7 @@ export default class Scene_1
         })
         .step(0.01)
         .min(0)
-        .max(10)
+        .max(100)
 
         this.animationFolder
         .add(debugObject, 'walkEnd')
@@ -167,7 +169,7 @@ export default class Scene_1
         })
         .step(0.01)
         .min(10)
-        .max(50)
+        .max(500)
 
         this.animationFolder
         .add(debugObject, 'timeScale')
@@ -226,10 +228,64 @@ export default class Scene_1
                 new THREE.MeshBasicMaterial({color: 'white'})
             )
 
-            this.catwalk.rotation.x = Math.PI * 0.5; 
+            // Rotation
+            this.catwalk.rotation.x = Math.PI * 0.5;
             this.catwalk.rotation.z = Math.PI * 0.5;
-            this.catwalk.position.z = this.walkStart/2
+
+            // Debug
+            if (this.debug.active) {
+                this.debugFolder
+                    .add(this.catwalk.rotation, 'z')
+                    .name('Catwalk Rotation Z')
+                    .step(0.01)
+                    .min(-Math.PI)
+                    .max(Math.PI);
+
+                this.debugFolder
+                    .add(this.catwalk.rotation, 'y')
+                    .name('Catwalk Rotation Y')
+                    .step(0.01)
+                    .min(-Math.PI)
+                    .max(Math.PI);
+
+                this.debugFolder
+                    .add(this.catwalk.rotation, 'x')
+                    .name('Catwalk Rotation X')
+                    .step(0.01)
+                    .min(-Math.PI)
+                    .max(Math.PI);
+
+                this.debugFolder
+                    .add(this.catwalk.position, 'z')
+                    .name('Catwalk Position Z')
+                    .step(0.01)
+                    .min(-100)
+                    .max(100);
+
+                this.debugFolder
+                    .add(this.catwalk.position, 'y')
+                    .name('Catwalk Position Y')
+                    .step(0.01)
+                    .min(-100)
+                    .max(100);
+
+                this.debugFolder
+                    .add(this.catwalk.position, 'x')
+                    .name('Catwalk Position X')
+                    .step(0.01)
+                    .min(-100)
+                    .max(100);
+
+            }
+
+
+            // Position
+            this.catwalk.position.z = (this.walkStart * this.scale) - (this.walkLength * 2 * this.scale);
             this.catwalk.position.y = 0.01
+
+
+
+
             this.scene.add(this.catwalk)
     }
 
@@ -256,6 +312,8 @@ export default class Scene_1
             this.updateWalk()
             this.setFade()
             this.switch.update()
+
+            // console.log(this.catwalk.position.z, this.animatedModel.position.z)
     }
 }
 

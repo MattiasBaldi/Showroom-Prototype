@@ -25,12 +25,13 @@ export default class Lights
 
         // Setup
         this.setObjectSpotLight(4, this.scene_1.posedModel)
-        this.setSpotlight(6)
+        this.setRoomLight()
+        this.setSpotlight(4, 20)
         this.setCatwalk(4, 20)
  
     }
 
-    setSpotlight(count) 
+    setSpotlight(count, gap) 
     {
         this.spotLights = [];
 
@@ -57,7 +58,6 @@ export default class Lights
             this.light.decay = 1.5;
 
             // Position X
-            const gap = 10; 
             const positionX = (i % 2 === 0) ? (i + 1) * gap : -(i + 1) * gap;
             this.spotLight.position.x = positionX;
             this.spotLight.children[0].material.uniforms.spotPosition.value.x = positionX;
@@ -247,7 +247,7 @@ export default class Lights
     setObjectSpotLight(count, object)
     {
         for (let i = 0; i < count; i++) {
-            const spotLight = new THREE.SpotLight('white', 100, 0, Math.PI * 0.1, 0.5, 2);
+            const spotLight = new THREE.SpotLight('white', 1000, 0, Math.PI * 0.1, 0.5, 2);
             const localPosition = new THREE.Vector3();
             object.localToWorld(localPosition.set(0, 0, 0)); // Assuming you want the object's position
         
@@ -267,8 +267,25 @@ export default class Lights
             const spotLightHelper = new THREE.SpotLightHelper(spotLight)
 
             this.scene.add(spotLight);
-            // this.scene.add(spotLightHelper);
+            this.scene.add(spotLightHelper);
         }
+    }
+
+    setRoomLight()
+    {
+        const light = new THREE.PointLight(0xffffff, 200, 50)
+        const helper = new THREE.PointLightHelper(light)
+
+
+        const localPosition = new THREE.Vector3();
+        this.scene_3.room.localToWorld(localPosition);
+
+        light.position.copy(localPosition);
+        light.position.y = 3; 
+
+        console.log(localPosition)
+
+        this.scene.add(light, helper)
     }
 
     setCatwalk(count, gap)
