@@ -31,8 +31,8 @@ export default class Sphere
         this.setLights()
         this.setOffset()
         this.setMaterial()
-        // this.setMesh()
-        this.setHead()
+        this.setMesh()
+        // this.setHead()
         // this.setBloom()
 
     }
