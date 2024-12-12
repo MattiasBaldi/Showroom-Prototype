@@ -6,7 +6,7 @@ import Scene_1 from './Scene_1.js'
 import Scene_2 from './Scene_2.js'
 import Scene_3 from './Scene_3.js'
 import Lights from './Lights.js'
-import Sphere from '../Sphere.js'
+import Sphere from './Sphere.js'
 
 export default class World
 {
@@ -25,7 +25,7 @@ export default class World
             // Setup
             this.camera.position.set(0, 1, 50)
             this.scene_3 = new Scene_3()
-            this.scene_2 = new Scene_2()
+            // this.scene_2 = new Scene_2()
             this.scene_1 = new Scene_1()
             this.teleportation = new Teleportation()
             this.lights = new Lights()

@@ -165,7 +165,7 @@ export default class VolumetricSpotLight {
     }
 
     setHelper() {
-                this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
-                this.group.add(this.spotLightHelper);
+    this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
+    this.group.add(this.spotLightHelper);
     }
 }

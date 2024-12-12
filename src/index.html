@@ -6,27 +6,40 @@
 <script type="module" src="script.js"> </script>
 </head>
 <body>
-<!-- 
-<div id="mobile-blocker">
-    <h1> This prototype is only available on PC </h1>
-<div> -->
+
 
 <div id="blocker">
     <div id="instructions">
         
+        <button class="full-screen">
+            <img src="/SVG/full-screen.svg"> </img>
+        </button>
+    
+        <button class="sound" style="display: none;">
+            <img src="/SVG/soundOn.svg"> </img>
+        </button>
         <h1> Click to play </h1>
         <br>
         <p>
             Escape = menu
         </p>
-        <button class="full-screen">
-            <img src="/full-screen.svg"> </img>
-        </button>
+
     </div>
 </div>
 
-<video id="video" style="display: none; ">
-</video>
+
+<div id="controls">
+
+
+</div>
+
+<!-- 
+<div id="mobile-blocker">
+    <h1> This prototype is only available on PC </h1>
+<div> -->
+
+<!-- <video id="video" style="display: none; ">
+</video> -->
 
 <canvas class="webgl"></canvas>
     </body>

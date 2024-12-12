@@ -27,23 +27,37 @@
     font-family: helvetica neue; 
 }
 
-.full-screen {
+.full-screen, .sound {
     z-index: 2; 
     width: 25px; 
     height: 25px; 
     background-color: transparent; 
     border: none; 
-    position: absolute; 
     top: 0; 
     left: 0; 
     margin: 20px; 
     cursor: pointer; 
 }
 
-.full-screen img {
+.full-screen img, .sound {
     width: 100%; 
     height: 100%; 
     color: white; 
+}
+
+.sound 
+{
+    scale: 0.015; 
+}
+
+#controls
+{
+    display: none; 
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background: transparent; 
 }
 
 #mobile-blocker

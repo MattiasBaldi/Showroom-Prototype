@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import Experience from '../Experience.js'
 import Switch from '../Controls/Switch.js'
 import PositionalAudio from '../Utils/PositionalAudio.js'
-import { TetrahedralUpscaler } from 'postprocessing'
 
 export default class Scene_1
 {

@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
-import restart from 'vite-plugin-restart';
-import glslify from 'vite-plugin-glslify';
+import { defineConfig } from 'vite'
+import restart from 'vite-plugin-restart'
+import glsl from 'vite-plugin-glsl'
 
 export default defineConfig({
     root: 'src/', // Source files (typically where index.html is)
@@ -16,7 +16,6 @@ export default defineConfig({
     },
     plugins: [
         restart({ restart: ['../static/**'] }), // Restart server on static file change
-        glslify() // Use vite-plugin-glslify
+        glsl() // Use vite-plugin-glsl
     ],
-});
-
+})
