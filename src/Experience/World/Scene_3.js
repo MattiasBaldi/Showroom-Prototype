@@ -36,12 +36,12 @@ export default class Scene_3 {
         // Setup
         this.setScene()
         this.updateMaterials()
-        console.log(this.sceneModels)
+        this.setBloom()
 
+        // Switch
         this.switch = new Switch(this.sceneGroup, 1, 10)
 
-        // Bloom
-        // this.renderer.setSelectiveBloom(this.table)
+
     }
 
     setScene()
@@ -123,6 +123,21 @@ export default class Scene_3 {
     
 
         }
+
+    setBloom()
+    {
+
+        const bodyOne = this.modelOne.children[0]
+        const bodyTwo = this.modelTwo.children[0]
+        const bodyThree = this.modelThree.children[0]
+
+        const bloom = this.renderer.selectiveBloom
+
+        bloom.selection.add(bodyOne)
+        bloom.selection.add(bodyTwo)
+        bloom.selection.add(bodyThree)
+        
+    }
 
     update()
     {

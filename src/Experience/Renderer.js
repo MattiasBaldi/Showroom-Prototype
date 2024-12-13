@@ -37,7 +37,7 @@ export default class Renderer
         // this.setAntiAliasing()
         // this.setBloom()
         this.setToneMapping()
-        // this.setSelectiveBloom()
+        this.setSelectiveBloom()
         // this.setDepthOfField()
         // this.setColor()
         // this.setGodRays()
@@ -79,7 +79,19 @@ export default class Renderer
         // Antialiasing
         const smaaEffect = new SMAAEffect();
         const effectPass = new EffectPass(this.camera.instance, smaaEffect);
-        this.composer.multisampling = 8 // Adjust this for better AntiAliasing // Higher = Worse performance & Better AntiAliasing
+    
+        const ratio = this.instance.getPixelRatio()
+
+        // Adjust AntiAliasing amount
+        if (ratio < 2)
+        {
+            this.composer.multisampling = 8 // Higher = Better AntiAliasing, but worse performance
+        }
+        else 
+        {
+            // this.composer.multisampling = 0 
+        }
+
         this.composer.addPass(effectPass);
 
         // Debug
@@ -224,74 +236,70 @@ export default class Renderer
         }
     }
 
-    setSelectiveBloom(object = null)
+    setSelectiveBloom()
     {
-
         // Bloom
         const blendMode = {
             blendFunction: THREE.AdditiveBlending,
             opacity: { value: 1.0 }
         };
 
-        const bloom = new SelectiveBloomEffect(this.scene, this.camera.instance, {
-                blendFunction: BlendFunction.ADD,
-                mipmapBlur: true,
-                luminanceThreshold: 0.4,
-                luminanceSmoothing: 0.2,
-                intensity: 3.0
+        this.selectiveBloom = new SelectiveBloomEffect(this.scene, this.camera.instance, {
+            blendFunction: BlendFunction.ADD,
+            mipmapBlur: true,
+            luminanceThreshold: 0.4,
+            luminanceSmoothing: 0.2,
+            intensity: 3.0
             });
 
         // Settings
-        bloom.ignoreBackground = true; 
-
-        // Set selected objects
-        bloom.selection.add(object)    
+        this.selectiveBloom.ignoreBackground = true; 
 
         // Init
-        this.composer.addPass(new EffectPass(this.camera.instance, bloom));
+        this.composer.addPass(new EffectPass(this.camera.instance, this.selectiveBloom));
 
         // Debug
         if(this.debug.active)
         {
 
-            const bloomFolder = this.debugFolder.addFolder(`Bloom ${object.name}`)
+            const bloomFolder = this.debugFolder.addFolder(`Bloom`)
             bloomFolder.close()
 
             const params = {
-            "intensity": bloom.intensity,
-            "radius": bloom.mipmapBlurPass.radius,
+            "intensity": this.selectiveBloom.intensity,
+            "radius": this.selectiveBloom.mipmapBlurPass.radius,
             "luminance": {
-                "filter": bloom.luminancePass.enabled,
-                "threshold": bloom.luminanceMaterial.threshold,
-                "smoothing": bloom.luminanceMaterial.smoothing
+            "filter": this.selectiveBloom.luminancePass.enabled,
+            "threshold": this.selectiveBloom.luminanceMaterial.threshold,
+            "smoothing": this.selectiveBloom.luminanceMaterial.smoothing
             },
             "selection": {
-                "inverted": bloom.inverted,
-                "ignore bg": bloom.ignoreBackground
+            "inverted": this.selectiveBloom.inverted,
+            "ignore bg": this.selectiveBloom.ignoreBackground
             },
             "opacity": blendMode.opacity.value,
             "blend mode": blendMode.blendFunction
             };
             bloomFolder.add(params, "intensity", 0.0, 10.0, 0.01).onChange((value) => {
-            bloom.intensity = Number(value);
+            this.selectiveBloom.intensity = Number(value);
             });
 
             bloomFolder.add(params, "radius", 0.0, 1.0, 0.001).onChange((value) => {
-            bloom.mipmapBlurPass.radius = Number(value);
+            this.selectiveBloom.mipmapBlurPass.radius = Number(value);
             });
 
             let luminanceFolder = bloomFolder.addFolder("Luminance");
 
             luminanceFolder.add(params.luminance, "filter").onChange((value) => {
-            bloom.luminancePass.enabled = value;
+            this.selectiveBloom.luminancePass.enabled = value;
             });
 
             luminanceFolder.add(params.luminance, "threshold", 0.0, 1.0, 0.001).onChange((value) => {
-            bloom.luminanceMaterial.threshold = Number(value);
+            this.selectiveBloom.luminanceMaterial.threshold = Number(value);
             });
 
             luminanceFolder.add(params.luminance, "smoothing", 0.0, 1.0, 0.001).onChange((value) => {
-            bloom.luminanceMaterial.smoothing = Number(value);
+            this.selectiveBloom.luminanceMaterial.smoothing = Number(value);
             });
 
             luminanceFolder.open();
@@ -299,25 +307,25 @@ export default class Renderer
             let selectionFolder = bloomFolder.addFolder("Selection");
 
             selectionFolder.add(params.selection, "inverted").onChange((value) => {
-            bloom.inverted = value;
+            this.selectiveBloom.inverted = value;
             });
 
             selectionFolder.add(params.selection, "ignore bg").onChange((value) => {
-            bloom.ignoreBackground = value;
+            this.selectiveBloom.ignoreBackground = value;
             });
 
             selectionFolder.open();
 
             bloomFolder.add(params, "opacity", 0.0, 1.0, 0.01).onChange((value) => {
-            bloom.blendMode.opacity.value = value;
+            this.selectiveBloom.blendMode.opacity.value = value;
             });
 
             bloomFolder.add(params, "blend mode", BlendFunction).onChange((value) => {
-            bloom.blendMode.setBlendFunction(Number(value));
+            this.selectiveBloom.blendMode.setBlendFunction(Number(value));
             });
 
-            bloomFolder.add(bloom, "dithering").onChange((value) => {
-            bloom.dithering = value;
+            bloomFolder.add(this.selectiveBloom, "dithering").onChange((value) => {
+            this.selectiveBloom.dithering = value;
             });
 
         }

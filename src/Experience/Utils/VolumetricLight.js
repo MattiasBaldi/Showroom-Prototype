@@ -30,6 +30,7 @@ export default class VolumetricSpotLight {
         this.setCone();
         this.setLight();
         // this.setHelper()
+        // this.setBloom()
 
         return this.group;
     }
@@ -126,8 +127,8 @@ export default class VolumetricSpotLight {
                 spotPosition: { type: "v3", value: new THREE.Vector3(0, this.coneHeight, 0) },
                 tDepth: { type: "t", value: null }, // This should be set to the depth texture
                 lightColor: { type: "c", value: new THREE.Color(this.color) },
-                emissiveColor: { type: "c", value: new THREE.Color(0x000000) }, // Default emissive color
-                emissiveIntensity: { type: "f", value: 1.0 } // Default emissive intensity
+                emissiveColor: { type: "c", value: new THREE.Color(0xffffff) }, // Default emissive color
+                emissiveIntensity: { type: "f", value: 2 } // Default emissive intensity
             },
             vertexShader: this.vertexShader,
             fragmentShader: this.fragmentShader,
@@ -147,6 +148,7 @@ export default class VolumetricSpotLight {
     }
 
     setCone() {
+
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.set(0, this.coneHeight, 0);
         this.mesh.rotation.x = Math.PI / 2; // Point downwards
@@ -162,6 +164,12 @@ export default class VolumetricSpotLight {
 
         this.group.add(this.spotLight);
         this.group.add(this.target);
+    }
+
+    setBloom()
+    {
+        const bloom = this.renderer.selectiveBloom
+        bloom.selection.add(this.mesh)
     }
 
     setHelper() {

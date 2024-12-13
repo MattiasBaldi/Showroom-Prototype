@@ -5,13 +5,18 @@
 <link rel="stylesheet" href="css.css">
 <script type="module" src="script.js"> </script>
 </head>
-<body>
-
+<body> 
 
 <div id="blocker">
     <div id="instructions">
-        
-   
+        <div id="controls">
+        <button class="full-screen">
+            <img src="/SVG/full-screen.svg"> </img>
+        </button>
+        <button class="sound">
+            <img src="/SVG/soundOn.svg"> </img>
+        </button>
+    </div>
     
         <button class="sound" style="display: none;">
             <img src="/SVG/soundOn.svg"> </img>
@@ -25,25 +30,18 @@
     </div>
 </div>
 
+<div id="experience">  
+    <canvas class="webgl"></canvas>
 
-<div id="controls">
-
-    <button class="full-screen">
-        <img src="/SVG/full-screen.svg"> </img>
-    </button>
-    <button class="sound">
-        <img src="/SVG/soundOn.svg"> </img>
-    </button>
+    <div class="template">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem nemo veritatis rem debitis quaerat alias, nulla eos aut illum maxime dolorem officiis voluptates animi beatae dolorum. Tempora necessitatibus sequi illo.
+    </div>
+    <div class="hotKey">I</div>
 </div>
 
-<!-- 
 <div id="mobile-blocker">
-    <h1> This prototype is only available on PC </h1>
-<div> -->
+    <h1> This experience is available on PC </h1>
+<div>
 
-<!-- <video id="video" style="display: none; ">
-</video> -->
-
-<canvas class="webgl"></canvas>
     </body>
 </html>

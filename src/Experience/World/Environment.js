@@ -53,7 +53,6 @@ export default class Environment
                     }
                 });
 
-
                 this.debugFolder
                 .add(debugObject, 'intensity')
                 .name('Intensity')

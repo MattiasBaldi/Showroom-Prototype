@@ -25,8 +25,7 @@ export default class Lights
 
         // Setup
         this.setObjectSpotLight(4, this.scene_1.posedModel)
-        // this.setRoomLight()
-        this.setSpotlight(4, 20)
+        this.setSpotlight(4, 40)
         this.setCatwalk(4, 20)
  
     }
@@ -39,7 +38,7 @@ export default class Lights
         {
 
             // constructor(color = Color = 'grey', ConeRadius = 2, ConeHeight = 5, LightIntensity = 100)
-            this.spotLight = new VolumetricSpotLight('white', 2.8, 10, 1000)
+            this.spotLight = new VolumetricSpotLight('white', 2.8, 10, 100)
             
             //Adjust cone
             this.cone = this.spotLight.children[0]
@@ -58,9 +57,18 @@ export default class Lights
             this.light.decay = 1.5;
 
             // Position X
-            const positionX = (i % 2 === 0) ? (i + 1) * gap : -(i + 1) * gap;
+           
+            // Calculate positionX based on the desired pattern
+            const positionX = (i % 2 === 0) ? ((i / 2) * gap) + gap: -(Math.ceil(i / 2)) * gap;
+
+
             this.spotLight.position.x = positionX;
+
+        
             this.spotLight.children[0].material.uniforms.spotPosition.value.x = positionX;
+
+        
+            console.log(this.spotLight.position)
 
             // Add this to the scene
             this.spotLights.push(this.spotLight)

@@ -353,7 +353,8 @@ export default class Sphere
     
     setBloom()
     {
-        this.renderer.setSelectiveBloom(this.mesh)
+        const bloom = this.renderer.selectiveBloom
+        bloom.selection.add(this.mesh)
     }
 
     update()

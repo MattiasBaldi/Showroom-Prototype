@@ -33,6 +33,8 @@ export default class WASD {
     {
             this.fullscreen = document.querySelector('button.full-screen');
             this.blocker = document.getElementById('blocker'); 
+            const experienceCanvas = document.getElementById('experience');
+            
 
             // Unlock
             // When I click on fullscreen icon, the screen becomes fullscreen and the locker locks
@@ -43,13 +45,13 @@ export default class WASD {
                 });
 
                 if (!document.fullscreenElement) {
-                if (this.canvas.requestFullscreen) {
+                if (experienceCanvas.requestFullscreen) {
                     this.canvas.requestFullscreen();
-                } else if (this.canvas.mozRequestFullScreen) { // Firefox
+                } else if (experienceCanvas.mozRequestFullScreen) { // Firefox
                     this.canvas.mozRequestFullScreen();
-                } else if (this.canvas.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                } else if (experienceCanvas.webkitRequestFullscreen) { // Chrome, Safari and Opera
                     this.canvas.webkitRequestFullscreen();
-                } else if (this.canvas.msRequestFullscreen) { // IE/Edge
+                } else if (experienceCanvas.msRequestFullscreen) { // IE/Edge
                     this.canvas.msRequestFullscreen();
                 }
                 }

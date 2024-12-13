@@ -96,6 +96,7 @@ Debug
 ☐ Remove animation on posed model
 ☐ Check  notion for perfomance tips
 ☐ Check three.js for perfomance tips
+☐ Change switch to one object to ensure less drawcalls in tick function
 
 
 Prioritized list

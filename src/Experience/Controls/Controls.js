@@ -46,19 +46,23 @@ export default class Controls {
     const blocker = document.getElementById('blocker');
 
     // Clicking on the fullscreen icon toggles fullscreen and removes blocker
+     const experienceCanvas = document.getElementById('experience');
+    console.log(experienceCanvas);
+
+    
     fullscreen.addEventListener('click', () =>
     {
         const setFullscreen = () =>
             {
                 if (!document.fullscreenElement) {
-                    if (this.experience.canvas.requestFullscreen) {
-                        this.experience.canvas.requestFullscreen();
-                    } else if (this.experience.canvas.mozRequestFullScreen) { // Firefox
-                        this.experience.canvas.mozRequestFullScreen();
-                    } else if (this.experience.canvas.webkitRequestFullscreen) { // Chrome, Safari and Opera
-                        this.experience.canvas.webkitRequestFullscreen();
-                    } else if (this.experience.canvas.msRequestFullscreen) { // IE/Edge
-                        this.experience.canvas.msRequestFullscreen();
+                    if (experienceCanvas.requestFullscreen) {
+                        experienceCanvas.requestFullscreen();
+                    } else if (experienceCanvas.mozRequestFullScreen) { // Firefox
+                        experienceCanvas.mozRequestFullScreen();
+                    } else if (experienceCanvas.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                        experienceCanvas.webkitRequestFullscreen();
+                    } else if (experienceCanvas.msRequestFullscreen) { // IE/Edge
+                        experienceCanvas.msRequestFullscreen();
                     }
                 } 
         }

@@ -39,15 +39,13 @@ export default class Scene_1
         this.updateMaterials()
         this.setWalk()
         this.setFade()
+        this.setBloom()
 
         // Switch
         this.switch = new Switch(this.posedBody, 2, 10)
 
         // Audio
         this.audio = new PositionalAudio('Test_small', this.posedBody, 1)
-
-        // Bloom
-        this.renderer.setSelectiveBloom(this.posedBody)
     }
 
     setScene()
@@ -305,13 +303,24 @@ export default class Scene_1
 
     }
 
+    setBloom()
+    {
+        const bloom = this.renderer.selectiveBloom
+        bloom.selection.add(this.posedBody)
+        bloom.selection.add(this.animatedBody)
+     
+    }
+
+    setSwitch()
+    {
+        
+    }
+
     update()
     {
             this.animation.mixer.walking.update(this.time.delta * 0.001); 
             this.updateWalk()
             this.setFade()
             this.switch.update()
-
-            // console.log(this.catwalk.position.z, this.animatedModel.position.z)
     }
 }
