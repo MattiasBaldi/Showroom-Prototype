@@ -250,9 +250,6 @@ export default class Renderer
         // Init
         this.composer.addPass(new EffectPass(this.camera.instance, bloom));
 
-
-        console.log('bloom', bloom.getSelection())
-
         // Debug
         if(this.debug.active)
         {

@@ -21,13 +21,24 @@ export default class Scene_3 {
             this.debugFolder.close()
         }
 
-        // Setup
+
+        // Scene 
         this.resource = this.resources.items.Scene_3
         this.sceneModels = this.resource.scene
+        this.sceneGroup = new THREE.Group()
+        this.modelOne = this.sceneModels.children[0]
+        this.modelTwo = this.sceneModels.children[1]
+        this.modelThree = this.sceneModels.children[2]
+        this.floor = this.sceneModels.children[4]
+        this.chairs = this.sceneModels.children[5]
+        
+
+        // Setup
         this.setScene()
         this.updateMaterials()
+        console.log(this.sceneModels)
 
-        this.switch = new Switch(this.room, 1, 10)
+        this.switch = new Switch(this.sceneGroup, 1, 10)
 
         // Bloom
         // this.renderer.setSelectiveBloom(this.table)
@@ -35,11 +46,16 @@ export default class Scene_3 {
 
     setScene()
     {
-        this.sceneGroup = new THREE.Group()
+
+        // Position
+        this.sceneGroup.position.x = 80
+
+        // Scale
+        this.sceneGroup.scale.setScalar(1)
+
+        // Init
         this.sceneGroup.add(this.sceneModels)
         this.scene.add(this.sceneGroup)
-        this.sceneGroup.position.x = 100
-        this.sceneGroup.scale.setScalar(1)
 
         // Debug
         if(this.debug.active)
@@ -47,17 +63,37 @@ export default class Scene_3 {
                 this.debugFolder.add(this.sceneGroup.position, 'x').name('PositionX').step(1).min(-100).max(100)
                 this.debugFolder.add(this.sceneGroup.rotation, 'y').name('Rotation').step(Math.PI * 0.25).min(- 10).max(10)
                 this.debugFolder.add(this.sceneGroup.scale, 'x', 'y', 'z').name('Scale').step(0.01).min(0).max(2).onChange((value) => {
-                this.sceneGroup.scale.set(value, value, value)
-            })
+                this.sceneGroup.scale.set(value, value, value)         })
+
+                // Debug floor
+                this.debugFolder.add(this.floor.position, 'x').name('Floor Position X').step(0.1).min(-10).max(10)
+                this.debugFolder.add(this.floor.position, 'y').name('Floor Position Y').step(0.1).min(-10).max(10)
+                this.debugFolder.add(this.floor.position, 'z').name('Floor Position Z').step(0.1).min(-10).max(10)
+                this.debugFolder.add(this.floor.rotation, 'x').name('Floor Rotation X').step(0.01).min(-Math.PI).max(Math.PI)
+                this.debugFolder.add(this.floor.rotation, 'y').name('Floor Rotation Y').step(0.01).min(-Math.PI).max(Math.PI)
+                this.debugFolder.add(this.floor.rotation, 'z').name('Floor Rotation Z').step(0.01).min(-Math.PI).max(Math.PI)
+     
+
+   
             }
     }
 
     updateMaterials()
     {
-        this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.01', metalness: '1'});
-        this.room = this.sceneModels.children[0]
-        this.chairs = this.sceneModels.children[1]
-        this.table = this.sceneModels.children[2]
+        this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.2', metalness: '1'});
+        this.bodyMaterial =  new THREE.MeshStandardMaterial({color: 'white', roughness: '0.2'});
+
+        this.transmissionMaterial = new THREE.MeshPhysicalMaterial(
+            {
+                color: '#ffffff', 
+                transparent: true, 
+                transmission: 1.0, 
+                thickness: 1,
+                metalness: 0, 
+                roughness: 0
+            })
+
+
 
         //  Set interior
          this.sceneModels.traverse((child) =>
@@ -66,28 +102,25 @@ export default class Scene_3 {
             {
                 if (child)
                 {
-                child.material = this.chromeMaterial
+                child.material = this.chromeMaterial 
                 }
             }
             })
 
-        // Flip normals of room 
-        this.room.material.side = THREE.BackSide
+            if (this.modelOne) {
+                this.modelOne.children[0].material = this.bodyMaterial
+            }
+            if (this.modelTwo) {
+                this.modelTwo.children[0].material = this.bodyMaterial
+            }
+            if (this.modelThree) {
+                this.modelThree.children[0].material = this.bodyMaterial
+            }
 
-        // Exterior
-        this.room.clone = this.room.clone()
-        this.room.clone.scale.copy(this.room.scale.clone().addScalar(0.01))
-        this.room.clone.position.y += this.room.position.y
-        this.room.clone.material = new THREE.MeshStandardMaterial({color: 'black', roughness: '1', metalness: '1'});
-        this.sceneGroup.add(this.room.clone);
+            if (this.floor) {
+                this.floor.material = new THREE.MeshStandardMaterial('white')
+            }
     
-        // Create edges geometry and material for the clone
-        const edges = new THREE.EdgesGeometry(this.room.clone.geometry);
-        const lineMaterial = new THREE.LineBasicMaterial({color: 'white'});
-        const lineSegments = new THREE.LineSegments(edges, lineMaterial);
-    
-        // Add the edges to the scene
-        this.room.clone.add(lineSegments);
 
         }
 

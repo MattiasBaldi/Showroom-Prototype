@@ -31,7 +31,7 @@ export default class Teleportation {
                     console.log('Key 1 pressed');
                     break;
                 case '2':
-                    this.camera.position.x = this.scene_2.sceneGroup.position.x;
+                    this.camera.position.x = this.scene_2.mesh.position.x;
                     this.camera.position.z = 5
                     this.camera.position.y = 1
                     this.camera.lookAt(this.scene_2.sceneGroup.position)

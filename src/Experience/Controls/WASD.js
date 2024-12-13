@@ -64,7 +64,6 @@ export default class WASD {
 
     setKeyMap() {
 
-        console.log('Setting keymaps')
         const onKeyDown = (event) => {
             switch (event.code) {
                 case 'ArrowUp':

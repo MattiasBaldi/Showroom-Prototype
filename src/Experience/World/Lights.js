@@ -25,7 +25,7 @@ export default class Lights
 
         // Setup
         this.setObjectSpotLight(4, this.scene_1.posedModel)
-        this.setRoomLight()
+        // this.setRoomLight()
         this.setSpotlight(4, 20)
         this.setCatwalk(4, 20)
  
@@ -282,8 +282,6 @@ export default class Lights
 
         light.position.copy(localPosition);
         light.position.y = 3; 
-
-        console.log(localPosition)
 
         this.scene.add(light, helper)
     }

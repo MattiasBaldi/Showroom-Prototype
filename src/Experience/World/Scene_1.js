@@ -53,7 +53,7 @@ export default class Scene_1
     setScene()
     {
         this.sceneGroup = new THREE.Group(); 
-        this.scale = 0.25
+        this.scale = 0.2
         this.sceneGroup.scale.set(this.scale, this.scale, this.scale)
         this.sceneGroup.add(this.sceneModels)
         this.scene.add(this.sceneGroup)
