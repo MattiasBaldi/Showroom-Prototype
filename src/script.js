@@ -3,6 +3,7 @@ import Experience from './Experience/Experience.js'
 
 const experience = new Experience(document.querySelector('canvas.webgl')); 
 
+
 // import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
 // // First person controls parameters

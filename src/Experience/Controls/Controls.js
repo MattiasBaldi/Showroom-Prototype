@@ -47,7 +47,6 @@ export default class Controls {
 
     // Clicking on the fullscreen icon toggles fullscreen and removes blocker
      const experienceCanvas = document.getElementById('experience');
-    console.log(experienceCanvas);
 
     
     fullscreen.addEventListener('click', () =>

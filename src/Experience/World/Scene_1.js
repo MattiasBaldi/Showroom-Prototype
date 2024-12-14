@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
 import Switch from '../Controls/Switch.js'
-import PositionalAudio from '../Utils/PositionalAudio.js'
 
 export default class Scene_1
 {
@@ -44,8 +43,6 @@ export default class Scene_1
         // Switch
         this.switch = new Switch(this.posedBody, 2, 10)
 
-        // Audio
-        this.audio = new PositionalAudio('Test_small', this.posedBody, 1)
     }
 
     setScene()

@@ -6,6 +6,7 @@ import Scene_1 from './Scene_1.js'
 import Scene_2 from './Scene_2.js'
 import Scene_3 from './Scene_3.js'
 import Lights from './Lights.js'
+import Audio from '../Audio.js'
 
 export default class World
 {
@@ -29,6 +30,7 @@ export default class World
             this.teleportation = new Teleportation()
             this.lights = new Lights()
             this.environment = new Environment()
+            this.audio = new Audio()
         })
 
     }

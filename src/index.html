@@ -13,14 +13,13 @@
         <button class="full-screen">
             <img src="/SVG/full-screen.svg"> </img>
         </button>
-        <button class="sound">
-            <img src="/SVG/soundOn.svg"> </img>
-        </button>
+        <button class="sound" onclick="childClick(event)">
+            <script>  function childClick(event) {event.stopPropagation()};  /* Removes click blocker event when clicking sound button*/ </script>
+            <img class="on" src="/SVG/soundOn.svg"> </img>
+            <img class="off" src="/SVG/soundOff.svg"> </img>       
+                
+        </button> 
     </div>
-    
-        <button class="sound" style="display: none;">
-            <img src="/SVG/soundOn.svg"> </img>
-        </button>
         <h1> Click to play </h1>
         <br>
         <p>

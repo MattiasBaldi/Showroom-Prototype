@@ -14,5 +14,10 @@ export default [
         name: 'Scene_3',
         type: 'gltfModel',
         path: 'scenes/scene_3.glb'
+    },
+    {
+        name: 'Test',
+        type: 'audio',
+        path: 'sounds/Test_small.mp3'
     }
 ]
