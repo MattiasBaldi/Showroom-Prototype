@@ -67,9 +67,6 @@ export default class Lights
         
             this.spotLight.children[0].material.uniforms.spotPosition.value.x = positionX;
 
-        
-            console.log(this.spotLight.position)
-
             // Add this to the scene
             this.spotLights.push(this.spotLight)
             this.scene.add(this.spotLight)
@@ -302,8 +299,8 @@ export default class Lights
         const spotLight = new VolumetricSpotLight('white', 2.8, 10, 100)
 
         // Position
-        spotLight.position.z += i * gap;
-        spotLight.children[0].material.uniforms.spotPosition.value.z += i * gap;
+        spotLight.position.z += i * gap + gap; 
+        spotLight.children[0].material.uniforms.spotPosition.value.z += i * gap + gap;
 
         // Cone settings
         const cone = spotLight.children[0]

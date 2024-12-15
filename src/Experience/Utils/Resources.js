@@ -23,21 +23,20 @@ export default class Resources extends EventEmitter
 
     setLoadingScreen()
     {
-       
-        console.log('test123')
+
         const overLay = document.querySelector('.loading.overlay')
-        console.log('before LoadingManager')
+  
         
         this.loadingManager = new THREE.LoadingManager(
-            // Loaded 
+        
         () =>
     {
-        console.log('before gsap')
+            // Loaded 
         gsap.delayedCall(0.5, () =>
         {
-            console.log('gsap delay')
+
             gsap.to(overLay, { duration: 3, opacity: 0, onComplete: () => overLay.style.display = 'none' })
-            console.log('has Loaded')
+
         })
     },
 
@@ -45,7 +44,6 @@ export default class Resources extends EventEmitter
     (itemUrl, itemsLoaded, itemsTotal) =>
         {
         const progressRatio = itemsLoaded / itemsTotal
-        console.log(`load ${progressRatio}`)
         overLay.innerHTML = `${progressRatio * 100 + '%'}`
     });
 

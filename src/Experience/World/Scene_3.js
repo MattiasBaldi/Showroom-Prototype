@@ -21,17 +21,40 @@ export default class Scene_3 {
             this.debugFolder.close()
         }
 
-
         // Scene 
         this.resource = this.resources.items.Scene_3
         this.sceneModels = this.resource.scene
         this.sceneGroup = new THREE.Group()
-        this.modelOne = this.sceneModels.children[0]
-        this.modelTwo = this.sceneModels.children[1]
-        this.modelThree = this.sceneModels.children[2]
-        this.floor = this.sceneModels.children[4]
-        this.chairs = this.sceneModels.children[5]
-        
+
+        this.empty = this.sceneModels.children[0]
+        this.floor = this.empty.children[0]
+
+        this.lampGroup = this.empty.children[1]
+        this.bulb = this.lampGroup.children[0]
+        this.frame = this.lampGroup.children[1]
+        this.string = this.lampGroup.children[2]
+
+        this.magazines = this.empty.children[2]
+
+        this.groupOne = this.empty.children[3]
+        this.modelOne = this.groupOne.children[0]
+        this.chairOne = this.groupOne.children[1]
+
+        this.groupTwo = this.empty.children[4]
+        this.modelTwo = this.groupTwo.children[0]
+        this.chairTwo = this.groupTwo.children[1]
+
+        this.groupThree = this.empty.children[5]
+        this.modelThree = this.groupThree.children[0]
+        this.chairThree = this.groupThree.children[1]
+
+        this.table = this.empty.children[6]
+
+        this.vaseGroup = this.empty.children[7]
+        this.cotton = this.vaseGroup.children[0]
+        this.cottonFlowers = this.vaseGroup.children[1]
+        this.vase = this.vaseGroup.children[2]
+        this.volume = this.vaseGroup.children[3]
 
         // Setup
         this.setScene()
@@ -40,15 +63,13 @@ export default class Scene_3 {
 
         // Switch
         this.switch = new Switch(this.sceneGroup, 1, 10)
-
-
     }
 
     setScene()
     {
 
         // Position
-        this.sceneGroup.position.x = 80
+        this.sceneGroup.position.x = 120
 
         // Scale
         this.sceneGroup.scale.setScalar(1)
@@ -80,7 +101,7 @@ export default class Scene_3 {
 
     updateMaterials()
     {
-        this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.2', metalness: '1'});
+        this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.01', metalness: '1'});
         this.bodyMaterial =  new THREE.MeshStandardMaterial({color: 'white', roughness: '0.2'});
 
         this.transmissionMaterial = new THREE.MeshPhysicalMaterial(
@@ -92,7 +113,6 @@ export default class Scene_3 {
                 metalness: 0, 
                 roughness: 0
             })
-
 
 
         //  Set interior
@@ -119,6 +139,7 @@ export default class Scene_3 {
 
             if (this.floor) {
                 this.floor.material = new THREE.MeshStandardMaterial('white')
+                this.bulb.material = new THREE.MeshStandardMaterial('white')
             }
     
 
@@ -127,15 +148,8 @@ export default class Scene_3 {
     setBloom()
     {
 
-        const bodyOne = this.modelOne.children[0]
-        const bodyTwo = this.modelTwo.children[0]
-        const bodyThree = this.modelThree.children[0]
-
         const bloom = this.renderer.selectiveBloom
-
-        bloom.selection.add(bodyOne)
-        bloom.selection.add(bodyTwo)
-        bloom.selection.add(bodyThree)
+        bloom.selection.add(this.bulb)
         
     }
 

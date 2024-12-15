@@ -21,7 +21,7 @@ export default class Switch {
 
         this.distance = null;
         this.keydownHandler = this.listener.bind(this);
-        this.listenerAdded = false; // Initialize the flag
+        this.listenerAdded = false;
 
     }
 
@@ -37,7 +37,7 @@ export default class Switch {
         this.controls.OrbitControls.autoRotate = true;
         this.controls.OrbitControls.autoRotateSpeed = 2;
         this.controls.OrbitControls.target.copy(localPosition)
-        this.controls.OrbitControls.target.y = this.height
+        // this.controls.OrbitControls.target.y = this.height
         this.controls.OrbitControls.maxDistance = this.radius - 0.1;
     }
 
@@ -53,14 +53,12 @@ export default class Switch {
             // if orbitcontrols are not active, then activate
             if (!this.controls.OrbitControls) 
             {
-                console.log('Orbitcontrols trying to activate');
                 this.setOrbit();
             }
 
-            // else if they are active, then removethem 
+            // else if they are active, then remove them 
             else if (this.controls.OrbitControls)
             {
-                console.log('PointerLock trying to activate');
                 this.setWASD();
             }
         }
@@ -123,6 +121,5 @@ export default class Switch {
     }
 
 }
-
 
 

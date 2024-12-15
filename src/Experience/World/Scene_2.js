@@ -303,7 +303,7 @@ export default class Sphere
     {
         this.mesh = new THREE.Mesh(this.geometry, this.material)
 
-        this.mesh.position.x = - 80; 
+        this.mesh.position.x = - 120; 
         this.mesh.position.y = 1.5; 
         this.mesh.rotation.z = Math.PI * 0.5;  
 
