@@ -19,5 +19,20 @@ export default [
         name: 'Test',
         type: 'audio',
         path: 'sounds/Test_small.mp3'
+    },
+    {
+        name: 'Audio_Scene_1',
+        type: 'audio',
+        path: 'sounds/Scene_1.mp3'
+    },
+    {
+        name: 'Audio_Scene_2',
+        type: 'audio',
+        path: 'sounds/Scene_2.wav'
+    },
+    {
+        name: 'Audio_Scene_3',
+        type: 'audio',
+        path: 'sounds/Scene_3.mp3'
     }
 ]

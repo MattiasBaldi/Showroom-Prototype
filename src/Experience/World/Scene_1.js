@@ -39,6 +39,7 @@ export default class Scene_1
         this.setWalk()
         this.setFade()
         this.setBloom()
+        this.setWalls()
 
         // Switch
         this.switch = new Switch(this.posedBody, 2, 10)
@@ -63,6 +64,54 @@ export default class Scene_1
         .step(0.01)
         .min(-20)
         .max(20)
+        }
+    }
+
+    setWalls()
+    {
+        this.walls = new THREE.Group()
+        this.wall = new THREE.Mesh(new THREE.PlaneGeometry(20, 50, 2), new THREE.MeshBasicMaterial({color: 'black'}))
+        this.wall.rotation.x = Math.PI * 0.5; 
+        this.clone = this.wall.clone()
+
+        this.wall.rotation.y = Math.PI * - 0.5
+        this.clone.rotation.y = Math.PI * 0.5
+
+        this.wall.position.x = 3
+        this.clone.position.x = -3
+
+        this.walls.position.z = 65
+        this.walls.scale.set(5.53, 1.43, 2.32)
+
+        this.walls.add(this.wall, this.clone)
+        this.scene.add(this.walls)
+
+        // Debug
+        if (this.debug.active) {
+
+
+            this.debugFolder.add(this.walls.position, 'z').name('Group Position Z').step(0.01).min(-100).max(100);
+
+            this.debugFolder.add(this.walls.scale, 'x').name('Scale X').step(0.01).min(0.1).max(10);
+            this.debugFolder.add(this.walls.scale, 'y').name('Scale Y').step(0.01).min(0.1).max(10);
+            this.debugFolder.add(this.walls.scale, 'z').name('Scale Z').step(0.01).min(0.1).max(10);
+
+
+            this.debugFolder.add(this.wall.position, 'x').name('Wall Position X').step(0.01).min(-10).max(10);
+            this.debugFolder.add(this.wall.position, 'y').name('Wall Position Y').step(0.01).min(-10).max(10);
+            this.debugFolder.add(this.wall.position, 'z').name('Wall Position Z').step(0.01).min(-10).max(10);
+
+            this.debugFolder.add(this.wall.rotation, 'x').name('Wall Rotation X').step(0.01).min(-Math.PI).max(Math.PI);
+            this.debugFolder.add(this.wall.rotation, 'y').name('Wall Rotation Y').step(0.01).min(-Math.PI).max(Math.PI);
+            this.debugFolder.add(this.wall.rotation, 'z').name('Wall Rotation Z').step(0.01).min(-Math.PI).max(Math.PI);
+
+            this.debugFolder.add(this.clone.position, 'x').name('Clone Position X').step(0.01).min(-10).max(10);
+            this.debugFolder.add(this.clone.position, 'y').name('Clone Position Y').step(0.01).min(-10).max(10);
+            this.debugFolder.add(this.clone.position, 'z').name('Clone Position Z').step(0.01).min(-10).max(10);
+
+            this.debugFolder.add(this.clone.rotation, 'x').name('Clone Rotation X').step(0.01).min(-Math.PI).max(Math.PI);
+            this.debugFolder.add(this.clone.rotation, 'y').name('Clone Rotation Y').step(0.01).min(-Math.PI).max(Math.PI);
+            this.debugFolder.add(this.clone.rotation, 'z').name('Clone Rotation Z').step(0.01).min(-Math.PI).max(Math.PI);
         }
     }
 
