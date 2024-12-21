@@ -3,7 +3,6 @@
 
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import { PointerLockControls } from 'three/examples/jsm/Addons.js'
 
 export default class Switch {
     constructor(pivotPoint, height, radius)

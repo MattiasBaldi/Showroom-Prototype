@@ -15,20 +15,23 @@ export default class Lights
         this.scene_1 = this.world.scene_1
         this.scene_2 = this.world.scene_2
         this.scene_3 = this.world.scene_3
+        
 
         // Debug
         if (this.debug.active) {
         this.debugFolder = this.debug.ui.addFolder('Lights');            
         this.Volumetric = this.debugFolder.addFolder('Volumetric Lights');
-        this.debugFolder.close()
+        this.Volumetric.close()
+        // this.debugFolder.close()
         }
 
         // Setup
-        this.setObjectSpotLight(4, this.scene_1.posedModel)
-        // this.setObjectSpotLight(4, this.scene_3.sceneModels)
         this.setSpotlight(4, 40)
         this.setCatwalk(4, 20)
-        this.setPointLight()
+        this.setRoomLight()
+
+
+        this.setObjectLight(this.scene_1.posedModel, 3)
  
     }
 
@@ -58,15 +61,9 @@ export default class Lights
             this.light.penumbra = 1;
             this.light.decay = 1.5;
 
-            // Position X
-           
             // Calculate positionX based on the desired pattern
             const positionX = (i % 2 === 0) ? ((i / 2) * gap) + gap: -(Math.ceil(i / 2)) * gap;
-
-
             this.spotLight.position.x = positionX;
-
-        
             this.spotLight.children[0].material.uniforms.spotPosition.value.x = positionX;
 
             // Add this to the scene
@@ -251,13 +248,338 @@ export default class Lights
     }
 }
 
+    setCatwalk(count, gap)
+    {
+    for (let i = 0; i < count; i++) {
+
+        const spotLight = new VolumetricSpotLight('white', 2.8, 10, 100)
+
+        // Position
+        spotLight.position.z += i * gap + (gap * 2); 
+        spotLight.children[0].material.uniforms.spotPosition.value.z += i * gap + (gap * 2);
+
+        // Cone settings
+        const cone = spotLight.children[0]
+        const spotLightConeUniforms = cone.material.uniforms
+
+        spotLightConeUniforms.attenuation.value = 10.5;
+        spotLightConeUniforms.anglePower.value = 5;
+        spotLightConeUniforms.edgeScale.value = 0.5; // Adjust this value as needed
+        spotLightConeUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
+        spotLightConeUniforms.emissiveIntensity = 100
+
+        // Light settings
+        const light = spotLight.children[1]
+
+        this.scene.add(spotLight);
+
+    }
+
+    }
+
+    setScene2Lights()
+    {
+        const VolumetricLight = new VolumetricSpotLight('white', 2.8, 10, 100)
+  
+        // Position
+        const localPosition = new THREE.Vector3();
+        this.scene_2.mesh.localToWorld(localPosition);
+        VolumetricLight.position.x = localPosition.x;
+        VolumetricLight.children[0].material.uniforms.spotPosition.value.x =  VolumetricLight.position.x
+
+        // Light
+        const light = VolumetricLight.children[1]
+        light.intensity = 1000;
+        light.penumbra = 1;
+        light.decay = 1.5;
+
+        // Cone 
+        const cone = VolumetricLight.children[0];
+        const spotLightConeUniforms = cone.material.uniforms;
+        spotLightConeUniforms.attenuation.value = 10.5;
+        spotLightConeUniforms.anglePower.value = 5;
+        spotLightConeUniforms.edgeScale.value = 0.5; // Adjust this value as needed
+        spotLightConeUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
+        spotLightConeUniforms.emissiveIntensity = 100;
+
+        const lightHelper = new THREE.SpotLightHelper(light);
+        this.scene.add(lightHelper);
+
+        this.scene.add(VolumetricLight)
+
+        if (this.debug.active)
+        {
+            const debugObject = {
+                attenuation: VolumetricLight.children[0].material.uniforms.attenuation.value,
+                anglePower: VolumetricLight.children[0].material.uniforms.anglePower.value,
+                lightIntensity: VolumetricLight.children[1].intensity,
+                lightPenumbra: VolumetricLight.children[1].penumbra,
+                lightDecay: VolumetricLight.children[1].decay,
+                edgeScale: VolumetricLight.children[0].material.uniforms.edgeScale.value,
+                edgeConstractPower: VolumetricLight.children[0].material.uniforms.edgeConstractPower.value
+            };
+
+            const scene2Folder = this.debugFolder.addFolder('Scene 2, Light');
+            scene2Folder.close();
+
+            scene2Folder
+                .add({ showHelper: true }, 'showHelper')
+                .name('Show Helper')
+                .onChange((value) => {
+                    lightHelper.visible = value;
+                });
+
+            scene2Folder
+                .add(VolumetricLight.rotation, 'x')
+                .name('Rotation X')
+                .step(0.1)
+                .min(-Math.PI)
+                .max(Math.PI)
+                .onChange((value) => {
+                    VolumetricLight.rotation.x = value;
+                    lightHelper.update();
+                });
+
+            scene2Folder
+                .add(VolumetricLight.rotation, 'y')
+                .name('Rotation Y')
+                .step(0.1)
+                .min(-Math.PI)
+                .max(Math.PI)
+                .onChange((value) => {
+                    VolumetricLight.rotation.y = value;
+                    lightHelper.update();
+                });
+
+            scene2Folder
+                .add(VolumetricLight.rotation, 'z')
+                .name('Rotation Z')
+                .step(0.1)
+                .min(-Math.PI)
+                .max(Math.PI)
+                .onChange((value) => {
+                    VolumetricLight.rotation.z = value;
+                    lightHelper.update();
+                });
+
+            scene2Folder
+                .add(VolumetricLight.position, 'x')
+                .name('Position X')
+                .step(0.1)
+                .min(-200)
+                .max(200)
+                .onChange((value) => {
+                    VolumetricLight.position.x = value;
+                    VolumetricLight.children[0].material.uniforms.spotPosition.value.x = value;
+                    lightHelper.update();
+                });
+
+            scene2Folder
+                .add(VolumetricLight.position, 'y')
+                .name('Position Y')
+                .step(0.1)
+                .min(-200)
+                .max(200)
+                .onChange((value) => {
+                    VolumetricLight.position.y = value;
+                    VolumetricLight.children[0].material.uniforms.spotPosition.value.y = value;
+                    lightHelper.update();
+                });
+
+            scene2Folder
+                .add(VolumetricLight.position, 'z')
+                .name('Position Z')
+                .step(0.1)
+                .min(-200)
+                .max(200)
+                .onChange((value) => {
+                    VolumetricLight.position.z = value;
+                    VolumetricLight.children[0].material.uniforms.spotPosition.value.z = value;
+                    lightHelper.update();
+                });
+
+            scene2Folder
+                .add(debugObject, 'attenuation')
+                .name('Attenuation')
+                .step(0.001)
+                .min(0)
+                .max(20)
+                .onChange((value) => {
+                    VolumetricLight.children[0].material.uniforms.attenuation.value = value;
+                });
+
+            scene2Folder
+                .add(debugObject, 'anglePower')
+                .name('AnglePower')
+                .step(0.001)
+                .min(0)
+                .max(20)
+                .onChange((value) => {
+                    VolumetricLight.children[0].material.uniforms.anglePower.value = value;
+                });
+
+            scene2Folder
+                .add(debugObject, 'lightIntensity')
+                .name('Light Intensity')
+                .step(0.001)
+                .min(0)
+                .max(1000)
+                .onChange((value) => {
+                    VolumetricLight.children[1].intensity = value;
+                });
+
+            scene2Folder
+                .add(debugObject, 'lightPenumbra')
+                .name('Light Penumbra')
+                .step(0.001)
+                .min(0)
+                .max(1)
+                .onChange((value) => {
+                    VolumetricLight.children[1].penumbra = value;
+                });
+
+            scene2Folder
+                .add(debugObject, 'lightDecay')
+                .name('Light Decay')
+                .step(0.001)
+                .min(0)
+                .max(2)
+                .onChange((value) => {
+                    VolumetricLight.children[1].decay = value;
+                });
+
+            scene2Folder
+                .add(debugObject, 'edgeScale')
+                .name('Edge Scale')
+                .step(0.001)
+                .min(0)
+                .max(1)
+                .onChange((value) => {
+                    VolumetricLight.children[0].material.uniforms.edgeScale.value = value;
+                });
+
+            scene2Folder
+                .add(debugObject, 'edgeConstractPower')
+                .name('Edge Constract Power')
+                .step(0.001)
+                .min(0)
+                .max(1)
+                .onChange((value) => {
+                    VolumetricLight.children[0].material.uniforms.edgeConstractPower.value = value;
+                });
+
+                scene2Folder
+                    .add({ duplicate: () => {
+                        const duplicateLight = VolumetricLight.clone();
+                        duplicateLight.position.x += 10; // Adjust position to avoid overlap
+                        this.scene.add(duplicateLight);
+
+                        const duplicateHelper = new THREE.SpotLightHelper(duplicateLight.children[1]);
+                        this.scene.add(duplicateHelper);
+                    }}, 'duplicate')
+                    .name('Duplicate Light');
+        }
+        scene2Folder
+            .add({ remove: () => {
+                this.scene.remove(VolumetricLight);
+                this.scene.remove(lightHelper);
+            }}, 'remove')
+            .name('Remove Light');
+
+    }
+
+    setRoomLight()
+    {
+
+        const spotLight = new THREE.SpotLight(0xffffff, 25, 0,  50 * (Math.PI / 180), 0.5, 2)
+
+        const localPosition = new THREE.Vector3();
+        this.scene_3.bulb.localToWorld(localPosition);
+
+        spotLight.position.copy(localPosition)
+        spotLight.position.y += 0.5
+        spotLight.target.position.set(spotLight.position.x, spotLight.position.y - 1, spotLight.position.z);
+        spotLight.target.updateMatrixWorld();
+
+        spotLight.castShadow = true; 
+        // const spotLightHelper = new THREE.SpotLightHelper(spotLight)
+        this.scene.add(spotLight)
+    
+
+        // Debug
+        if (this.debug.active)
+        {
+            const scene3Folder = this.debugFolder.addFolder('Scene 3, Light')
+            scene3Folder.close()
+
+            const debugObject = {
+                intensity: spotLight.intensity,
+                distance: spotLight.distance,
+                angle: spotLight.angle,
+                penumbra: spotLight.penumbra,
+                decay: spotLight.decay
+            };
+
+            scene3Folder
+                .add(debugObject, 'intensity')
+                .name('Intensity')
+                .min(0)
+                .max(1000)
+                .step(0.1)
+                .onChange((value) => {
+                    spotLight.intensity = value;
+                });
+
+            scene3Folder
+                .add(debugObject, 'distance')
+                .name('Distance')
+                .min(0)
+                .max(1000)
+                .step(0.1)
+                .onChange((value) => {
+                    spotLight.distance = value;
+                });
+
+            scene3Folder
+                .add(debugObject, 'angle')
+                .name('Angle')
+                .min(0)
+                .max(Math.PI / 2)
+                .step(0.01)
+                .onChange((value) => {
+                    spotLight.angle = value;
+                });
+
+            scene3Folder
+                .add(debugObject, 'penumbra')
+                .name('Penumbra')
+                .min(0)
+                .max(1)
+                .step(0.01)
+                .onChange((value) => {
+                    spotLight.penumbra = value;
+                });
+
+            scene3Folder
+                .add(debugObject, 'decay')
+                .name('Decay')
+                .min(0)
+                .max(2)
+                .step(0.01)
+                .onChange((value) => {
+                    spotLight.decay = value;
+                });
+        }
+
+    }
+
     setObjectSpotLight(count, object)
     {
         for (let i = 0; i < count; i++) {
             const spotLight = new THREE.SpotLight('white', 100, 0, Math.PI * 0.1, 0.5, 2);
             const localPosition = new THREE.Vector3();
-            object.localToWorld(localPosition.set(0, 0, 0)); // Assuming you want the object's position
-        
+            object.localToWorld(localPosition.set(0, 0, 0));
+            
             // Create a target object and set its position
             const targetObject = new THREE.Object3D();
             targetObject.position.copy(localPosition);
@@ -278,75 +600,47 @@ export default class Lights
         }
     }
 
-    setPointLight()
+    setObjectLight(object, count, radius = 5, height = 5)
     {
-        const point = new THREE.PointLight(0xffffff, 10, 100);
 
+    const gap = 360 / count
 
-        const localPosition = new THREE.Vector3()
-        this.scene_3.bulb.localToWorld(localPosition)
-        point.position.copy(localPosition);
-        this.scene.add(point);
+    for (let i = 0; i < count; i++)
+    {
+    
+    const light = new VolumetricSpotLight('white', 2.8, height, 100)
+    const cone = light.children[0]
+    const spotLight = light.children[1]
 
-        // const helper = new THREE.PointLightHelper(point)
-        // this.scene.add(helper);
+    // circle point positioning
+    light.position.x = Math.cos(THREE.MathUtils.degToRad(gap * i)) * radius;
+    light.position.z = Math.sin(THREE.MathUtils.degToRad(gap * i)) * radius;
 
-        if (this.debug.active)
+    // calculate the object position and make the objects lookAt it
+    const localPosition = new THREE.Vector3(); 
+    object.localToWorld(localPosition)
+    light.lookAt(localPosition);
+    for (const child of light.children)
         {
-            const pointLightFolder = this.debugFolder.addFolder('PointLight')
-
-            pointLightFolder.add(point, 'intensity').min(0).max(100).step(0.001)
+            if(child instanceof THREE.Mesh)
+            {
+            child.lookAt(object)
+            }
         }
+    
+    
+    // add the localPosition 
+    light.position.z += localPosition.z
+    light.position.x += localPosition.x
+    cone.material.uniforms.spotPosition.value = light.position
+
+    console.log(light)
+
+    this.scene.add(light)
+    
     }
 
-    setRoomLight()
-    {
-        const light = new THREE.PointLight(0xffffff, 200, 50)
-        const helper = new THREE.PointLightHelper(light)
-
-
-        const localPosition = new THREE.Vector3();
-        this.scene_3.room.localToWorld(localPosition);
-
-        light.position.copy(localPosition);
-        light.position.y = 3; 
-
-        this.scene.add(light)
-    }
-
-    setCatwalk(count, gap)
-    {
-    for (let i = 0; i < count; i++) {
-
-        // Light
-        const spotLight = new VolumetricSpotLight('white', 2.8, 10, 100)
-
-        // Position
-        spotLight.position.z += i * gap + gap; 
-        spotLight.children[0].material.uniforms.spotPosition.value.z += i * gap + gap;
-
-        // Cone settings
-        const cone = spotLight.children[0]
-        const spotLightConeUniforms = cone.material.uniforms
-
-        spotLightConeUniforms.attenuation.value = 10.5;
-        spotLightConeUniforms.anglePower.value = 5;
-        spotLightConeUniforms.edgeScale.value = 0.5; // Adjust this value as needed
-        spotLightConeUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
-        spotLightConeUniforms.emissiveIntensity = 100
-
-        // Light settings
-        const light = spotLight.children[1]
-        // light.angle = Math.PI * 0.1;
-
-        this.scene.add(spotLight);
-
-
-        // Helper
-        // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-        // this.scene.add(spotLightHelper);
-    }
-
+    
     }
 
     update(){

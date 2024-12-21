@@ -36,7 +36,6 @@ export default class Sphere
         this.setOffset()
         this.setMaterial()
         this.setMesh()
-        // this.setHead()
         this.setBloom()
 
         // Switch
@@ -320,36 +319,6 @@ export default class Sphere
         }
     }
 
-    setHead()
-    {
-        const loader  = new GLTFLoader()
-        loader.load('./models/head.glb', (gltf) =>
-        {
-            this.model = gltf.scene
-            this.model.scale.set(7, 7, 7)
-            this.scene.add(this.model)
-            console.log(this.model)
-
-            const head = this.model.children[0]
-            head.geometry.computeTangents()
-            head.material = this.material
-            console.log('Head Material:', head.material)
-            console.log(head)
-
-            if(this.debug.active)
-            {
-
-                const debugFolder = this.debugFolder.addFolder('Head Model')
-                debugFolder.add(this.model.scale, 'x').min(1).max(10).step(0.1).name('Scale X')
-                debugFolder.add(this.model.scale, 'y').min(1).max(10).step(0.1).name('Scale Y')
-                debugFolder.add(this.model.scale, 'z').min(1).max(10).step(0.1).name('Scale Z')
-                debugFolder.add(this.model.position, 'x').min(-10).max(10).step(0.1).name('Position X')
-                debugFolder.add(this.model.position, 'y').min(-10).max(10).step(0.1).name('Position Y')
-                debugFolder.add(this.model.position, 'z').min(-10).max(10).step(0.1).name('Position Z')
-            }
-           
-        })
-    }
     
     setBloom()
     {
@@ -390,6 +359,12 @@ export default class Sphere
         // Time
         this.material.uniforms.uTime.value += this.elapsedTime
 
+        if(this.mesh)
+        {
+            this.mesh.rotation.y += 0.01; 
+            this.mesh.rotation.x += 0.01; 
+            this.mesh.rotation.z += 0.01; 
+        }
 
         this.switch.update()
     }

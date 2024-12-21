@@ -21,7 +21,7 @@ export default class Environment
 
         //Setup
         this.environmentMap = this.resources.items.blueStudio
-        this.addGrid()
+        // this.addGrid()
         this.setEnvironmentMap()
         this.addFloor()
         this.setFog()
@@ -113,15 +113,74 @@ export default class Environment
 
         addFloor()
         {
+
         const floor = new THREE.Mesh
         (
             new THREE.PlaneGeometry(1000, 1000),
-            new THREE.MeshStandardMaterial({ color: 'black', emissive: new THREE.Color(0x000000) })
+            new THREE.MeshStandardMaterial({
+                color: 'black',
+                emissive: new THREE.Color(0x000000), // Set emissive color
+                emissiveIntensity: 2 // Set emissive intensity
+            })
         )
     
+        floor.receiveShadow = true; 
         floor.rotation.x = Math.PI * - 0.5
         this.scene.add(floor)
-        
+
+        const bloom = this.renderer.selectiveBloom;
+        bloom.selection.add(floor);
+
+        if (this.debug.active) {
+            const debugObject = {
+            color: floor.material.color.getHex(),
+            emissive: floor.material.emissive.getHex(),
+            emissiveIntensity: floor.material.emissiveIntensity || 1
+            };
+
+            this.debugFolder
+            .addColor(debugObject, 'color')
+            .name('Floor Color')
+            .onChange((value) => {
+            floor.material.color.set(value);
+            });
+
+            this.debugFolder
+            .addColor(debugObject, 'emissive')
+            .name('Floor Emissive')
+            .onChange((value) => {
+            floor.material.emissive.set(value);
+            });
+
+            this.debugFolder
+            .add(debugObject, 'emissiveIntensity')
+            .name('Emissive Intensity')
+            .onChange((value) => {
+            floor.material.emissiveIntensity = value;
+            })
+            .step(0.1)
+            .max(10)
+            .min(0);
+
+            this.debugFolder
+            .add({ showFloor: true }, 'showFloor')
+            .name('Show Floor')
+            .onChange((value) => {
+                floor.visible = value;
+            });
+
+            this.debugFolder
+            .add({ bloom: true }, 'bloom')
+            .name('Bloom Effect')
+            .onChange((value) => {
+                if (value) {
+                    bloom.selection.add(floor);
+                } else {
+                    bloom.selection.delete(floor);
+                }
+            });
+        }
+
         }
     
         addGrid()
@@ -148,5 +207,5 @@ export default class Environment
             })
             }
         }
-
+        
     }

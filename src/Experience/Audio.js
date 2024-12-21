@@ -5,8 +5,6 @@ import { PositionalAudioHelper } from 'three/addons/helpers/PositionalAudioHelpe
 export default class Audio {
 
     constructor() {
-
-        console.log(PositionalAudioHelper)
         
         // Setup
         this.experience = new Experience()
@@ -25,6 +23,7 @@ export default class Audio {
         if (this.debug.active)
             {
                 this.debugFolder = this.debug.ui.addFolder('Sound')
+                this.debugFolder.close()
             }
 
         // Positional Audio
@@ -123,6 +122,7 @@ export default class Audio {
             // helper
             const helper = new PositionalAudioHelper(sound, refDistance)
             sound.add(helper)
+            sound.visible = false;
 
             const soundFolder = this.debugFolder.addFolder(`Audio: ${object.name}`)
 
@@ -185,6 +185,12 @@ export default class Audio {
                 helper.update();
             });
 
+            soundFolder.add({ visible: true }, 'visible').name('Toggle Visibility').onChange((value) => {
+                sound.visible = value;
+                helper.visible = value;
+                helper.update();
+            });
+
         } 
     }
 
@@ -192,7 +198,6 @@ export default class Audio {
     {
         const toggle = document.querySelector('.sound')
 
-        console.log(toggle)
         const toggleOn = document.querySelector('.sound .on')
         const toggleOff = document.querySelector('.sound .off')
 

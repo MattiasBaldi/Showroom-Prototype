@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { WebGLRenderer } from "three";
 import Experience from './Experience.js'
-import { KernelSize, ShaderPass, CopyMaterial, EdgeDetectionMode, TextureEffect, SMAAEffect, SMAAImageLoader, SMAAPreset, SepiaEffect, PredicationMode,  LookupTexture3D, LUT3DEffect, BrightnessContrastEffect, ColorAverageEffect, HueSaturationEffect, ColorDepthEffect, BlendFunction, BloomEffect, SelectiveBloomEffect, EffectComposer, EffectPass, RenderPass, GodRaysEffect, ToneMappingMode, ToneMappingEffect, DepthOfFieldEffect, VignetteEffect } from "postprocessing";
+import { FXAAEffect, KernelSize, ShaderPass, CopyMaterial, EdgeDetectionMode, TextureEffect, SMAAEffect, SMAAImageLoader, SMAAPreset, SepiaEffect, PredicationMode,  LookupTexture3D, LUT3DEffect, BrightnessContrastEffect, ColorAverageEffect, HueSaturationEffect, ColorDepthEffect, BlendFunction, BloomEffect, SelectiveBloomEffect, EffectComposer, EffectPass, RenderPass, GodRaysEffect, ToneMappingMode, ToneMappingEffect, DepthOfFieldEffect, VignetteEffect } from "postprocessing";
 import { HalfFloatType } from "three";
 
 export default class Renderer
@@ -23,18 +23,16 @@ export default class Renderer
         if(this.debug.active)
         {
             this.debugFolder = this.debug.ui.addFolder('Post Processing')
+            this.debugFolder.close()
         }
 
         // Setup
         this.setInstance()
         this.resize()
 
-        // Post Processing
-        // Effects should be applied in the below order
-
-        
+        // Post Processing -- Effects should be applied in the below order
         this.setComposer()
-        // this.setAntiAliasing()
+        this.setAntiAliasing()
         // this.setBloom()
         this.setToneMapping()
         this.setSelectiveBloom()
@@ -85,11 +83,11 @@ export default class Renderer
         // Adjust AntiAliasing amount
         if (ratio < 2)
         {
-            this.composer.multisampling = 8 // Higher = Better AntiAliasing, but worse performance
+            this.composer.multisampling = 0 // Higher = Better AntiAliasing, but worse performance
         }
         else 
         {
-            // this.composer.multisampling = 0 
+            this.composer.multisampling = 0 
         }
 
         this.composer.addPass(effectPass);
@@ -109,11 +107,10 @@ export default class Renderer
 
     setAntiAliasing()
     {
-        
-        /*
+
+       /*
             https://pmndrs.github.io/postprocessing/public/demo/#antialiasing
         */
-        
     }
  
     setToneMapping()
@@ -218,7 +215,7 @@ export default class Renderer
             const bloomFolder = this.debugFolder.addFolder('Bloom');
             bloomFolder.close();
 
-            bloomFolder.add(params, "intensity", 0.0, 10.0, 0.01).onChange((value) => {
+            bloomFolder.add(params, "intensity", 0.0, 100.0, 0.01).onChange((value) => {
                 bloom.intensity = Number(value);
             });
 
@@ -249,7 +246,7 @@ export default class Renderer
             mipmapBlur: true,
             luminanceThreshold: 0.4,
             luminanceSmoothing: 0.2,
-            intensity: 3.0
+            intensity: 5.0
             });
 
         // Settings
@@ -308,6 +305,9 @@ export default class Renderer
 
             selectionFolder.add(params.selection, "inverted").onChange((value) => {
             this.selectiveBloom.inverted = value;
+            console.log('Selective Bloom Inverted:', this.selectiveBloom.inverted);
+            console.log('Inverted Objects:', this.selectiveBloom.selection);
+            console.log('Non-Inverted Objects:', this.selectiveBloom.selection.inverted);
             });
 
             selectionFolder.add(params.selection, "ignore bg").onChange((value) => {

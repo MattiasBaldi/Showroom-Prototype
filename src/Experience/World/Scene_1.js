@@ -354,7 +354,6 @@ export default class Scene_1
         const bloom = this.renderer.selectiveBloom
         bloom.selection.add(this.posedBody)
         bloom.selection.add(this.animatedBody)
-     
     }
 
     setSwitch()

@@ -9,6 +9,8 @@ export default class VolumetricSpotLight {
         this.experience = new Experience()
         this.debug = this.experience.debug
         this.renderer = this.experience.renderer
+        this.scene = this.experience.scene
+        this.resources = this.experience.resources
         this.camera = this.experience.camera.instance
         this.sizes = this.experience.sizes
         this.height = this.sizes.height
@@ -29,88 +31,96 @@ export default class VolumetricSpotLight {
         this.setGeometry();
         this.setCone();
         this.setLight();
+        this.setLightObject(); 
         // this.setHelper()
-        // this.setBloom()
+        this.setBloom()
 
         return this.group;
     }
 
     setShader() {
         this.vertexShader = `
-            varying vec3 vNormal;
-            varying vec3 vWorldPosition;
-            void main(){
-                // compute intensity
-                vNormal = normalize(normalMatrix * normal);
-                vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-                vWorldPosition = worldPosition.xyz;
-                // set gl_Position
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-            }
-        `;
+        precision highp float;
+        varying vec3 vNormal;
+        varying vec3 vWorldPosition;
+        void main(){
+            // compute intensity
+            vNormal = normalize(normalMatrix * normal);
+            vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+            vWorldPosition = worldPosition.xyz;
+            // set gl_Position
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `;
+    
+    this.fragmentShader = `
+        precision highp float;
+        varying vec3 vNormal;
+        varying vec3 vWorldPosition;
+        uniform vec3 lightColor;
+        uniform float intensity;
+        uniform vec3 emissiveColor;
+        uniform float emissiveIntensity;
+        uniform vec3 spotPosition;
+        uniform float attenuation;
+        uniform float anglePower;
+        uniform float edgeScale;
+        uniform float cameraNear;
+        uniform float cameraFar;
+        uniform float screenWidth;
+        uniform float screenHeight;
+        uniform sampler2D tDepth;
 
-        this.fragmentShader = `
-            varying vec3 vNormal;
-            varying vec3 vWorldPosition;
-            uniform vec3 lightColor;
-            uniform float intensity;
-            uniform vec3 emissiveColor;
-            uniform float emissiveIntensity;
-            uniform vec3 spotPosition;
-            uniform float attenuation;
-            uniform float anglePower;
-            uniform float edgeScale;
-            uniform float cameraNear;
-            uniform float cameraFar;
-            uniform float screenWidth;
-            uniform float screenHeight;
-            uniform sampler2D tDepth;
+        #define EDGE_CONSTRAST_SMOOTH
 
-            #define EDGE_CONSTRAST_SMOOTH
+        #ifdef EDGE_CONSTRAST_SMOOTH
+            uniform float edgeConstractPower;
+        #endif
+
+        float unpackDepth(const in vec4 rgba_depth) {
+            const vec4 bit_shift = vec4(1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0);
+            float depth = dot(rgba_depth, bit_shift);
+            return depth;
+        }
+
+        void main(){
+            float intensity;
+
+            // distance attenuation
+            intensity = distance(vWorldPosition, spotPosition) / attenuation;
+            intensity = 1.0 - clamp(intensity, 0.0, 1.0);
+
+            // intensity on angle
+            vec3 normal = vec3(vNormal.x, vNormal.y, abs(vNormal.z));
+            float angleIntensity = pow(dot(normal, vec3(0.0, 0.0, 1.0)), anglePower);
+            intensity = intensity * angleIntensity;
+
+            // SOFT EDGES
+            vec2 depthUV = vec2(gl_FragCoord.x / screenWidth, gl_FragCoord.y / screenHeight);
+            float sceneDepth = unpackDepth(texture2D(tDepth, depthUV));
+            float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
+            fragDepth = 1.0 - smoothstep(cameraNear, cameraFar, fragDepth);
+            float deltaDepth = abs(sceneDepth - fragDepth) * edgeScale;
 
             #ifdef EDGE_CONSTRAST_SMOOTH
-                uniform float edgeConstractPower;
+                float edgeIntensity = 0.5 * pow(clamp(2.0 * ((deltaDepth > 0.5) ? 1.0 - deltaDepth : deltaDepth), 0.0, 1.0), edgeConstractPower);
+                edgeIntensity = (deltaDepth > 0.5) ? 1.0 - edgeIntensity : edgeIntensity;
             #endif
 
-            float unpackDepth(const in vec4 rgba_depth) {
-                const vec4 bit_shift = vec4(1.0 / (256.0 * 256.0 * 256.0), 1.0 / (256.0 * 256.0), 1.0 / 256.0, 1.0);
-                float depth = dot(rgba_depth, bit_shift);
-                return depth;
-            }
+            intensity = intensity * edgeIntensity;
 
-            void main(){
-                float intensity;
+            // Calculate emissive color
+            vec3 emissive = emissiveColor * emissiveIntensity;
 
-                // distance attenuation
-                intensity = distance(vWorldPosition, spotPosition) / attenuation;
-                intensity = 1.0 - clamp(intensity, 0.0, 1.0);
+            // final color
+            gl_FragColor = vec4(lightColor, intensity);
+            gl_FragColor.rgb += emissiveColor.rgb * emissiveIntensity;
 
-                // intensity on angle
-                vec3 normal = vec3(vNormal.x, vNormal.y, abs(vNormal.z));
-                float angleIntensity = pow(dot(normal, vec3(0.0, 0.0, 1.0)), anglePower);
-                intensity = intensity * angleIntensity;
+            // Apply smooth blending to the edges
+            gl_FragColor.a = smoothstep(0.0, 1.0, intensity);
+        }
+    `;
 
-                // SOFT EDGES
-                vec2 depthUV = vec2(gl_FragCoord.x / screenWidth, gl_FragCoord.y / screenHeight);
-                float sceneDepth = unpackDepth(texture2D(tDepth, depthUV));
-                float fragDepth = gl_FragCoord.z / gl_FragCoord.w;
-                fragDepth = 1.0 - smoothstep(cameraNear, cameraFar, fragDepth);
-                float deltaDepth = abs(sceneDepth - fragDepth) * edgeScale;
-
-                #ifdef EDGE_CONSTRAST_SMOOTH
-                    float edgeIntensity = 0.5 * pow(clamp(2.0 * ((deltaDepth > 0.5) ? 1.0 - deltaDepth : deltaDepth), 0.0, 1.0), edgeConstractPower);
-                    edgeIntensity = (deltaDepth > 0.5) ? 1.0 - edgeIntensity : edgeIntensity;
-                #endif
-
-                intensity = intensity * edgeIntensity;
-
-                // Calculate emissive color
-                vec3 emissive = emissiveColor * emissiveIntensity;
-
-                // final color
-                gl_FragColor = vec4(lightColor, intensity);
-            }
-        `;
     }
 
     setMaterial() {
@@ -128,7 +138,7 @@ export default class VolumetricSpotLight {
                 tDepth: { type: "t", value: null }, // This should be set to the depth texture
                 lightColor: { type: "c", value: new THREE.Color(this.color) },
                 emissiveColor: { type: "c", value: new THREE.Color(0xffffff) }, // Default emissive color
-                emissiveIntensity: { type: "f", value: 2 } // Default emissive intensity
+                emissiveIntensity: { type: "f", value: 200 } // Default emissive intensity
             },
             vertexShader: this.vertexShader,
             fragmentShader: this.fragmentShader,
@@ -153,6 +163,18 @@ export default class VolumetricSpotLight {
         this.mesh.position.set(0, this.coneHeight, 0);
         this.mesh.rotation.x = Math.PI / 2; // Point downwards
         this.group.add(this.mesh);
+
+        const bloom = this.renderer.selectiveBloom;
+        bloom.selection.add(this.mesh)
+    }
+
+    setLightObject()
+    {
+        this.lightMesh = this.resources.items.light.scene.children[2]
+        this.lightMesh.position.set(0, this.coneHeight, 0);
+        this.lightMesh.scale.setScalar(0.25)
+        this.group.add(this.lightMesh.clone())
+
     }
 
     setLight() {
@@ -166,10 +188,10 @@ export default class VolumetricSpotLight {
         this.group.add(this.target);
     }
 
-    setBloom()
-    {
-        const bloom = this.renderer.selectiveBloom
-        bloom.selection.add(this.mesh)
+    setBloom() {
+        const bloom = this.renderer.selectiveBloom;
+        bloom.selection.add(this.lightMesh.children[0])
+        bloom.selection.add(this.lightMesh.children[1])
     }
 
     setHelper() {

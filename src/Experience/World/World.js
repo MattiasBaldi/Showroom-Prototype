@@ -23,7 +23,7 @@ export default class World
         this.resources.on('ready', () =>
         {   
             // Setup
-            this.camera.position.set(0, 1, 50)
+            this.camera.position.set(0, 1, 150)
             this.scene_3 = new Scene_3()
             this.scene_2 = new Scene_2()
             this.scene_1 = new Scene_1()

@@ -16,9 +16,14 @@ export default [
         path: 'scenes/scene_3.glb'
     },
     {
-        name: 'Test',
-        type: 'audio',
-        path: 'sounds/Test_small.mp3'
+        name: 'test_floor',
+        type: 'gltfModel',
+        path: 'scenes/test.floor.glb'
+    },
+    {
+        name: 'light',
+        type: 'gltfModel',
+        path: 'scenes/light.glb'
     },
     {
         name: 'Audio_Scene_1',
