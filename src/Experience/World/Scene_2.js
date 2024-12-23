@@ -17,7 +17,6 @@ export default class Sphere
         this.time = this.experience.time
         this.microphone = this.experience.microphone
 
-
         this.timeFrequency = 0.0003
         this.elapsedTime = 0
 
@@ -307,7 +306,6 @@ export default class Sphere
         this.mesh.rotation.z = Math.PI * 0.5;  
 
         this.scene.add(this.mesh) // Add mesh to the group
-
 
         // Debug
         if (this.debug.active)

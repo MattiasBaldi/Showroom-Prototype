@@ -26,16 +26,18 @@ export default class VolumetricSpotLight {
         this.group = new THREE.Group();
 
         // Init
-        this.setShader();
-        this.setMaterial();
-        this.setGeometry();
-        this.setCone();
-        this.setLight();
-        this.setLightObject(); 
-        // this.setHelper()
-        this.setBloom()
+        this.setShader()
+        this.setMaterial()
+        this.setGeometry()
+        this.setCone()
+        this.setLight()
+        this.setSpotMesh()
+        this.setHelper()
+        // this.setBloom()
 
         return this.group;
+
+
     }
 
     setShader() {
@@ -134,7 +136,7 @@ export default class VolumetricSpotLight {
                 cameraFar: { type: "f", value: this.camera.far },
                 screenWidth: { type: "f", value: this.sizes.width },
                 screenHeight: { type: "f", value: this.sizes.height },
-                spotPosition: { type: "v3", value: new THREE.Vector3(0, this.coneHeight, 0) },
+                spotPosition: { type: "v3", value: new THREE.Vector3() },
                 tDepth: { type: "t", value: null }, // This should be set to the depth texture
                 lightColor: { type: "c", value: new THREE.Color(this.color) },
                 emissiveColor: { type: "c", value: new THREE.Color(0xffffff) }, // Default emissive color
@@ -150,42 +152,49 @@ export default class VolumetricSpotLight {
 
     setGeometry() {
         const radiusTop = 0.1;
-        const height = this.coneHeight;
-        this.geometry = new THREE.CylinderGeometry(radiusTop, this.coneRadius, height, 128, 20, true);
+        this.geometry = new THREE.CylinderGeometry(radiusTop, this.coneRadius, this.coneHeight, 128, 20, true);
         this.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, -this.geometry.parameters.height / 2, 0));
         this.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
         this.geometry.computeVertexNormals();
     }
 
     setCone() {
-
         this.mesh = new THREE.Mesh(this.geometry, this.material);
-        this.mesh.position.set(0, this.coneHeight, 0);
         this.mesh.rotation.x = Math.PI / 2; // Point downwards
+        this.mesh.position.set(0, 0, 0)
         this.group.add(this.mesh);
-
-        const bloom = this.renderer.selectiveBloom;
-        bloom.selection.add(this.mesh)
     }
 
-    setLightObject()
+    setSpotMesh()
     {
         this.lightMesh = this.resources.items.light.scene.children[2]
-        this.lightMesh.position.set(0, this.coneHeight, 0);
         this.lightMesh.scale.setScalar(0.25)
+        // this.lightMesh.traverse((child) => {
+        //     if (child.isMesh) {
+        //     child.geometry.computeBoundingBox();
+        //     child.geometry.translate(0, -child.geometry.boundingBox.max.y, 0)     
+        // }
+        // });
+        this.lightMesh.position.set(0, 0, 0)
         this.group.add(this.lightMesh.clone())
-
     }
 
     setLight() {
         const angle = Math.atan(this.coneRadius / this.coneHeight); // Calculate the angle
         this.spotLight = new THREE.SpotLight(this.color, this.lightIntensity, 0, angle, 0.5, 0);
-        this.spotLight.position.set(0, this.coneHeight, 0);
-        this.target = new THREE.Object3D();
-        this.spotLight.target = this.target;
-
+        this.spotLight.position.set(0, 0, 0)
         this.group.add(this.spotLight);
-        this.group.add(this.target);
+
+        // Create a target object for the spotlight
+        this.spotLightTarget = new THREE.Object3D();
+        this.spotLightTarget.position.set(0, -this.coneHeight, 0); // Set the target position directly below the spotlight
+        this.group.add(this.spotLightTarget);
+        this.spotLight.target = this.spotLightTarget;
+        
+        // Ensure the spotlight updates its target
+        this.spotLight.target.updateMatrixWorld();
+        this.spotLight.updateMatrixWorld();
+        
     }
 
     setBloom() {
@@ -198,4 +207,5 @@ export default class VolumetricSpotLight {
     this.spotLightHelper = new THREE.SpotLightHelper(this.spotLight);
     this.group.add(this.spotLightHelper);
     }
+
 }

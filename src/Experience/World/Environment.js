@@ -113,7 +113,6 @@ export default class Environment
 
         addFloor()
         {
-
         const floor = new THREE.Mesh
         (
             new THREE.PlaneGeometry(1000, 1000),
@@ -128,8 +127,8 @@ export default class Environment
         floor.rotation.x = Math.PI * - 0.5
         this.scene.add(floor)
 
-        const bloom = this.renderer.selectiveBloom;
-        bloom.selection.add(floor);
+        // const bloom = this.renderer.selectiveBloom;
+        // bloom.selection.add(floor);
 
         if (this.debug.active) {
             const debugObject = {
