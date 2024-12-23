@@ -57,6 +57,10 @@ export default class Renderer
         // Reset everything
         this.instance.toneMapping = THREE.NoToneMapping;
         this.instance.outputEncoding = THREE.sRGBEncoding;
+
+        // Shadows
+        this.instance.shadowMap.enabled = true;
+        this.instance.shadowMap.type = THREE.PCFSoftShadowMap;
     }
 
     resize()

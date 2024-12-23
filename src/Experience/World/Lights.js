@@ -24,8 +24,8 @@ export default class Lights
         }
 
         // Setup
-        this.setObjectLight(this.scene_1.posedModel, 3, 10, 10, 50)
-        this.setObjectLight(this.scene_2.mesh, 3, 10, -1, 10)
+        this.setObjectLight(this.scene_1.posedModel, 3, 10, 0, 50)
+        this.setObjectLight(this.scene_2.mesh, 3, 10, 2, 10)
         // this.setObjectLight(this.scene_3.sceneModels, 3, 10, 2, 50)
         this.setSpotlight(4, 40, 10)
         this.setCatwalk(4, 20)
@@ -296,6 +296,7 @@ export default class Lights
     for (let i = 0; i < count; i++) {
 
         const spotLight = new VolumetricSpotLight('white', 2.8, height, 100)
+        const light = spotLight.children[1]
 
         // Position
         spotLight.position.z += i * gap + (gap * 2); 
@@ -306,13 +307,16 @@ export default class Lights
         const cone = spotLight.children[0]
         const spotLightConeUniforms = cone.material.uniforms
         spotLightConeUniforms.spotPosition.value = spotLight.position
-
-
         // spotLightConeUniforms.attenuation.value = 10.5;
         // spotLightConeUniforms.anglePower.value = 5;
         // spotLightConeUniforms.edgeScale.value = 0.5; // Adjust this value as needed
         // spotLightConeUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
         // spotLightConeUniforms.emissiveIntensity = 100
+
+        // Shaodws
+        light.castShadow = true; 
+        const shadowCameraHelper = new THREE.CameraHelper(light.shadow.camera);
+        this.scene.add(shadowCameraHelper);
 
         // Light settings
         lights.push(spotLight)
@@ -537,47 +541,62 @@ export default class Lights
     const light = new VolumetricSpotLight('white', 2.8, coneLength, 10)
     const lightMesh = light.children[3]
     const cone = light.children[0]
-    lightMesh.children.slice(1, 5).forEach((child) => { 
-        lightMesh.remove(child);
-    });
+    console.log(light)
 
-    // circle point positioning
+
+    // each light group positioned on a circle
     light.position.x = Math.cos(THREE.MathUtils.degToRad(gap * i)) * radius;
     light.position.z = Math.sin(THREE.MathUtils.degToRad(gap * i)) * radius;
     light.position.y = height
 
-    // calculate the objects world position
+    // calculate the lookAt object's world position
     const localPosition = new THREE.Vector3()
     object.localToWorld(localPosition)
 
-    // add the localPosition to the original position
+    // add the object's position to the lights position
     light.position.x += localPosition.x
     light.position.y += localPosition.y
     light.position.z += localPosition.z
 
-    // look at
-    // light.traverse((child) => {
-    //     if (child.isLight) {
-    //         child.target = new THREE.Object3D();
-    //         child.target.position.copy(localPosition);
-    //         this.scene.add(child.target);
-    //         child.target.updateMatrixWorld();
-    //         child.lookAt(localPosition);
-    //     } else if (lightMesh || cone) {
-    //         child.lookAt(localPosition);
-    //     }
-    // });
+    // ensure no preapplied rotation messing with the lookAt
+    console.log('Rotation before:', light.rotation)
+    console.log('Light:', light.position.y);
+    console.log('Light position.y:', light.position.y);
+    light.children.forEach((child, index) => {
+        console.log(`Child ${index} position.y:`, child.position.y);
+    });
 
+    // lookAt the object
     light.lookAt(localPosition)
 
+    // debug
+    console.log('Rotation after:', light.rotation)
+    console.log('Position light:', light.position)
+    console.log('Position lookAt object:', localPosition)
 
-    // cone
+    // invert axises to ensure correct orientation
+    light.rotation.x *= -1;
+    light.rotation.z *= -1;
+
+    // Adjust the light's position to ensure it looks at the correct target
+    light.position.set(
+        Math.cos(THREE.MathUtils.degToRad(gap * i)) * radius + localPosition.x,
+        height + localPosition.y,
+        Math.sin(THREE.MathUtils.degToRad(gap * i)) * radius + localPosition.z
+    );
+
+
+    // remove uneccessay elements from the mesh
+    lightMesh.children.slice(1, 5).forEach((child) => { 
+        lightMesh.remove(child);
+    });
+
+    // adjust cone
     const spotLightConeUniforms = cone.material.uniforms
     spotLightConeUniforms.spotPosition.value = light.position
 
-    // adjust light
+    // adjust spotlight
     const spotLight = light.children[1]
-
     lights.push(light)
     this.scene.add(light)
     }

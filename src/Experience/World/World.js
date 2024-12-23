@@ -7,6 +7,7 @@ import Scene_2 from './Scene_2.js'
 import Scene_3 from './Scene_3.js'
 import Lights from './Lights.js'
 import Audio from '../Audio.js'
+import Shadows from './Shadows.js'
 
 export default class World
 {
@@ -31,6 +32,7 @@ export default class World
             this.lights = new Lights()
             this.environment = new Environment()
             this.audio = new Audio()
+            this.shadows = new Shadows()
         })
 
     }

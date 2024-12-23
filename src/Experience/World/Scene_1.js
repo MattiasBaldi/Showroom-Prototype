@@ -153,8 +153,8 @@ export default class Scene_1
         this.walkAxis = 'z'; 
         this.walkSpeed = 0.7;
         this.action.walking.timeScale = 0.8; 
-        this.walkStart = 70;
-        this.walkEnd = 250;
+        this.walkStart = 250;
+        this.walkEnd = 550;
         this.length = null
 
         // Debug

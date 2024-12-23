@@ -162,6 +162,7 @@ export default class VolumetricSpotLight {
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.rotation.x = Math.PI / 2; // Point downwards
         this.mesh.position.set(0, 0, 0)
+        this.mesh.name = 'Cone'
         this.group.add(this.mesh);
     }
 
@@ -169,13 +170,8 @@ export default class VolumetricSpotLight {
     {
         this.lightMesh = this.resources.items.light.scene.children[2]
         this.lightMesh.scale.setScalar(0.25)
-        // this.lightMesh.traverse((child) => {
-        //     if (child.isMesh) {
-        //     child.geometry.computeBoundingBox();
-        //     child.geometry.translate(0, -child.geometry.boundingBox.max.y, 0)     
-        // }
-        // });
         this.lightMesh.position.set(0, 0, 0)
+        this.lightMesh.name = 'lightMesh'
         this.group.add(this.lightMesh.clone())
     }
 
@@ -187,13 +183,15 @@ export default class VolumetricSpotLight {
 
         // Create a target object for the spotlight
         this.spotLightTarget = new THREE.Object3D();
-        this.spotLightTarget.position.set(0, -this.coneHeight, 0); // Set the target position directly below the spotlight
+        this.spotLightTarget.position.set(0, -1, 0); // Set the target position directly below the spotlight
+        this.spotLightTarget.name = 'spotLightTarget'
         this.group.add(this.spotLightTarget);
         this.spotLight.target = this.spotLightTarget;
         
         // Ensure the spotlight updates its target
         this.spotLight.target.updateMatrixWorld();
         this.spotLight.updateMatrixWorld();
+        // this.spotLight.castShadow = true
         
     }
 
