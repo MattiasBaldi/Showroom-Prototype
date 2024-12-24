@@ -35,7 +35,6 @@ export default class Scene_1
         // Call actions
         this.setScene()
         this.setAnimations()
-        this.updateMaterials()
         this.setWalk()
         this.setFade()
         this.setBloom()
@@ -123,29 +122,6 @@ export default class Scene_1
         this.animation.mixer.walking = new THREE.AnimationMixer(this.sceneModels);
         this.action.walking = this.animation.mixer.walking.clipAction(this.animation.walking);
         this.action.walking.play();
-    }
-
-    updateMaterials()
-    {
-        this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.01', metalness: '1'});
-        this.bodyMaterial = new THREE.MeshStandardMaterial({color: 'white', roughness: '0.01'}); 
-
-        //  Set all chrome except the bodies
-         this.sceneModels.traverse((child) =>
-            {
-            if (child instanceof THREE.Mesh)
-            {
-            if(child === this.animatedBody || child === this.posedBody)
-            {
-                child.material = this.bodyMaterial
-            }
-            else
-            {
-                child.material = this.chromeMaterial
-            }
-            }
-            })
-
     }
 
     setWalk()
@@ -354,11 +330,6 @@ export default class Scene_1
         const bloom = this.renderer.selectiveBloom
         bloom.selection.add(this.posedBody)
         bloom.selection.add(this.animatedBody)
-    }
-
-    setSwitch()
-    {
-        
     }
 
     update()

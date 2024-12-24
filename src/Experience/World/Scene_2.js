@@ -300,7 +300,7 @@ export default class Sphere
     setMesh()
     {
         this.mesh = new THREE.Mesh(this.geometry, this.material)
-
+        this.mesh.name = 'Sphere'
         this.mesh.position.x = - 120; 
         this.mesh.position.y = 1.5; 
         this.mesh.rotation.z = Math.PI * 0.5;  
@@ -316,7 +316,6 @@ export default class Sphere
             debugFolder.add(this.mesh.position, 'y').min(0).max(10).step(1)
         }
     }
-
     
     setBloom()
     {

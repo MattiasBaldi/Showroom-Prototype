@@ -118,6 +118,7 @@ export default class Environment
             new THREE.PlaneGeometry(1000, 1000),
             new THREE.MeshStandardMaterial({
                 color: 'black',
+                roughness: 0.3,
                 emissive: new THREE.Color(0x000000), // Set emissive color
                 emissiveIntensity: 2 // Set emissive intensity
             })

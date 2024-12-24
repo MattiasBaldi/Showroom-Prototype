@@ -28,5 +28,13 @@ export default class Shadows {
             child.receiveShadow = true;
             }
         });
+
+        this.scene_1.posedModel.castShadow = true; 
+        this.scene_1.posedModel.traverse((child) => {
+            if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            }
+        });
     }
 }

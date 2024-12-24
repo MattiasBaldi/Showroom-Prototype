@@ -58,7 +58,7 @@ export default class Scene_3 {
 
         // Setup
         this.setScene()
-        this.updateMaterials()
+        // this.updateMaterials()
         this.setBloom()
 
         // Switch
@@ -98,52 +98,6 @@ export default class Scene_3 {
    
             }
     }
-
-    updateMaterials()
-    {
-        this.chromeMaterial =  new THREE.MeshStandardMaterial({roughness: '0.01', metalness: '1'});
-        this.bodyMaterial =  new THREE.MeshStandardMaterial({color: 'white', roughness: '0.2'});
-
-        this.transmissionMaterial = new THREE.MeshPhysicalMaterial(
-            {
-                color: '#ffffff', 
-                transparent: true, 
-                transmission: 1.0, 
-                thickness: 1,
-                metalness: 0, 
-                roughness: 0
-            })
-
-
-        //  Set interior
-         this.sceneModels.traverse((child) =>
-            {
-            if (child instanceof THREE.Mesh)
-            {
-                if (child)
-                {
-                child.material = this.chromeMaterial 
-                }
-            }
-            })
-
-            if (this.modelOne) {
-                this.modelOne.children[0].material = this.bodyMaterial
-            }
-            if (this.modelTwo) {
-                this.modelTwo.children[0].material = this.bodyMaterial
-            }
-            if (this.modelThree) {
-                this.modelThree.children[0].material = this.bodyMaterial
-            }
-
-            if (this.floor) {
-                this.floor.material = new THREE.MeshStandardMaterial('white')
-                this.bulb.material = new THREE.MeshStandardMaterial('white')
-            }
-    
-
-        }
 
     castShadow()
     {
