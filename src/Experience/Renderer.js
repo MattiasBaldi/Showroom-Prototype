@@ -281,7 +281,7 @@ export default class Renderer
             "opacity": blendMode.opacity.value,
             "blend mode": blendMode.blendFunction
             };
-            bloomFolder.add(params, "intensity", 0.0, 10.0, 0.01).onChange((value) => {
+            bloomFolder.add(params, "intensity", 0.0, 100.0, 0.01).onChange((value) => {
             this.selectiveBloom.intensity = Number(value);
             });
 

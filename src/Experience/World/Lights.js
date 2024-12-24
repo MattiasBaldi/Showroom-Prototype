@@ -24,8 +24,8 @@ export default class Lights
         }
 
         // Setup
-        this.setObjectLight(this.scene_1.posedModel, 3, 10, 5, 50, 20)
-        this.setObjectLight(this.scene_2.mesh, 3, 10, -1, 10)
+        this.setObjectLight(this.scene_1.posedModel, 3, 5, 5, 50, 30)
+        this.setObjectLight(this.scene_2.mesh, 3, 10, 0.16, 10)
         this.setNavigationallight(4, 40, 10)
         this.setCatwalk(4, 20)
  
@@ -484,7 +484,6 @@ export default class Lights
 
     // add the object's position to the lights position
     volumetricLight.position.x += localPosition.x
-    volumetricLight.position.y += localPosition.y
     volumetricLight.position.z += localPosition.z
 
     // lookAt the object
@@ -514,6 +513,30 @@ export default class Lights
             edgeScale: lights[0].children[0].material.uniforms.edgeScale.value,
             edgeConstractPower: lights[0].children[0].material.uniforms.edgeConstractPower.value
         };
+
+        // debugFolder
+        // .add(debugObject, 'CircleRadius')
+        // .name('Position Y')
+        // .min(-10)
+        // .max(10)
+        // .step(0.1)
+        // .onChange((value) => {
+        //     lights.forEach((volumetricLight) => {
+        //         volumetricLight.position.y = value;
+        //     });
+        // });
+
+        // debugFolder
+        // .add(debugObject, 'ConeRadius')
+        // .name('Position Y')
+        // .min(-10)
+        // .max(10)
+        // .step(0.1)
+        // .onChange((value) => {
+        //     lights.forEach((volumetricLight) => {
+        //         volumetricLight.position.y = value;
+        //     });
+        // });
 
         debugFolder
             .add(debugObject, 'positionY')

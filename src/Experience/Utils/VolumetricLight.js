@@ -156,9 +156,10 @@ export default class VolumetricSpotLight {
 
     setBloom() {
         const bloom = this.renderer.selectiveBloom;
-        bloom.selection.add(this.lightMesh)
-
-        console.log(this.renderer)
+    
+    this.lightMesh.traverse(child => {
+        bloom.selection.add(child);
+    });
     }
 
     setHelper() {
