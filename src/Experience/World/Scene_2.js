@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import vertexShader from '../shaders/sphere/vertex.glsl'
 import fragmentShader from '../shaders/sphere/fragment.glsl'
 import Switch from '../Controls/Switch'

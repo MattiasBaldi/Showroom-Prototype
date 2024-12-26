@@ -6,44 +6,64 @@
 <script type="module" src="script.js" > </script>
 </head>
 <body> 
-
-    <div class="loading overlay">
+    
+    <div id="experience"> 
+        <div class="loading overlay"></div> 
+        <canvas class="webgl"></canvas>
     </div>
 
-<div id="blocker">
-    <div id="instructions">
-        <div id="controls">
-        <button class="full-screen">
-            <img src="/SVG/full-screen.svg"> </img>
-        </button>
-        <button class="sound" onclick="childClick(event)">
-            <script>  function childClick(event) {event.stopPropagation()};  /* Removes click blocker event when clicking sound button*/ </script>
-            <img class="on" src="/SVG/soundOn.svg"> </img>
-            <img class="off" src="/SVG/soundOff.svg"> </img>       
-                
-        </button> 
+    <div id="ui-overlay" style="display: none">
+    <div id="blocker">
+        <div id="instructions">
+            <div id="controls">
+            <button class="full-screen">
+                <img src="/SVG/full-screen.svg"> </img>
+            </button>
+            <button class="sound" onclick="childClick(event)">
+                <script>  function childClick(event) {event.stopPropagation()};  /* Removes click blocker event when clicking sound button*/ </script>
+                <img class="on" src="/SVG/soundOn.svg"> </img>
+                <img class="off" src="/SVG/soundOff.svg"> </img>       
+                </button> 
+        </div>
+            <h1> Click to play </h1>
+            <br>
+            <p>
+                Escape = menu
+            </p>
+        </div>
     </div>
-        <h1> Click to play </h1>
-        <br>
-        <p>
-            Escape = menu
-        </p>
+    
+    <div id="mobile-blocker">
+        <h1> This experience is available on PC </h1>
+
+
 
     </div>
-</div>
 
-<div id="experience">  
-    <canvas class="webgl"></canvas>
+    <div id="orbit-info">
 
-    <div class="template">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem nemo veritatis rem debitis quaerat alias, nulla eos aut illum maxime dolorem officiis voluptates animi beatae dolorum. Tempora necessitatibus sequi illo.
+        <!-- Sphere -->
+        <div>
+        <h2>Object Information</h2>
+        <p id="object-name">Object Name: Example</p>
+        <p id="object-description">Description: This is an example object.</p>
+        </div>
+
+        <!-- PosedBody -->
+        <div>
+
+        </div>
+        <!-- Scene_3 -->
+        <div>
+
+        </div>
+
+
     </div>
-    <div class="hotKey">I</div>
-</div>
 
-<div id="mobile-blocker">
-    <h1> This experience is available on PC </h1>
-<div>
+
+
+    </div>
 
     </body>
 </html>

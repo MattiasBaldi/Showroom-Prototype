@@ -23,18 +23,24 @@ export default class Switch {
         this.keydownHandler = this.listener.bind(this);
         this.listenerAdded = false;
 
-        console.log(pivotPoint)
-
-        // this.setSwitch()
-
     }
 
-    setSwitch(pivotPoint, radius, height = null)
-    {
+    // setOverlay()   
+    // {    
+    // const overlay = document.body.querySelector(`.template .${this.pivotPoint.name}`)
+    // overlay.classList.add('active')
+    // }
 
+    // removeOverlay()
+    // {
+    // const overlay = document.body.querySelector(`.template .${this.pivotPoint.name}`)
+    // overlay.classList.remove('active')
+    // }
 
+    // setMicrophone()
+    // {
 
-    }
+    // }
 
     setOrbit()
     {
@@ -49,11 +55,15 @@ export default class Switch {
         this.controls.OrbitControls.target.copy(localPosition)
         // this.controls.OrbitControls.target.y = this.height
         this.controls.OrbitControls.maxDistance = this.radius - 0.1;
+
+        // Set overlay 
+        // this.setOverlay()
     }
 
     setWASD()
     {
         this.controls.setControls('PointerLock')
+        // this.removeOverlay()
     }
 
     listener(event) {
@@ -127,9 +137,4 @@ export default class Switch {
             }
         }
     }
-
 }
-
-// Switch
-// Add microphone switch for the sphere
-// Add overlay-text for each listener

@@ -25,17 +25,18 @@ export default class Resources extends EventEmitter
     {
 
         const overLay = document.querySelector('.loading.overlay')
+        const uiOverlay = document.querySelector('#ui-overlay')
   
         
         this.loadingManager = new THREE.LoadingManager(
         
         () =>
     {
-            // Loaded 
+        // Loaded 
         gsap.delayedCall(0.5, () =>
         {
-
             gsap.to(overLay, { duration: 3, opacity: 0, onComplete: () => overLay.style.display = 'none' })
+            uiOverlay.style.display = 'block'
 
         })
     },
