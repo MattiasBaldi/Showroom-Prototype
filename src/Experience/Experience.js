@@ -8,6 +8,7 @@ import Resources from './Utils/Resources.js'
 import sources from  './Sources.js'
 import Debug from './Utils/Debug.js'
 import Microphone from './Microphone.js'
+import Stats from 'stats.js'
 
 let instance = null; 
 
@@ -40,6 +41,7 @@ export default class Experience
         this.renderer = new Renderer(this)
         this.world = new World()
         this.microphone = new Microphone()
+        this.stats = new Stats()
 
         // Sizes resize event
         this.sizes.on('resize', () =>
@@ -52,6 +54,15 @@ export default class Experience
         {
             this.update()
         })
+
+        // Stats
+        if(this.debug.active)
+        {
+            document.body.appendChild(this.stats.dom)
+            this.stats.dom.style.position = 'fixed';
+            this.stats.dom.style.left = '10px';
+            this.stats.dom.style.bottom = '10px';
+        }
     }
 
     resize()
@@ -62,10 +73,20 @@ export default class Experience
 
     update()
     {
+        if(this.debug.active)
+        {
+            this.stats.begin()
+        }
+
         this.camera.update()
         this.world.update()
         this.renderer.update()
         this.microphone.update()
+        
+        if(this.debug.active)
+            {
+                this.stats.end()
+            }
     }
 
     destroy()

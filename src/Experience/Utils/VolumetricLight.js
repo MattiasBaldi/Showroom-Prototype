@@ -108,6 +108,7 @@ export default class VolumetricSpotLight {
     
     setConeMaterial() {
         this.material = new THREE.ShaderMaterial({
+            precision: 'lowp', 
             uniforms: {
                 attenuation: { type: "f", value: 1 },
                 anglePower: { type: "f", value: Math.cos(1) },

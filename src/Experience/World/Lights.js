@@ -15,7 +15,6 @@ export default class Lights
         this.scene_1 = this.world.scene_1
         this.scene_2 = this.world.scene_2
         this.scene_3 = this.world.scene_3
-        
 
         // Debug
         if (this.debug.active) {
@@ -25,7 +24,7 @@ export default class Lights
 
         // Setup
         this.setObjectLight(this.scene_1.posedModel, 3, 5, 5, 50, 30)
-        this.setObjectLight(this.scene_2.mesh, 3, 10, 0.16, 10)
+        this.setObjectLight(this.scene_2.mesh, 3, 10, 0.16, 10, undefined, false)
         this.setNavigationallight(4, 40, 10)
         this.setCatwalk(4, 20)
  
@@ -288,11 +287,11 @@ export default class Lights
 
         // Shadows
         spotLight.castShadow = true; 
-        spotLight.shadow.mapSize.width = 512; // default
-        spotLight.shadow.mapSize.height = 512; // default
-        spotLight.shadow.camera.near = 0.5; // default
-        spotLight.shadow.camera.far = 500; // default
-        spotLight.shadow.focus = 1; // default
+        spotLight.shadow.mapSize.set(1024, 1024) // the resolution of the shadow map for the spotlight to 512x512 pixels. Higher values result in better shadow quality but can impact performance.
+        spotLight.shadow.camera.near = 0.5; // Objects closer than this distance to the camera will not cast shadows.
+        spotLight.shadow.camera.far = 15; // Objects farther than this distance from the camera will not cast shadows.
+        spotLight.shadow.camera.fov = 30 // Match the spotlight's cone angle
+        spotLight.shadow.focus = 1; // This line sets the focus of the shadow map. A value of 1 means the shadow map is focused on the center of the light's cone. Adjusting this value can help improve shadow quality in certain situations.
 
         // LookAt
         spotLight.target = new THREE.Object3D();
@@ -303,10 +302,10 @@ export default class Lights
         volumetricLight.lookAt(spotLight.target.position);
 
         // helpers
-        // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-        // this.scene.add(spotLightHelper);
-        // const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-        // this.scene.add(shadowCameraHelper);
+        const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+        this.scene.add(spotLightHelper);
+        const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+        this.scene.add(shadowCameraHelper);
 
         // Light settings
         lights.push(volumetricLight)
@@ -441,7 +440,7 @@ export default class Lights
 
     }
 
-    setObjectLight(object, count, radius = 5, height = 10, coneLength = 10, coneRadius = 3)
+    setObjectLight(object, count, radius = 5, height = 10, coneLength = 10, coneRadius = 3, shadowEnabled = true)
     {
     const gap = 360 / count
     const lights = []
@@ -471,11 +470,11 @@ export default class Lights
     coneUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
 
     // Shadows
-    spotLight.castShadow = true; 
-    spotLight.shadow.mapSize.width = 512; // default
-    spotLight.shadow.mapSize.height = 512; // default
+    spotLight.castShadow = shadowEnabled; 
+    spotLight.shadow.mapSize.set(1024, 1024)
+    spotLight.shadow.camera.fov = coneRadius // Match the spotlight's cone angle     
     spotLight.shadow.camera.near = 0.5; // default
-    spotLight.shadow.camera.far = 500; // default
+    spotLight.shadow.camera.far = 50; // default
     spotLight.shadow.focus = 1; // default
 
     // calculate the lookAt object's world position
@@ -491,10 +490,10 @@ export default class Lights
     spotLight.target = object
 
     // helpers
-    // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-    // this.scene.add(spotLightHelper);
-    // const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-    // this.scene.add(shadowCameraHelper);
+    const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+    this.scene.add(spotLightHelper);
+    const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+    this.scene.add(shadowCameraHelper);
 
     lights.push(volumetricLight)
     this.scene.add(volumetricLight)

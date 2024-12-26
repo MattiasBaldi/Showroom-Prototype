@@ -4,6 +4,7 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
 
+
 export default class Switch {
     constructor(pivotPoint, height, radius)
     {
@@ -22,6 +23,17 @@ export default class Switch {
         this.keydownHandler = this.listener.bind(this);
         this.listenerAdded = false;
 
+        console.log(pivotPoint)
+
+        // this.setSwitch()
+
+    }
+
+    setSwitch(pivotPoint, radius, height = null)
+    {
+
+
+
     }
 
     setOrbit()
@@ -29,7 +41,6 @@ export default class Switch {
         // Create a vector to store the local position
         const localPosition = new THREE.Vector3();
         this.pivotPoint.localToWorld(localPosition);
-
 
         // Set pivot point
         this.controls.setControls('OrbitControls')
@@ -100,7 +111,6 @@ export default class Switch {
         // if the camera is within radius of the pivotpoint
         if (this.distance <= this.radius)
         {   
-            // console.log('Camera is within distance ')
             // if the listener is not already there, then add it 
             if (!this.listenerAdded)
             {
@@ -110,7 +120,6 @@ export default class Switch {
         // else if the camera is not within that direction
             else 
             {   
-                // console.log('Camera is not within distance ')
             //and if there event listener is still there - then remove it 
             if (this.listenerAdded)
             {
@@ -120,3 +129,7 @@ export default class Switch {
     }
 
 }
+
+// Switch
+// Add microphone switch for the sphere
+// Add overlay-text for each listener

@@ -8,6 +8,7 @@ export default class Shadows {
         // Setup
         this.experience = new Experience()
         this.camera =  this.experience.camera.instance
+        this.debug = this.experience.debug
         this.controls = this.camera.controls
         this.world = this.experience.world
         this.envionment = this.world.environment
@@ -16,11 +17,22 @@ export default class Shadows {
         this.scene_3 = this.world.scene_3
 
 
+       // Debug
+       if (this.debug.active)
+        {
+            this.debugFolder = this.debug.ui.addFolder('Shadows');
+            this.debugFolder.close();
+        }
+
+        
         this.setCatWalkShadow()
+
+ 
     }
 
     setCatWalkShadow()
     {
+
         this.scene_1.animatedModel.castShadow = true; 
         this.scene_1.animatedModel.traverse((child) => {
             if (child.isMesh) {
@@ -36,5 +48,39 @@ export default class Shadows {
             child.receiveShadow = true;
             }
         });
+
+
+        // Debug
+        if (this.debug.active) {
+            const debugObject = {
+            receiveShadow: this.scene_1.animatedModel.receiveShadow
+            };
+
+            // Set initial value based on default
+            this.scene_1.animatedModel.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = debugObject.receiveShadow;
+            }
+            });
+            this.scene_1.posedModel.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = debugObject.receiveShadow;
+            }
+            });
+
+            this.debugFolder.add(debugObject, 'receiveShadow').onChange((value) => {
+            this.scene_1.animatedModel.traverse((child) => {
+                if (child.isMesh) {
+                child.receiveShadow = value;
+                }
+            });
+            this.scene_1.posedModel.traverse((child) => {
+                if (child.isMesh) {
+                child.receiveShadow = value;
+                }
+            });
+            });
+        }
+
     }
 }

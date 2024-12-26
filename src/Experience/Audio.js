@@ -18,7 +18,6 @@ export default class Audio {
         this.loader = this.resources.loaders.audioLoader
         this.sounds = []
 
-
         // Debug
         if (this.debug.active)
             {
@@ -34,10 +33,8 @@ export default class Audio {
         // Directional Audio
         this.setDirectionalAudio('Audio_Scene_1',  this.scene_1.walls, 2, 8, 0.1)
      
-
         // Mute Button
         this.toggleMute()
-
 
     }
 
@@ -85,7 +82,6 @@ export default class Audio {
 
         }
     }
-
 
     setDirectionalAudio(audioName, object, coneInner = 180, coneOuter = 180, gain = 1, refDistance = 40, rollOffFactor = 5, distanceModel = 'exponential')
     {
@@ -194,6 +190,16 @@ export default class Audio {
         } 
     }
 
+    setWalkingAudio()
+    {
+       if (this.camera.position.y !== this.previousY || this.camera.position.z !== this.previousZ) {
+        this.setWalkingAudio();
+    }
+    this.previousY = this.camera.position.y;
+    this.previousZ = this.camera.position.z;
+
+    }
+
     toggleMute()
     {
         const toggle = document.querySelector('.sound')
@@ -220,6 +226,14 @@ export default class Audio {
                 toggleOn.style.display = 'block'
             }
         })
+    }
+
+    update()
+    {
+
+
+
+
     }
 
 }
