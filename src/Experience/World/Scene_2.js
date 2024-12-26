@@ -2,7 +2,9 @@ import * as THREE from 'three'
 import Experience from '../Experience'
 import vertexShader from '../shaders/sphere/vertex.glsl'
 import fragmentShader from '../shaders/sphere/fragment.glsl'
+import Microphone from '../Microphone.js'
 import Switch from '../Controls/Switch'
+import Microphone from '../Microphone.js'
 
 
 export default class Sphere
@@ -14,7 +16,9 @@ export default class Sphere
         this.debug = this.experience.debug
         this.scene = this.experience.scene
         this.time = this.experience.time
-        this.microphone = this.experience.microphone
+        this.camera = this.experience.camera
+        this.controls = this.camera.controls
+
 
         this.timeFrequency = 0.0003
         this.elapsedTime = 0
@@ -28,17 +32,14 @@ export default class Sphere
             .add(this,'timeFrequency').min(0).max(0.001).step(0.000001)
         }
         
-        this.setVariations()
         this.setGeometry()
         this.setLights()
         this.setOffset()
         this.setMaterial()
-        this.setMesh()
-        this.setBloom()
+        this.setSphere()
 
         // Switch
-        this.switch = new Switch(this.mesh, 1.5, 10)
-
+        this.switch = new Switch(this.sphere, 1.5, 10)
     }
 
     setVariations()
@@ -121,6 +122,13 @@ export default class Sphere
         }
     }
 
+    removeVariations()
+    {
+        if (this.variations) {
+            delete this.variations;
+        }
+    }
+
     setLights()
     {
         this.lights = {}
@@ -129,22 +137,18 @@ export default class Sphere
         this.lights.a = {}
 
         this.lights.a.intensity = 1.85
-
         this.lights.a.color = {}
         this.lights.a.color.value = '#ffffff'
         this.lights.a.color.instance = new THREE.Color(this.lights.a.color.value)
-
         this.lights.a.spherical = new THREE.Spherical(1, 0.615, 2.049)
 
         // Light B
         this.lights.b = {}
 
         this.lights.b.intensity = 1.4
-
         this.lights.b.color = {}
         this.lights.b.color.value = '#000000'
         this.lights.b.color.instance = new THREE.Color(this.lights.b.color.value)
-
         this.lights.b.spherical = new THREE.Spherical(1, 2.561, - 1.844)
 
         if(this.debug.active)
@@ -296,34 +300,59 @@ export default class Sphere
         }
     }
 
-    setMesh()
+    setSphere()
     {
-        this.mesh = new THREE.Mesh(this.geometry, this.material)
-        this.mesh.name = 'Sphere'
-        this.mesh.position.x = - 120; 
-        this.mesh.position.y = 1.5; 
-        this.mesh.rotation.z = Math.PI * 0.5;  
+        this.sphere = new THREE.Mesh(this.geometry, this.material)
+        this.sphere.name = 'sphere'
+        this.sphere.position.x = - 120; 
+        this.sphere.position.y = 1.5; 
+        this.sphere.rotation.z = Math.PI * 0.5;  
 
-        this.scene.add(this.mesh) // Add mesh to the group
+        this.scene.add(this.sphere) // Add sphere to the group
 
         // Debug
         if (this.debug.active)
         {
             const debugFolder = this.debugFolder.addFolder('Position')
 
-            debugFolder.add(this.mesh.position, 'x').min(-100).max(100).step(1)
-            debugFolder.add(this.mesh.position, 'y').min(0).max(10).step(1)
+            debugFolder.add(this.sphere.position, 'x').min(-100).max(100).step(1)
+            debugFolder.add(this.sphere.position, 'y').min(0).max(10).step(1)
         }
     }
     
     setBloom()
     {
         const bloom = this.renderer.selectiveBloom
-        bloom.selection.add(this.mesh)
+        bloom.selection.add(this.sphere)
+    }
+
+    updateMicrophone()
+    {
+
+        if(this.switch.active && !this.microphone) {
+            this.microphone = new Microphone()
+            this.setVariations()
+        }
+
+        if(!this.switch.active && this.microphone)
+            {
+                this.microphone = null
+                this.removeVariations()
+            }
     }
 
     update()
     {
+
+        this.switch.update()
+        this.updateMicrophone()
+
+        // update sphere
+        if(this.microphone)
+        {
+
+        this.microphone.update()
+
         // Update variations
         for(let _variationName in this.variations)
         {
@@ -354,14 +383,13 @@ export default class Sphere
 
         // Time
         this.material.uniforms.uTime.value += this.elapsedTime
-
-        if(this.mesh)
-        {
-            this.mesh.rotation.y += 0.01; 
-            this.mesh.rotation.x += 0.01; 
-            this.mesh.rotation.z += 0.01; 
         }
 
-        this.switch.update()
+        if(this.sphere)
+        {
+            this.sphere.rotation.y += 0.01; 
+            this.sphere.rotation.x += 0.01; 
+            this.sphere.rotation.z += 0.01; 
+        }
     }
 }

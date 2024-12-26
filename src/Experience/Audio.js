@@ -27,7 +27,7 @@ export default class Audio {
 
         // Positional Audio
         this.setPositionalAudio('Audio_Scene_3', this.scene_1.posedBody, 5, 2)
-        this.setPositionalAudio('Audio_Scene_2', this.scene_2.mesh)
+        this.setPositionalAudio('Audio_Scene_2', this.scene_2.sphere)
         this.setPositionalAudio('Audio_Scene_3', this.scene_3.sceneModels)
 
         // Directional Audio
@@ -36,6 +36,21 @@ export default class Audio {
         // Mute Button
         this.toggleMute()
 
+        // Handle visibility change
+        document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+
+    }
+
+    handleVisibilityChange() {
+
+        const toggleOn = document.querySelector('.sound .on')
+        const toggleOff = document.querySelector('.sound .off')
+
+        if (document.hidden) {
+            this.sounds.forEach((sound) => sound.pause())
+        } else if (!document.hidden && toggleOn){
+            this.sounds.forEach((sound) => sound.play());
+        }
     }
 
     setPositionalAudio(audioName, object, refDistance = 40, rollOffFactor = 5, distanceModel = 'exponential'  )
@@ -190,15 +205,25 @@ export default class Audio {
         } 
     }
 
-    setWalkingAudio()
-    {
-       if (this.camera.position.y !== this.previousY || this.camera.position.z !== this.previousZ) {
-        this.setWalkingAudio();
-    }
-    this.previousY = this.camera.position.y;
-    this.previousZ = this.camera.position.z;
+    // setWalkingAudio()
+    // {
+    //    if (this.camera.position.y !== this.previousY || this.camera.position.z !== this.previousZ) {
+    //     this.setWalkingAudio();
+    // }
+    // this.previousY = this.camera.position.y;
+    // this.previousZ = this.camera.position.z;
 
-    }
+    // }
+
+    // turnVolumeDown(percentage = 50)
+    // {
+    //     const volumeReduction = 1 - (percentage / 100);
+    //     this.sounds.forEach((sound) => {
+    //         const currentVolume = sound.getVolume();
+    //         const newVolume = currentVolume * volumeReduction;
+    //         sound.setVolume(newVolume);
+    //     });
+    // }
 
     toggleMute()
     {
@@ -226,14 +251,6 @@ export default class Audio {
                 toggleOn.style.display = 'block'
             }
         })
-    }
-
-    update()
-    {
-
-
-
-
     }
 
 }

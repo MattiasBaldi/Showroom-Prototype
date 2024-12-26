@@ -24,7 +24,7 @@ export default class Lights
 
         // Setup
         this.setObjectLight(this.scene_1.posedModel, 3, 5, 5, 50, 30)
-        this.setObjectLight(this.scene_2.mesh, 3, 10, 0.16, 10, undefined, false)
+        this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
         this.setNavigationallight(4, 40, 10)
         this.setCatwalk(4, 20)
  
@@ -302,10 +302,10 @@ export default class Lights
         volumetricLight.lookAt(spotLight.target.position);
 
         // helpers
-        const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-        this.scene.add(spotLightHelper);
-        const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-        this.scene.add(shadowCameraHelper);
+        // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+        // this.scene.add(spotLightHelper);
+        // const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+        // this.scene.add(shadowCameraHelper);
 
         // Light settings
         lights.push(volumetricLight)
@@ -490,10 +490,10 @@ export default class Lights
     spotLight.target = object
 
     // helpers
-    const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-    this.scene.add(spotLightHelper);
-    const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-    this.scene.add(shadowCameraHelper);
+    // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+    // this.scene.add(spotLightHelper);
+    // const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+    // this.scene.add(shadowCameraHelper);
 
     lights.push(volumetricLight)
     this.scene.add(volumetricLight)

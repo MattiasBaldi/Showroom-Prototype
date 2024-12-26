@@ -18,10 +18,12 @@ export default class Microphone
 
                 this.init()
 
-                if(this.debug)
-                {
-                    this.setSpectrum()
-                }
+                this.setSpectrum()
+
+                // if(this.debug.active)
+                // {
+                //     this.setSpectrum()
+                // }
             })
     }
 

@@ -6,7 +6,7 @@ import Experience from '../Experience.js'
 
 
 export default class Switch {
-    constructor(pivotPoint, height, radius)
+    constructor(pivotPoint, height, radius, Orbitactive = false)
     {
 
         this.experience  = new Experience()
@@ -18,29 +18,18 @@ export default class Switch {
         this.pivotPoint = pivotPoint
         this.radius = radius
         this.height = height
+        this.active = null
+
+        //Overlay
+        this.overlay = document.querySelector(`.${this.pivotPoint.name}`);
+        this.orbitToggleButton = document.querySelector('#orbit-objects .toggleButton')
 
         this.distance = null;
         this.keydownHandler = this.listener.bind(this);
         this.listenerAdded = false;
 
+        return this.active
     }
-
-    // setOverlay()   
-    // {    
-    // const overlay = document.body.querySelector(`.template .${this.pivotPoint.name}`)
-    // overlay.classList.add('active')
-    // }
-
-    // removeOverlay()
-    // {
-    // const overlay = document.body.querySelector(`.template .${this.pivotPoint.name}`)
-    // overlay.classList.remove('active')
-    // }
-
-    // setMicrophone()
-    // {
-
-    // }
 
     setOrbit()
     {
@@ -57,13 +46,17 @@ export default class Switch {
         this.controls.OrbitControls.maxDistance = this.radius - 0.1;
 
         // Set overlay 
-        // this.setOverlay()
+        this.overlay.classList.add('active')
+
+        // set active
+        this.active = true
     }
 
     setWASD()
     {
         this.controls.setControls('PointerLock')
-        // this.removeOverlay()
+        this.overlay.classList.remove('active')
+        this.active = false
     }
 
     listener(event) {
@@ -90,16 +83,8 @@ export default class Switch {
         this.listenerAdded = true;
 
         // Create a highlight that shows the hotkey that activates the orbit
-        this.instructionOverlay = document.createElement('div')
-        this.instructionOverlay.style.border = '1px solid white'
-        this.instructionOverlay.style.color = 'white'
-        this.instructionOverlay.style.padding = '10px'
-        this.instructionOverlay.style.position = 'absolute'
-        this.instructionOverlay.style.top = '10px'
-        this.instructionOverlay.style.right = '10px'
-        this.instructionOverlay.textContent = 'I'
-        this.instructionOverlay.style.zIndex = '10'
-        document.body.append(this.instructionOverlay);
+     
+        this.orbitToggleButton.style.display = 'block'
 
     }
 
@@ -107,9 +92,8 @@ export default class Switch {
     {
         document.removeEventListener('keydown', this.keydownHandler);
         this.listenerAdded = false;
-        if (this.instructionOverlay) {
-            this.instructionOverlay.remove();
-            this.instructionOverlay = null;
+        if (this.orbitToggleButton.style.display = 'block') {
+            this.orbitToggleButton.style.display = 'none'
         }
     }
 

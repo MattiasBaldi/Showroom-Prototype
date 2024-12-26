@@ -37,7 +37,6 @@ export default class Scene_1
         this.setAnimations()
         this.setWalk()
         this.setFade()
-        // this.setBloom()
         this.setWalls()
 
         // Switch

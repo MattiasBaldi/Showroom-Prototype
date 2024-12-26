@@ -32,20 +32,17 @@ export default class Scene_3 {
         this.setBloom()
         
         // Switch
-        this.switch = new Switch(this.sceneGroup, 1, 10)
+        this.switch = new Switch(this.empty , 1, 10)
     }
 
     setScene()
     {
         // Position
-        this.sceneGroup.position.x = 120
-
-        // Scale
-        this.sceneGroup.scale.setScalar(1)
-
-        // Init
-        this.sceneGroup.add(this.sceneModels)
-        this.scene.add(this.sceneGroup)
+        this.sceneModels.position.x = 120
+        this.sceneModels.scale.setScalar(1)
+        this.sceneModels.name = 'scene_3'
+        this.empty.name = 'scene_3'
+        this.scene.add(this.sceneModels)
 
         // Debug
         if(this.debug.active)
@@ -61,7 +58,7 @@ export default class Scene_3 {
 
     castShadow()
     {
-        this.sceneModels.traverse((child) => {
+        this.scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
@@ -71,14 +68,13 @@ export default class Scene_3 {
 
     setBloom()
     {
-        this.empty = this.sceneModels.children[0]
-        this.lampGroup = this.empty.children[1]
-        this.bulb = this.lampGroup.children[0]
-        this.frame = this.lampGroup.children[1]
-        this.string = this.lampGroup.children[2]
+        const lampGroup = this.empty.children[1]
+        const bulb = lampGroup.children[0]
+        const frame = lampGroup.children[1]
+        const string = lampGroup.children[2]
 
         const bloom = this.renderer.selectiveBloom
-        bloom.selection.add(this.bulb)
+        bloom.selection.add(bulb)
         
     }
 

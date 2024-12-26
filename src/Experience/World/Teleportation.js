@@ -30,10 +30,10 @@ export default class Teleportation {
                     this.camera.lookAt(this.scene_1.sceneGroup.position)
                     break;
                 case '2':
-                    this.camera.position.x = this.scene_2.mesh.position.x;
+                    this.camera.position.x = this.scene_2.sphere.position.x;
                     this.camera.position.z = 5
                     this.camera.position.y = 1
-                    this.camera.lookAt(this.scene_2.mesh.position)
+                    this.camera.lookAt(this.scene_2.sphere.position)
                     break;
                 case '3':
                     this.camera.position.x = this.scene_3.sceneGroup.position.x;
