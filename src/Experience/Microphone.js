@@ -10,38 +10,52 @@ export default class Microphone
         this.volume = 0
         this.levels = []
 
+    }
+
+    setMicrophone()
+    {
         navigator.mediaDevices
             .getUserMedia({ audio: true, video: false })
             .then((_stream) =>
             {
                 this.stream = _stream
 
-                this.init()
+                this.audioContext = new AudioContext()
+        
+                this.mediaStreamSourceNode = this.audioContext.createMediaStreamSource(this.stream)
+                
+                this.analyserNode = this.audioContext.createAnalyser()
+                this.analyserNode.fftSize = 256
+                
+                this.mediaStreamSourceNode.connect(this.analyserNode)
+                
+                this.floatTimeDomainData = new Float32Array(this.analyserNode.fftSize)
+                this.byteFrequencyData = new Uint8Array(this.analyserNode.fftSize)
+                
+                this.ready = true
 
                 this.setSpectrum()
-
-                // if(this.debug.active)
-                // {
-                //     this.setSpectrum()
-                // }
             })
     }
 
-    init()
+    removeMicrophone()
     {
-        this.audioContext = new AudioContext()
-        
-        this.mediaStreamSourceNode = this.audioContext.createMediaStreamSource(this.stream)
-        
-        this.analyserNode = this.audioContext.createAnalyser()
-        this.analyserNode.fftSize = 256
-        
-        this.mediaStreamSourceNode.connect(this.analyserNode)
-        
-        this.floatTimeDomainData = new Float32Array(this.analyserNode.fftSize)
-        this.byteFrequencyData = new Uint8Array(this.analyserNode.fftSize)
-        
-        this.ready = true
+        this.removeSpectrum()
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+            this.stream = null;
+        }
+    
+        if (this.audioContext) {
+            this.audioContext.close();
+            this.audioContext = null;
+        }
+    
+        this.mediaStreamSourceNode = null;
+        this.analyserNode = null;
+        this.floatTimeDomainData = null;
+        this.byteFrequencyData = null;
+        this.ready = false;
     }
 
     setSpectrum()
@@ -81,6 +95,15 @@ export default class Microphone
 
                 this.spectrum.context.fillRect(x, y, width, height)
             }
+        }
+    }
+
+    removeSpectrum()
+    {
+        if (this.spectrum) {
+            document.body.removeChild(this.spectrum.canvas);
+            this.spectrum.update = null;
+            this.spectrum = null;
         }
     }
 

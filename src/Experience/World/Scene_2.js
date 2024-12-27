@@ -4,7 +4,6 @@ import vertexShader from '../shaders/sphere/vertex.glsl'
 import fragmentShader from '../shaders/sphere/fragment.glsl'
 import Microphone from '../Microphone.js'
 import Switch from '../Controls/Switch'
-import Microphone from '../Microphone.js'
 
 
 export default class Sphere
@@ -12,14 +11,13 @@ export default class Sphere
     constructor()
     {
         this.experience = new Experience()
+        this.microphone = new Microphone()
         this.renderer = this.experience.renderer
         this.debug = this.experience.debug
         this.scene = this.experience.scene
         this.time = this.experience.time
         this.camera = this.experience.camera
         this.controls = this.camera.controls
-
-
         this.timeFrequency = 0.0003
         this.elapsedTime = 0
 
@@ -319,36 +317,42 @@ export default class Sphere
             debugFolder.add(this.sphere.position, 'y').min(0).max(10).step(1)
         }
     }
-    
-    setBloom()
-    {
-        const bloom = this.renderer.selectiveBloom
-        bloom.selection.add(this.sphere)
-    }
 
     updateMicrophone()
     {
 
-        if(this.switch.active && !this.microphone) {
-            this.microphone = new Microphone()
+        if(this.switch.active && !this.microphone.ready) {
+            this.microphone.setMicrophone()
             this.setVariations()
+
+            this.experience.world.audio.sounds.forEach((sound) => {
+                const currentTime = sound.gain.context.currentTime;
+                sound.gain.gain.setValueAtTime(sound.gain.gain.value, currentTime);
+                sound.gain.gain.linearRampToValueAtTime(0.2, currentTime + 3);
+            })
         }
 
-        if(!this.switch.active && this.microphone)
+        if(!this.switch.active && this.microphone.ready)
             {
-                this.microphone = null
+                this.microphone.removeMicrophone()
                 this.removeVariations()
+    
+                this.experience.world.audio.sounds.forEach((sound) => {
+                    const currentTime = sound.gain.context.currentTime;
+                    sound.gain.gain.setValueAtTime(sound.gain.gain.value, currentTime);
+                    sound.gain.gain.linearRampToValueAtTime(1, currentTime + 3);
+                })
             }
     }
 
     update()
     {
-
         this.switch.update()
         this.updateMicrophone()
+        console.log(this.microphone.ready)
 
         // update sphere
-        if(this.microphone)
+        if(this.microphone.ready)
         {
 
         this.microphone.update()

@@ -205,26 +205,6 @@ export default class Audio {
         } 
     }
 
-    // setWalkingAudio()
-    // {
-    //    if (this.camera.position.y !== this.previousY || this.camera.position.z !== this.previousZ) {
-    //     this.setWalkingAudio();
-    // }
-    // this.previousY = this.camera.position.y;
-    // this.previousZ = this.camera.position.z;
-
-    // }
-
-    // turnVolumeDown(percentage = 50)
-    // {
-    //     const volumeReduction = 1 - (percentage / 100);
-    //     this.sounds.forEach((sound) => {
-    //         const currentVolume = sound.getVolume();
-    //         const newVolume = currentVolume * volumeReduction;
-    //         sound.setVolume(newVolume);
-    //     });
-    // }
-
     toggleMute()
     {
         const toggle = document.querySelector('.sound')
