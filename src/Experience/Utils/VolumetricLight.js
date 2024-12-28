@@ -101,6 +101,7 @@ export default class VolumetricSpotLight {
     
             // Apply smooth blending to the edges
             gl_FragColor.a = smoothstep(0.0, 1.0, intensity);
+
         }
         `;
     }
@@ -126,7 +127,7 @@ export default class VolumetricSpotLight {
 
     setConeGeometry() {
         const radiusTop = 0.1;
-        this.geometry = new THREE.CylinderGeometry(radiusTop, this.coneRadius * 1.1, this.coneHeight, 128, 20, true);
+        this.geometry = new THREE.CylinderGeometry(radiusTop, this.coneRadius, this.coneHeight, 128, 20, true);
         this.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, -this.geometry.parameters.height / 2, 0));
         this.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
         this.geometry.computeVertexNormals();

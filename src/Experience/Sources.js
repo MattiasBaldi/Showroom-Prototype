@@ -8,36 +8,36 @@ export default [
     {
         name: 'Scene_1',
         type: 'gltfModel',
-        path: 'scenes/scene_1.glb'
+        path: 'models/scenes/scene_1.glb'
     },
     {
         name: 'Scene_3',
         type: 'gltfModel',
-        path: 'scenes/scene_3.glb'
-    },
-    {
-        name: 'test_floor',
-        type: 'gltfModel',
-        path: 'scenes/test.floor.glb'
+        path: 'models/scenes/scene_3.glb'
     },
     {
         name: 'light',
         type: 'gltfModel',
-        path: 'scenes/light.glb'
+        path: 'models/light.glb'
+    },
+    {
+        name: 'floor',
+        type: 'gltfModel',
+        path: 'models/floor.glb'
     },
     {
         name: 'Audio_Scene_1',
         type: 'audio',
-        path: 'sounds/Scene_1.mp3'
+        path: 'audio/Scene_1.mp3'
     },
     {
         name: 'Audio_Scene_2',
         type: 'audio',
-        path: 'sounds/Scene_2.wav'
+        path: 'audio/Scene_2.wav'
     },
     {
         name: 'Audio_Scene_3',
         type: 'audio',
-        path: 'sounds/Scene_3.mp3'
+        path: 'audio/Scene_3.mp3'
     }
 ]

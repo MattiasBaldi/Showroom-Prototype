@@ -113,6 +113,11 @@ export default class Environment
 
         addFloor()
         {
+
+        // this.resource = this.resources.items.floor
+        // const floor = this.resource.scene
+
+
         const floor = new THREE.Mesh
         (
             new THREE.PlaneGeometry(1000, 1000),
@@ -122,13 +127,10 @@ export default class Environment
                 emissiveIntensity: 2 // Set emissive intensity
             })
         )
-    
-        floor.receiveShadow = true; 
-        floor.rotation.x = Math.PI * - 0.5
-        this.scene.add(floor)
 
-        // const bloom = this.renderer.selectiveBloom;
-        // bloom.selection.add(floor);
+        floor.rotation.x = Math.PI * - 0.5
+        floor.receiveShadow = true; 
+        this.scene.add(floor)
 
         if (this.debug.active) {
             const debugObject = {

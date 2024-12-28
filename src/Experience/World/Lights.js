@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
 import VolumetricSpotLight from '../Utils/VolumetricLight.js'
-import { TetrahedralUpscaler } from 'postprocessing'
 
 export default class Lights 
 {
@@ -26,9 +25,8 @@ export default class Lights
         // Setup
         this.bloom = []
 
-
         // Methods
-        this.setObjectLight(this.scene_1.posedModel, 3, 5, 5, 50, 30)
+        this.setObjectLight(this.scene_1.posedModel, 1, 5, 5, 50, 30)
         this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
         this.setNavigationallight(4, 40, 10)
         this.setCatwalk(4, 20)
@@ -466,6 +464,7 @@ export default class Lights
     {
     const gap = 360 / count
     const lights = []
+    this.objectLight = lights
 
     for (let i = 0; i < count; i++)
     {
@@ -525,6 +524,8 @@ export default class Lights
         }
     });
 
+    this.bloom.push(cone)
+
     // add
     lights.push(volumetricLight)
     this.scene.add(volumetricLight)
@@ -544,29 +545,47 @@ export default class Lights
             edgeConstractPower: lights[0].children[0].material.uniforms.edgeConstractPower.value
         };
 
-        // debugFolder
-        // .add(debugObject, 'CircleRadius')
-        // .name('Position Y')
-        // .min(-10)
-        // .max(10)
-        // .step(0.1)
-        // .onChange((value) => {
-        //     lights.forEach((volumetricLight) => {
-        //         volumetricLight.position.y = value;
-        //     });
-        // });
+        const localPosition = new THREE.Vector3();
+        object.localToWorld(localPosition);
 
-        // debugFolder
-        // .add(debugObject, 'ConeRadius')
-        // .name('Position Y')
-        // .min(-10)
-        // .max(10)
-        // .step(0.1)
-        // .onChange((value) => {
-        //     lights.forEach((volumetricLight) => {
-        //         volumetricLight.position.y = value;
-        //     });
-        // });
+
+        debugFolder
+            .add({ radius }, 'radius')
+            .name('Circle Radius')
+            .min(1)
+            .max(20)
+            .step(0.1)
+            .onChange((value) => {
+            lights.forEach((volumetricLight, index) => {
+                const gap = 360 / count;
+                volumetricLight.position.x = Math.cos(THREE.MathUtils.degToRad(gap * index)) * value;
+                volumetricLight.position.z = Math.sin(THREE.MathUtils.degToRad(gap * index)) * value;
+
+                volumetricLight.position.x += localPosition.x
+                volumetricLight.position.z += localPosition.z
+
+                volumetricLight.lookAt(localPosition);  
+            });
+            });
+
+            debugFolder
+                .add({ rotationY: 0 }, 'rotationY')
+                .name('Rotation Y')
+                .min(0)
+                .max(Math.PI * 2)
+                .step(0.01)
+                .onChange((value) => {
+                    lights.forEach((volumetricLight, index) => {
+                        const gap = 360 / count;
+                        volumetricLight.position.x = Math.cos(THREE.MathUtils.degToRad(gap * index + THREE.MathUtils.radToDeg(value))) * radius;
+                        volumetricLight.position.z = Math.sin(THREE.MathUtils.degToRad(gap * index + THREE.MathUtils.radToDeg(value))) * radius;
+
+                        volumetricLight.position.x += localPosition.x;
+                        volumetricLight.position.z += localPosition.z;
+
+                        volumetricLight.lookAt(localPosition);
+                    });
+                });
 
         debugFolder
             .add(debugObject, 'positionY')
@@ -575,10 +594,12 @@ export default class Lights
             .max(10)
             .step(0.1)
             .onChange((value) => {
-                lights.forEach((volumetricLight) => {
-                    volumetricLight.position.y = value;
-                });
+            lights.forEach((volumetricLight) => {
+                volumetricLight.position.y = value;
+                volumetricLight.lookAt(localPosition);
             });
+            });
+
 
         debugFolder
             .add(debugObject, 'intensity')
@@ -732,13 +753,29 @@ export default class Lights
     this.renderer.setSelectiveBloom()
     this.bloom.forEach((child) => {  this.renderer.selectiveBloom.selection.add(child)})
 
-    const bulb = this.scene_3.empty.children[1].children[0]
-    this.renderer.selectiveBloom.selection.add(bulb)
+    // const testCone = new THREE.Mesh(
+    //     new THREE.ConeGeometry(2, 2, 20, 20),
+    //     new THREE.MeshStandardMaterial({
+    //         color: 'white',
+    //         emissive: new THREE.Color(0xffffff),
+    //         emissiveIntensity: 1
+    //     })
+    // )
+    // testCone.position.set(5, 5, 5)
+    // this.scene.add(testCone)
 
-    console.log(this.renderer.selectiveBloom.selection)
+    const bulb = this.scene_3.empty.children[1].children[0]
+    bulb.material = new THREE.MeshStandardMaterial({
+        emissive: new THREE.Color(0x808080),
+        emissiveIntensity: 10,
+        color: new THREE.Color(0x0000000),
+        roughness: 0,
+        metalness: 1 
+    });
+
+    this.renderer.selectiveBloom.selection.add(bulb)
     }
 
     update(){
-    }
-    
+}
 }
