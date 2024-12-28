@@ -145,7 +145,7 @@ export default class Sphere
 
         this.lights.b.intensity = 1.4
         this.lights.b.color = {}
-        this.lights.b.color.value = '#000000'
+        this.lights.b.color.value = '#ffffff'
         this.lights.b.color.instance = new THREE.Color(this.lights.b.color.value)
         this.lights.b.spherical = new THREE.Spherical(1, 2.561, - 1.844)
 
@@ -349,7 +349,6 @@ export default class Sphere
     {
         this.switch.update()
         this.updateMicrophone()
-        console.log(this.microphone.ready)
 
         // update sphere
         if(this.microphone.ready)

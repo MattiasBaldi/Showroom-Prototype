@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
 import VolumetricSpotLight from '../Utils/VolumetricLight.js'
+import { TetrahedralUpscaler } from 'postprocessing'
 
 export default class Lights 
 {
@@ -23,10 +24,15 @@ export default class Lights
         }
 
         // Setup
+        this.bloom = []
+
+
+        // Methods
         this.setObjectLight(this.scene_1.posedModel, 3, 5, 5, 50, 30)
         this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
         this.setNavigationallight(4, 40, 10)
         this.setCatwalk(4, 20)
+        this.setBloom()
  
     }
 
@@ -53,10 +59,10 @@ export default class Lights
             // Adjust cone
             const cone = volumetricLight.children[0];
             const coneUniforms = cone.material.uniforms;
-            coneUniforms.attenuation.value = 10.5;
-            coneUniforms.anglePower.value = 5;
+            coneUniforms.attenuation.value = 12.5;
+            coneUniforms.anglePower.value = 2;
             coneUniforms.edgeScale.value = 0.5; // Adjust this value as needed
-            coneUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
+            coneUniforms.edgeConstractPower.value = 1; // Adjust this value as needed
 
             // LookAt
             const target = new THREE.Object3D();
@@ -71,6 +77,14 @@ export default class Lights
             // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
             // this.scene.add(spotLightHelper);
         
+            // bloom
+            const lightMesh = volumetricLight.children[2]
+            lightMesh.traverse((child) => {
+                if (child.isMesh) {
+                this.bloom.push(child)
+                }
+            });
+
             // Add this to the scene
             lights.push(volumetricLight);
             this.scene.add(volumetricLight);
@@ -307,6 +321,14 @@ export default class Lights
         // const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
         // this.scene.add(shadowCameraHelper);
 
+        // bloom
+        const lightMesh = volumetricLight.children[2]
+        lightMesh.traverse((child) => {
+            if (child.isMesh) {
+               this.bloom.push(child)
+            }
+        });
+
         // Light settings
         lights.push(volumetricLight)
         this.scene.add(volumetricLight);
@@ -495,6 +517,15 @@ export default class Lights
     // const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
     // this.scene.add(shadowCameraHelper);
 
+    //bloom
+    const lightMesh = volumetricLight.children[2]
+    lightMesh.traverse((child) => {
+        if (child.isMesh) {
+           this.bloom.push(child)
+        }
+    });
+
+    // add
     lights.push(volumetricLight)
     this.scene.add(volumetricLight)
     }
@@ -697,7 +728,14 @@ export default class Lights
 
     setBloom()
     {
+    
+    this.renderer.setSelectiveBloom()
+    this.bloom.forEach((child) => {  this.renderer.selectiveBloom.selection.add(child)})
 
+    const bulb = this.scene_3.empty.children[1].children[0]
+    this.renderer.selectiveBloom.selection.add(bulb)
+
+    console.log(this.renderer.selectiveBloom.selection)
     }
 
     update(){

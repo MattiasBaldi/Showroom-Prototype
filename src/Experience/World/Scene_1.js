@@ -132,6 +132,10 @@ export default class Scene_1
         this.walkEnd = 550;
         this.length = null
 
+
+        // Set Initial start position of the model
+        this.animatedModel.position.z = this.walkStart
+
         // Debug
         if(this.debug.active)
         {
@@ -322,13 +326,6 @@ export default class Scene_1
             }
         });
 
-    }
-
-    setBloom()
-    {
-        const bloom = this.renderer.selectiveBloom
-        bloom.selection.add(this.posedBody)
-        bloom.selection.add(this.animatedBody)
     }
 
     update()

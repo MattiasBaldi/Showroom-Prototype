@@ -29,7 +29,6 @@ export default class VolumetricSpotLight {
         this.setLight()
         this.setSpotMesh()
         // this.setHelper()
-        this.setBloom()
 
         return this.group;
     }
@@ -127,7 +126,7 @@ export default class VolumetricSpotLight {
 
     setConeGeometry() {
         const radiusTop = 0.1;
-        this.geometry = new THREE.CylinderGeometry(radiusTop, this.coneRadius, this.coneHeight, 128, 20, true);
+        this.geometry = new THREE.CylinderGeometry(radiusTop, this.coneRadius * 1.1, this.coneHeight, 128, 20, true);
         this.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, -this.geometry.parameters.height / 2, 0));
         this.geometry.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
         this.geometry.computeVertexNormals();
@@ -153,14 +152,6 @@ export default class VolumetricSpotLight {
         this.spotLight = new THREE.SpotLight(this.color, this.lightIntensity, 0, angle, 0.5, 0);
         this.spotLight.position.set(0, 0, 0)
         this.group.add(this.spotLight);
-    }
-
-    setBloom() {
-        const bloom = this.renderer.selectiveBloom;
-    
-    this.lightMesh.traverse(child => {
-        bloom.selection.add(child);
-    });
     }
 
     setHelper() {

@@ -9,7 +9,6 @@ export default class Microphone
         this.ready = false
         this.volume = 0
         this.levels = []
-
     }
 
     setMicrophone()
@@ -40,6 +39,7 @@ export default class Microphone
 
     removeMicrophone()
     {
+
         this.removeSpectrum()
         if (this.stream) {
             this.stream.getTracks().forEach(track => track.stop());
@@ -50,7 +50,7 @@ export default class Microphone
             this.audioContext.close();
             this.audioContext = null;
         }
-    
+
         this.mediaStreamSourceNode = null;
         this.analyserNode = null;
         this.floatTimeDomainData = null;
@@ -148,6 +148,7 @@ export default class Microphone
 
     update()
     {
+
         if(!this.ready)
             return
 

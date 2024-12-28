@@ -29,7 +29,6 @@ export default class Scene_3 {
 
         // Setup
         this.setScene()
-        this.setBloom()
         
         // Switch
         this.switch = new Switch(this.empty , 1, 10)
@@ -64,18 +63,6 @@ export default class Scene_3 {
                 child.receiveShadow = true;
             }
         });
-    }
-
-    setBloom()
-    {
-        const lampGroup = this.empty.children[1]
-        const bulb = lampGroup.children[0]
-        const frame = lampGroup.children[1]
-        const string = lampGroup.children[2]
-
-        const bloom = this.renderer.selectiveBloom
-        bloom.selection.add(bulb)
-        
     }
 
     update()

@@ -35,7 +35,7 @@ export default class Renderer
         this.setAntiAliasing()
         // this.setBloom()
         this.setToneMapping()
-        this.setSelectiveBloom()
+        // this.setSelectiveBloom()
         // this.setDepthOfField()
         // this.setColor()
         // this.setGodRays()

@@ -106,7 +106,6 @@ export default class Audio {
         const listener = new THREE.AudioListener();
         this.camera.add(listener);
 
-
         // create the PositionalAudio object (passing in the listener)
         const sound = new THREE.PositionalAudio(listener);
 
