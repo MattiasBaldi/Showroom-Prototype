@@ -26,11 +26,14 @@ export default class Scene_1
 
         // Setup
         this.resource = this.resources.items.Scene_1
-        this.sceneModels = this.resource.scene
+        this.sceneModels = this.resource.scene.children[0]
+        console.log(this.sceneModels)
         this.animatedModel = this.sceneModels.children[0]
         this.posedModel = this.sceneModels.children[1]
         this.animatedBody = this.animatedModel.children[0]
-        this.posedBody = this.posedModel.children[0]
+        this.posedBody = this.posedModel.children[1]
+        console.log(this.posedBody)
+
 
         // Call actions
         this.setScene()
@@ -38,7 +41,6 @@ export default class Scene_1
         this.setWalk()
         this.setFade()
         this.setWalls()
-        // this.setBloom()
 
         // Switch
         this.switch = new Switch(this.posedBody, 2, 10)
@@ -327,13 +329,6 @@ export default class Scene_1
             }
         });
 
-    }
-
-    setBloom()
-    {
-        console.log(this.renderer)
-        console.log(this.renderer.selectiveBloom)
-        this.renderer.selectiveBloom.selection.add(this.posedBody)
     }
 
     update()

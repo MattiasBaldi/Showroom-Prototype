@@ -16,27 +16,31 @@ export default class Lights
         this.scene_2 = this.world.scene_2
         this.scene_3 = this.world.scene_3
 
+        this.poseSpeed = null
+        this.sphereSpeed = null
+
         // Debug
         if (this.debug.active) {
         this.debugFolder = this.debug.ui.addFolder('Lights');            
-        // this.debugFolder.close()
+        this.debugFolder.close()
         }
 
         // Setup
         this.bloom = []
+        this.lightGroups = {}
 
         // Methods
-        this.setObjectLight(this.scene_1.posedModel, 1, 5, 5, 50, 30)
+        this.setObjectLight(this.scene_1.posedModel, 2, 5, 5, 50, 30)
         this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
+        this.setObjectLight(this.scene_3.empty, 4, 5, 5, 50, 30)
         this.setNavigationallight(4, 40, 10)
         this.setCatwalk(4, 20)
         this.setBloom()
- 
     }
 
     setNavigationallight(count, gap, height = 10, coneRadius = 3) 
     {
-        const lights = []
+        const group = new THREE.Group()
 
         for (let i = 0; i < count; i++)
         {
@@ -70,198 +74,151 @@ export default class Lights
             
             // Make the light look at the target
             volumetricLight.lookAt(spotLight.target.position);
-
-            // helpers
-            // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-            // this.scene.add(spotLightHelper);
         
             // bloom
             const lightMesh = volumetricLight.children[2]
-            lightMesh.traverse((child) => {
+            const reflector = lightMesh.children[0].children[5]
+            reflector.traverse((child) => {
                 if (child.isMesh) {
-                this.bloom.push(child)
+                   this.bloom.push(child)
                 }
             });
 
-            // Add this to the scene
-            lights.push(volumetricLight);
-            this.scene.add(volumetricLight);
-        }
+
+            group.add(volumetricLight)
+            }
+    
+        this.scene.add(group)
+        this.lightGroups['navLights'] = group; // Store the group by object name or ID
 
         // Debug
         if (this.debug.active) {
             const debugObject = {
-            radiusBottom: lights[0].children[0].geometry.parameters.radiusBottom,
-            attenuation: lights[0].children[0].material.uniforms.attenuation.value,
-            anglePower: lights[0].children[0].material.uniforms.anglePower.value,
-            lightIntensity: lights[0].children[1].intensity,
-            lightAngle: lights[0].children[1].angle,
-            lightPenumbra: lights[0].children[1].penumbra,
-            lightDecay: lights[0].children[1].decay,
-            edgeScale: lights[0].children[0].material.uniforms.edgeScale.value, // Adjust this value as needed
-            edgeConstractPower: lights[0].children[0].material.uniforms.edgeConstractPower.value, // Adjust this value as needed,
-            height: 10, // Assign a default value to height
+            radiusBottom: group.children[0].children[0].geometry.parameters.radiusBottom,
+            attenuation: group.children[0].children[0].material.uniforms.attenuation.value,
+            anglePower: group.children[0].children[0].material.uniforms.anglePower.value,
+            lightIntensity: group.children[0].children[1].intensity,
+            lightAngle: group.children[0].children[1].angle,
+            lightPenumbra: group.children[0].children[1].penumbra,
+            lightDecay: group.children[0].children[1].decay,
+            edgeScale: group.children[0].children[0].material.uniforms.edgeScale.value,
+            edgeConstractPower: group.children[0].children[0].material.uniforms.edgeConstractPower.value,
+            height: 10,
             };
 
-            this.Volumetric = this.debugFolder.addFolder('Navigational Lights');
-            this.Volumetric.close();
+            const navFolder = this.debugFolder.addFolder('Navigational Lights');
+            navFolder.close();
 
-            this.Volumetric
-            .add(debugObject, 'height')
-            .name('Height')
-            .step(0.1)
-            .min(0)
-            .max(20)
+            //helpers
+            const spotLightHelpers = [];
+            group.children.forEach((light) => {
+                const spotLightHelper = new THREE.SpotLightHelper(light.children[1]);
+                this.scene.add(spotLightHelper);
+                spotLightHelper.visible = false
+                spotLightHelpers.push(spotLightHelper);
+            });
+            
+            navFolder
+            .add({ showHelpers: false }, 'showHelpers')
+            .name('Show Helpers')
             .onChange((value) => {
-                // Update the height for all spotlights
-                lights.forEach((spotLight) => {
-                const oldGeometry = spotLight.children[0].geometry;
-                const newGeometry = oldGeometry.clone();
-                newGeometry.parameters.height = value;
-                newGeometry.dispose(); // Dispose the old geometry
-
-                spotLight.children[0].geometry = new THREE.CylinderGeometry(
-                    newGeometry.parameters.radiusTop,
-                    newGeometry.parameters.radiusBottom,
-                    value,
-                    newGeometry.parameters.radialSegments
-                );
-
-                // Rotate the spotlight so it is pointing down
-                spotLight.children[0].rotation.x = -Math.PI / 0.5;
-                spotLight.children[0].position.y = value / 2;
-                spotLight.position.y = 0;
+                spotLightHelpers.forEach((helper) => {
+                helper.visible = value;
                 });
             });
-
-            this.Volumetric
-            .add(debugObject, 'radiusBottom')
-            .name('radiusBottom')
-            .step(0.001)
-            .min(0)
-            .max(20)
-            .onChange((value) => {
-                // Update the radiusBottom value for all spotlights
-                lights.forEach((spotLight) => {
-                const oldGeometry = spotLight.children[0].geometry;
-                const newGeometry = oldGeometry.clone();
-                newGeometry.parameters.radiusBottom = value;
-                newGeometry.dispose(); // Dispose the old geometry
-
-                spotLight.children[0].geometry = new THREE.CylinderGeometry(
-                    newGeometry.parameters.radiusTop,
-                    value,
-                    newGeometry.parameters.height,
-                    newGeometry.parameters.radialSegments
-                );
-
-                // Rotate the spotlight so it is pointing down
-                spotLight.children[0].rotation.x = -Math.PI / 0.5;
-                spotLight.children[0].position.y = newGeometry.parameters.height / 2;   
-                spotLight.position.y = 0;              
-                });
-            });
-
-            this.Volumetric
+  
+            navFolder
             .add(debugObject, 'attenuation')
             .name('Attenuation')
             .step(0.001)
             .min(0)
             .max(20)
             .onChange((value) => {
-                // Update the attenuation value for all spotlights
-                lights.forEach((spotLight) => {
+                group.children.forEach((spotLight) => {
                 spotLight.children[0].material.uniforms.attenuation.value = value;
                 });
             });
 
-            this.Volumetric
+            navFolder
             .add(debugObject, 'anglePower')
             .name('AnglePower')
             .step(0.001)
             .min(0)
             .max(20)
             .onChange((value) => {
-                // Update the anglePower value for all spotlights
-                lights.forEach((spotLight) => {
+                group.children.forEach((spotLight) => {
                 spotLight.children[0].material.uniforms.anglePower.value = value;
                 });
             });
 
-            this.Volumetric
+            navFolder
             .add(debugObject, 'lightIntensity')
             .name('Light Intensity')
             .step(0.001)
             .min(0)
             .max(1000)
             .onChange((value) => {
-                // Update the light intensity for all spotlights
-                lights.forEach((spotLight) => {
+                group.children.forEach((spotLight) => {
                 spotLight.children[1].intensity = value;
                 });
             });
 
-            this.Volumetric
+            navFolder
             .add(debugObject, 'lightAngle')
             .name('Light Angle')
             .step(0.001)
             .min(0)
             .max(Math.PI / 2)
             .onChange((value) => {
-                // Update the light angle for all spotlights
-                lights.forEach((spotLight) => {
+                group.children.forEach((spotLight) => {
                 spotLight.children[1].angle = value;
                 });
             });
 
-            this.Volumetric
+            navFolder
             .add(debugObject, 'lightPenumbra')
             .name('Light Penumbra')
             .step(0.001)
             .min(0)
             .max(1)
             .onChange((value) => {
-                // Update the light penumbra for all spotlights
-                lights.forEach((spotLight) => {
+                group.children.forEach((spotLight) => {
                 spotLight.children[1].penumbra = value;
                 });
             });
 
-            this.Volumetric
+            navFolder
             .add(debugObject, 'lightDecay')
             .name('Light Decay')
             .step(0.001)
             .min(0)
             .max(2)
             .onChange((value) => {
-                // Update the light decay for all spotlights
-                lights.forEach((spotLight) => {
+                group.children.forEach((spotLight) => {
                 spotLight.children[1].decay = value;
                 });
             });
 
-            this.Volumetric
+            navFolder
             .add(debugObject, 'edgeScale')
             .name('Edge Scale')
             .step(0.001)
             .min(0)
             .max(1)
             .onChange((value) => {
-                // Update the edgeScale value for all spotlights
-                lights.forEach((spotLight) => {
+                group.children.forEach((spotLight) => {
                 spotLight.children[0].material.uniforms.edgeScale.value = value;
                 });
             });
 
-            this.Volumetric
+            navFolder
             .add(debugObject, 'edgeConstractPower')
             .name('Edge Constract Power')
             .step(0.001)
             .min(0)
             .max(1)
             .onChange((value) => {
-                // Update the edgeConstractPower value for all spotlights
-                lights.forEach((spotLight) => {
+                group.children.forEach((spotLight) => {
                 spotLight.children[0].material.uniforms.edgeConstractPower.value = value;
                 });
             });
@@ -270,8 +227,7 @@ export default class Lights
 
     setCatwalk(count, gap, height = 10, coneRadius = 3)
     {
-
-    const lights = []
+    const group = new THREE.Group()
 
     for (let i = 0; i < count; i++) {
 
@@ -309,49 +265,69 @@ export default class Lights
         spotLight.target = new THREE.Object3D();
         spotLight.target.position.set(volumetricLight.position.x, volumetricLight.position.y - height, volumetricLight.position.z);
         this.scene.add(spotLight.target); // Add the target to the scene
-        
-        // Make the light look at the target
-        volumetricLight.lookAt(spotLight.target.position);
+        volumetricLight.lookAt(spotLight.target.position);    // Make the light look at the target
 
-        // helpers
-        // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-        // this.scene.add(spotLightHelper);
-        // const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-        // this.scene.add(shadowCameraHelper);
-
-        // bloom
         const lightMesh = volumetricLight.children[2]
-        lightMesh.traverse((child) => {
+        const reflector = lightMesh.children[0].children[5]
+        reflector.traverse((child) => {
             if (child.isMesh) {
                this.bloom.push(child)
             }
         });
 
-        // Light settings
-        lights.push(volumetricLight)
-        this.scene.add(volumetricLight);
+        group.add(volumetricLight)
     }
+
+    this.scene.add(group)
+    this.lightGroups['catWalk'] = group; // Store the group by object name or ID
 
     // Debug
     if (this.debug.active) {
-        const debugObject = {
-            attenuation: lights[0].children[0].material.uniforms.attenuation.value,
-            anglePower: lights[0].children[0].material.uniforms.anglePower.value,
-            lightIntensity: lights[0].children[1].intensity,
-            lightAngle: lights[0].children[1].angle,
-            lightPenumbra: lights[0].children[1].penumbra,
-            lightDecay: lights[0].children[1].decay,
-            edgeScale: lights[0].children[0].material.uniforms.edgeScale.value,
-            edgeConstractPower: lights[0].children[0].material.uniforms.edgeConstractPower.value,
-            shadowCameraNear: lights[0].children[1].shadow.camera.near,
-            shadowCameraFar: lights[0].children[1].shadow.camera.far,
-            shadowMapSizeWidth: lights[0].children[1].shadow.mapSize.width,
-            shadowMapSizeHeight: lights[0].children[1].shadow.mapSize.height
-        };
 
         const catWalkFolder = this.debugFolder.addFolder(' catWalk ')
         catWalkFolder.close()
 
+        const debugObject = {
+            attenuation: group.children[0].children[0].material.uniforms.attenuation.value,
+            anglePower: group.children[0].children[0].material.uniforms.anglePower.value,
+            lightIntensity: group.children[0].children[1].intensity,
+            lightAngle: group.children[0].children[1].angle,
+            lightPenumbra: group.children[0].children[1].penumbra,
+            lightDecay: group.children[0].children[1].decay,
+            edgeScale: group.children[0].children[0].material.uniforms.edgeScale.value,
+            edgeConstractPower: group.children[0].children[0].material.uniforms.edgeConstractPower.value,
+            shadowCameraNear: group.children[0].children[1].shadow.camera.near,
+            shadowCameraFar: group.children[0].children[1].shadow.camera.far,
+        };
+
+
+        //helpers
+        const spotLightHelpers = [];
+        const shadowHelpers = [];
+        group.children.forEach((light) => {
+            const spotLightHelper = new THREE.SpotLightHelper(light.children[1]);
+            this.scene.add(spotLightHelper);
+            spotLightHelper.visible = false; 
+            spotLightHelpers.push(spotLightHelper);
+
+            const shadowCameraHelper = new THREE.CameraHelper(light.children[1].shadow.camera);
+            this.scene.add(shadowCameraHelper);
+            shadowCameraHelper.visible = false; 
+            shadowHelpers.push(shadowCameraHelper);
+        });
+        
+        catWalkFolder
+        .add({ showHelpers: false }, 'showHelpers')
+        .name('Show Helpers')
+        .onChange((value) => {
+            spotLightHelpers.forEach((helper) => {
+            helper.visible = value;
+            });
+            shadowHelpers.forEach((helper) => {
+            helper.visible = value;
+            });
+        });
+  
         catWalkFolder
             .add(debugObject, 'attenuation')
             .name('Attenuation')
@@ -359,7 +335,7 @@ export default class Lights
             .min(0)
             .max(20)
             .onChange((value) => {
-                lights.forEach((light) => {
+                group.children.forEach((light) => {
                     light.children[0].material.uniforms.attenuation.value = value;
                 });
             });
@@ -371,7 +347,7 @@ export default class Lights
             .min(0)
             .max(20)
             .onChange((value) => {
-                lights.forEach((light) => {
+                group.children.forEach((light) => {
                     light.children[0].material.uniforms.anglePower.value = value;
                 });
             });
@@ -383,7 +359,7 @@ export default class Lights
             .min(0)
             .max(1000)
             .onChange((value) => {
-                lights.forEach((light) => {
+                group.children.forEach((light) => {
                     light.children[1].intensity = value;
                 });
             });
@@ -395,7 +371,7 @@ export default class Lights
             .min(0)
             .max(1)
             .onChange((value) => {
-                lights.forEach((light) => {
+                group.children.forEach((light) => {
                     light.children[1].penumbra = value;
                 });
             });
@@ -407,7 +383,7 @@ export default class Lights
             .min(0)
             .max(1)
             .onChange((value) => {
-                lights.forEach((light) => {
+                group.children.forEach((light) => {
                     light.children[0].material.uniforms.edgeScale.value = value;
                 });
             });
@@ -419,42 +395,9 @@ export default class Lights
             .min(0)
             .max(1)
             .onChange((value) => {
-                lights.forEach((light) => {
+                group.children.forEach((light) => {
                     light.children[0].material.uniforms.edgeConstractPower.value = value;
                 });
-            });
-
-        catWalkFolder
-            .add(debugObject, 'shadowMapSizeWidth')
-            .name('Shadow Map Size Width')
-            .step(1)
-            .min(0)
-            .max(4096)
-            .onChange((value) => {
-                lights.forEach((light) => {
-                    light.children[1].shadow.mapSize.width = value;
-                    if (light.children[1].shadow.map) {
-                        light.children[1].shadow.mapSize.width = value;
-                        light.children[1].shadow.map.dispose();
-                        light.children[1].shadow.map = null;
-                    }
-                });
-            });
-
-        catWalkFolder
-            .add(debugObject, 'shadowMapSizeHeight')
-            .name('Shadow Map Size Height')
-            .step(1)
-            .min(0)
-            .max(4096)
-            .onChange((value) => {
-                lights.forEach((light) => {
-                    if (light.children[1].shadow.map) {
-                    light.children[1].shadow.mapSize.height = value;
-                    light.children[1].shadow.map.dispose();
-                    light.children[1].shadow.map = null;
-                    }
-                })
             });
     }
 
@@ -462,9 +405,12 @@ export default class Lights
 
     setObjectLight(object, count, radius = 5, height = 10, coneLength = 10, coneRadius = 3, shadowEnabled = true)
     {
+    const group = new THREE.Group()
     const gap = 360 / count
-    const lights = []
-    this.objectLight = lights
+
+    // calculate the lookAt object's world position
+    const localPosition = new THREE.Vector3()
+    object.localToWorld(localPosition)
 
     for (let i = 0; i < count; i++)
     {
@@ -498,169 +444,258 @@ export default class Lights
     spotLight.shadow.camera.far = 50; // default
     spotLight.shadow.focus = 1; // default
 
-    // calculate the lookAt object's world position
-    const localPosition = new THREE.Vector3()
-    object.localToWorld(localPosition)
-
     // add the object's position to the lights position
-    volumetricLight.position.x += localPosition.x
-    volumetricLight.position.z += localPosition.z
+    group.position.x = localPosition.x
+    group.position.z = localPosition.z
 
     // lookAt the object
-    volumetricLight.lookAt(localPosition)
+    volumetricLight.lookAt(0, 0, 0)
     spotLight.target = object
-
-    // helpers
-    // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-    // this.scene.add(spotLightHelper);
-    // const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-    // this.scene.add(shadowCameraHelper);
 
     //bloom
     const lightMesh = volumetricLight.children[2]
-    lightMesh.traverse((child) => {
+    const reflector = lightMesh.children[0].children[5]
+    reflector.traverse((child) => {
         if (child.isMesh) {
            this.bloom.push(child)
         }
     });
 
-    this.bloom.push(cone)
+    group.add(volumetricLight)
+    }
 
     // add
-    lights.push(volumetricLight)
-    this.scene.add(volumetricLight)
-    }
+    this.scene.add(group)
+    this.lightGroups[object.name] = group; // Store the group by object name or ID
 
     // Debug
     if (this.debug.active) {
-        const debugFolder = this.debugFolder.addFolder(`${object.name}`);
-        debugFolder.close();
 
-        const debugObject = {
-            intensity: lights[0].children[1].intensity,
-            positionY: lights[0].position.y,
-            attenuation: lights[0].children[0].material.uniforms.attenuation.value,
-            anglePower: lights[0].children[0].material.uniforms.anglePower.value,
-            edgeScale: lights[0].children[0].material.uniforms.edgeScale.value,
-            edgeConstractPower: lights[0].children[0].material.uniforms.edgeConstractPower.value
-        };
+    //  Helpers
+    const spotLightHelpers = [];
+    const shadowHelpers = [];
+    group.children.forEach((light) => {
+        const spotLightHelper = new THREE.SpotLightHelper(light.children[1]);
+        this.scene.add(spotLightHelper);
+        spotLightHelper.visible = false;
+        spotLightHelpers.push(spotLightHelper); // Store reference
 
-        const localPosition = new THREE.Vector3();
-        object.localToWorld(localPosition);
+        const shadowCameraHelper = new THREE.CameraHelper(light.children[1].shadow.camera);
+        this.scene.add(shadowCameraHelper);
+        shadowCameraHelper.visible = false;
+        shadowHelpers.push(shadowCameraHelper); // Store reference
+    });
 
+    // Function to update SpotLightHelpers
+    const updateSpotLightHelpers = () => {
+        spotLightHelpers.forEach(helper => helper.update());
+    };
 
-        debugFolder
-            .add({ radius }, 'radius')
-            .name('Circle Radius')
-            .min(1)
-            .max(20)
-            .step(0.1)
-            .onChange((value) => {
-            lights.forEach((volumetricLight, index) => {
-                const gap = 360 / count;
-                volumetricLight.position.x = Math.cos(THREE.MathUtils.degToRad(gap * index)) * value;
-                volumetricLight.position.z = Math.sin(THREE.MathUtils.degToRad(gap * index)) * value;
+    // Folder
+    const debugFolder = this.debugFolder.addFolder(`${object.name}`);
+    debugFolder.close();
 
-                volumetricLight.position.x += localPosition.x
-                volumetricLight.position.z += localPosition.z
+    const debugObject = {
+        intensity: group.children[0].children[1].intensity,
+        positionY: group.children[0].position.y,
+        attenuation: group.children[0].children[0].material.uniforms.attenuation.value,
+        anglePower: group.children[0].children[0].material.uniforms.anglePower.value,
+        edgeScale: group.children[0].children[0].material.uniforms.edgeScale.value,
+        edgeConstractPower: group.children[0].children[0].material.uniforms.edgeConstractPower.value,
+        count: count // Add this line
+    };
+ 
+    this[`${object.name}Speed`] = 0.05;
+    
+    debugFolder
+        .add(this, `${object.name}Speed`)
+        .name('Speed')
+        .min(0)
+        .max(1)
+        .step(0.01)
+        .onChange((value) => {
+            this[`${object.name}Speed`] = value;
+        });
 
-                volumetricLight.lookAt(localPosition);  
-            });
-            });
-
-            debugFolder
-                .add({ rotationY: 0 }, 'rotationY')
-                .name('Rotation Y')
-                .min(0)
-                .max(Math.PI * 2)
-                .step(0.01)
-                .onChange((value) => {
-                    lights.forEach((volumetricLight, index) => {
-                        const gap = 360 / count;
-                        volumetricLight.position.x = Math.cos(THREE.MathUtils.degToRad(gap * index + THREE.MathUtils.radToDeg(value))) * radius;
-                        volumetricLight.position.z = Math.sin(THREE.MathUtils.degToRad(gap * index + THREE.MathUtils.radToDeg(value))) * radius;
-
-                        volumetricLight.position.x += localPosition.x;
-                        volumetricLight.position.z += localPosition.z;
-
-                        volumetricLight.lookAt(localPosition);
-                    });
+    debugFolder
+        .add(debugObject, 'count')
+        .name('Light Count')
+        .min(0)
+        .max(20)
+        .step(1)
+        .onChange((value) => {
+            // Clear existing lights
+            while (group.children.length > 0) {
+                const child = group.children[0];
+                child.traverse((object) => {
+                    if (object.isMesh) {
+                        object.geometry.dispose();
+                        object.material.dispose();
+                    }
                 });
-
-        debugFolder
-            .add(debugObject, 'positionY')
-            .name('Position Y')
-            .min(-10)
-            .max(10)
-            .step(0.1)
-            .onChange((value) => {
-            lights.forEach((volumetricLight) => {
-                volumetricLight.position.y = value;
-                volumetricLight.lookAt(localPosition);
-            });
-            });
-
-
-        debugFolder
-            .add(debugObject, 'intensity')
-            .name('Intensity')
-            .min(0)
-            .max(1000)
-            .step(0.1)
-            .onChange((value) => {
-                lights.forEach((volumetricLight) => {
-                    volumetricLight.children[1].intensity = value;
+                group.remove(child);
+            }
+            // Add new lights
+            for (let i = 0; i < value; i++) {
+                const volumetricLight = new VolumetricSpotLight('white', coneRadius, coneLength, 10);
+    
+                // each light group positioned on a circle
+                volumetricLight.position.x = Math.cos(THREE.MathUtils.degToRad((360 / value) * i)) * radius;
+                volumetricLight.position.z = Math.sin(THREE.MathUtils.degToRad((360 / value) * i)) * radius;
+                volumetricLight.position.y = height;
+    
+                // Adjust light
+                const spotLight = volumetricLight.children[1];
+                spotLight.intensity = 1000;
+                spotLight.penumbra = 1;
+                spotLight.decay = 1.5;
+                spotLight.distance = 15;
+    
+                // Adjust cone
+                const cone = volumetricLight.children[0];
+                const coneUniforms = cone.material.uniforms;
+                coneUniforms.attenuation.value = 10.5;
+                coneUniforms.anglePower.value = 5;
+                coneUniforms.edgeScale.value = 0.5;
+                coneUniforms.edgeConstractPower.value = 0.7;
+    
+                // Shadows
+                spotLight.castShadow = shadowEnabled;
+                spotLight.shadow.mapSize.set(1024, 1024);
+                spotLight.shadow.camera.fov = coneRadius;
+                spotLight.shadow.camera.near = 0.5;
+                spotLight.shadow.camera.far = 50;
+                spotLight.shadow.focus = 1;
+    
+                // lookAt the object
+                volumetricLight.lookAt(0, localPosition.y, 0);
+                spotLight.target = object;
+    
+                // bloom
+                const lightMesh = volumetricLight.children[2];
+                const reflector = lightMesh.children[0].children[5];
+                reflector.traverse((child) => {
+                    if (child.isMesh) {
+                        this.bloom.push(child);
+                    }
                 });
-            });
+    
+                group.add(volumetricLight);
+            }
+        });
 
         debugFolder
-            .add(debugObject, 'attenuation')
-            .name('Attenuation')
-            .min(0)
-            .max(20)
-            .step(0.1)
-            .onChange((value) => {
-                lights.forEach((volumetricLight) => {
-                    volumetricLight.children[0].material.uniforms.attenuation.value = value;
-                });
-            });
+        .add({ showHelpers: false }, 'showHelpers')
+        .name('Show Helpers')
+        .onChange((value) => {
+        spotLightHelpers.forEach(helper => helper.visible = value);
+        shadowHelpers.forEach(helper => helper.visible = value);
+        });
 
-        debugFolder
-            .add(debugObject, 'anglePower')
-            .name('Angle Power')
-            .min(0)
-            .max(20)
-            .step(0.1)
-            .onChange((value) => {
-                lights.forEach((volumetricLight) => {
-                    volumetricLight.children[0].material.uniforms.anglePower.value = value;
-                });
-            });
+    debugFolder
+        .add({ radius }, 'radius')
+        .name('Circle Radius')
+        .min(1)
+        .max(20)
+        .step(0.1)
+        .onChange((value) => {
+        group.children.forEach((volumetricLight, index) => {
+            const count = group.children.length
+            const gap = 360 / count;
+            volumetricLight.position.x = Math.cos(THREE.MathUtils.degToRad(gap * index)) * value;
+            volumetricLight.position.z = Math.sin(THREE.MathUtils.degToRad(gap * index)) * value;
+            volumetricLight.lookAt(localPosition)
 
-        debugFolder
-            .add(debugObject, 'edgeScale')
-            .name('Edge Scale')
-            .min(0)
-            .max(1)
-            .step(0.01)
-            .onChange((value) => {
-                lights.forEach((volumetricLight) => {
-                    volumetricLight.children[0].material.uniforms.edgeScale.value = value;
-                });
-            });
+        });
 
-        debugFolder
-            .add(debugObject, 'edgeConstractPower')
-            .name('Edge Constract Power')
-            .min(0)
-            .max(1)
-            .step(0.01)
-            .onChange((value) => {
-                lights.forEach((volumetricLight) => {
-                    volumetricLight.children[0].material.uniforms.edgeConstractPower.value = value;
-                });
+        updateSpotLightHelpers()
+        });
+
+    debugFolder
+        .add(group.rotation, 'y')
+        .name('Rotation Y')
+        .min(0)
+        .max(Math.PI * 2)
+        .step(0.01)
+        .onChange((value) => {
+            group.rotation.y = value;
+            updateSpotLightHelpers();
+        });
+
+    debugFolder
+        .add(debugObject, 'positionY')
+        .name('Position Y')
+        .min(-10)
+        .max(10)
+        .step(0.1)
+        .onChange((value) => {
+        group.children.forEach((volumetricLight) => {
+            volumetricLight.position.y = value;
+            volumetricLight.lookAt(localPosition)
+        });
+        updateSpotLightHelpers()
+        });
+
+    debugFolder
+        .add(debugObject, 'intensity')
+        .name('Intensity')
+        .min(0)
+        .max(1000)
+        .step(0.1)
+        .onChange((value) => {
+            group.children.forEach((volumetricLight) => {
+                volumetricLight.children[1].intensity = value;
             });
-    }
+        });
+
+    debugFolder
+        .add(debugObject, 'attenuation')
+        .name('Attenuation')
+        .min(0)
+        .max(20)
+        .step(0.1)
+        .onChange((value) => {
+            group.children.forEach((volumetricLight) => {
+                volumetricLight.children[0].material.uniforms.attenuation.value = value;
+            });
+        });
+
+    debugFolder
+        .add(debugObject, 'anglePower')
+        .name('Angle Power')
+        .min(0)
+        .max(20)
+        .step(0.1)
+        .onChange((value) => {
+            group.children.forEach((volumetricLight) => {
+                volumetricLight.children[0].material.uniforms.anglePower.value = value;
+            });
+        });
+
+    debugFolder
+        .add(debugObject, 'edgeScale')
+        .name('Edge Scale')
+        .min(0)
+        .max(1)
+        .step(0.01)
+        .onChange((value) => {
+            group.children.forEach((volumetricLight) => {
+                volumetricLight.children[0].material.uniforms.edgeScale.value = value;
+            });
+        });
+
+    debugFolder
+        .add(debugObject, 'edgeConstractPower')
+        .name('Edge Constract Power')
+        .min(0)
+        .max(1)
+        .step(0.01)
+        .onChange((value) => {
+            group.children.forEach((volumetricLight) => {
+                volumetricLight.children[0].material.uniforms.edgeConstractPower.value = value;
+            });
+        });
+}
     
     }
 
@@ -678,7 +713,6 @@ export default class Lights
         // spotLight.castShadow = true; 
         // const spotLightHelper = new THREE.SpotLightHelper(spotLight)
         this.scene.add(spotLight)
-    
 
         // Debug
         if (this.debug.active)
@@ -749,20 +783,7 @@ export default class Lights
 
     setBloom()
     {
-    
-    this.renderer.setSelectiveBloom()
-    this.bloom.forEach((child) => {  this.renderer.selectiveBloom.selection.add(child)})
-
-    // const testCone = new THREE.Mesh(
-    //     new THREE.ConeGeometry(2, 2, 20, 20),
-    //     new THREE.MeshStandardMaterial({
-    //         color: 'white',
-    //         emissive: new THREE.Color(0xffffff),
-    //         emissiveIntensity: 1
-    //     })
-    // )
-    // testCone.position.set(5, 5, 5)
-    // this.scene.add(testCone)
+    this.bloom.forEach((child) => {this.renderer.selectiveBloom.selection.add(child)})
 
     const bulb = this.scene_3.empty.children[1].children[0]
     bulb.material = new THREE.MeshStandardMaterial({
@@ -776,6 +797,24 @@ export default class Lights
     this.renderer.selectiveBloom.selection.add(bulb)
     }
 
-    update(){
-}
+    update()
+    {
+        this.lightGroups.pose.rotation.y += this.poseSpeed
+        this.lightGroups.sphere.rotation.y += this.sphereSpeed
+        
+        // catWalk
+        const speed = 1
+
+        if (Math.random() < 0.01) { // 1% chance to update on each frame
+            this.lightGroups.catWalk.traverse(child => { 
+            if (child instanceof THREE.SpotLight) { 
+                child.intensity = 100 + Math.sin(Date.now() * speed) * 50;
+            }
+            if (child.children[0] && child.children[0].material && child.children[0].material.uniforms) {
+                child.children[0].material.uniforms.anglePower.value = 5 + Math.sin(Date.now() * speed) * 0.2;
+                child.children[0].material.uniforms.attenuation.value = 10.5 + Math.sin(Date.now() * speed) * 0.5;
+            }
+            });
+        }
+    }
 }

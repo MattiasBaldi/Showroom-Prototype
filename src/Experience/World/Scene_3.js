@@ -55,16 +55,6 @@ export default class Scene_3 {
             }
     }
 
-    castShadow()
-    {
-        this.scene.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-            }
-        });
-    }
-
     update()
     {
         this.switch.update()

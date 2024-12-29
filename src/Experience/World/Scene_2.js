@@ -35,6 +35,7 @@ export default class Sphere
         this.setOffset()
         this.setMaterial()
         this.setSphere()
+        // this.setBloom()
 
         // Switch
         this.switch = new Switch(this.sphere, 1.5, 10)
@@ -343,6 +344,11 @@ export default class Sphere
                     sound.gain.gain.linearRampToValueAtTime(1, currentTime + 3);
                 })
             }
+    }
+
+    setBloom()
+    {
+        this.renderer.selectiveBloom.selection.add(this.sphere)
     }
 
     update()

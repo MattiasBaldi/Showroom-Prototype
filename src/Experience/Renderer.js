@@ -32,10 +32,10 @@ export default class Renderer
 
         // Post Processing -- Effects should be applied in the below order
         this.setComposer()
-        this.setAntiAliasing()
+        // this.setAntiAliasing()
         // this.setBloom()
         this.setToneMapping()
-        // this.setSelectiveBloom()
+        this.setSelectiveBloom()
         // this.setDepthOfField()
         // this.setColor()
         // this.setGodRays()

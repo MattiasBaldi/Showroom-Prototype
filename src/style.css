@@ -87,12 +87,12 @@
     display: none; 
 }
 
-
-
+/* 
 #ui-overlay #orbit-objects
 {
 
-}
+} */
+
 @keyframes scaleAnimation {
     0% {
         transform: scale(1);
@@ -137,7 +137,6 @@ display: block;
 #ui-overlay #mobile-blocker {
     display: none;
 } 
-
 
 @media (max-width: 1024px) {
     #mobile-blocker {
