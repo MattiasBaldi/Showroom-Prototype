@@ -18,15 +18,17 @@ export default class WASD {
         this.direction = new THREE.Vector3();
 
         // Movement flags
-        this.moveSpeed =  0.5; 
+        this.moveSpeed =  0.6;
         this.moveForward = false;
         this.moveBackward = false;
         this.moveLeft = false;
         this.moveRight = false;
         this.canJump = false;
+        // this.sprintSpeed = this.moveSpeed * 1.5
 
         this.setKeyMap()
         this.setPointerLockControls()
+    
     }
 
     setLock()
@@ -92,6 +94,12 @@ export default class WASD {
                     if (this.canJump === true) this.velocity.y += 350;
                     this.canJump = false;
                     break;
+
+                // case 'ShiftLeft':
+                // case 'ShiftRight':
+                //     this.sprint = true;
+                //     console.log('shift clicked')
+                //     break;
             }
         }
 
@@ -116,6 +124,17 @@ export default class WASD {
                 case 'KeyD':
                     this.moveRight = false;
                     break;
+
+                case 'Space':
+                    if (this.canJump === true) this.velocity.y += 350;
+                    this.canJump = false;
+                    break;
+
+                // case 'ShiftLeft':
+                // case 'ShiftRight':
+                //     console.log('shift up')
+                //     this.sprint = false;
+                //     break;
             }
         }
 
@@ -126,7 +145,7 @@ export default class WASD {
     setPointerLockControls() {
         this.camera.position.y = 1; 
         this.PointerLockControls = new PointerLockControls(this.camera, this.canvas)
-        // this.setLock()
+        this.PointerLockControls.pointerSpeed  = 2;
     }
 
     update()
@@ -145,6 +164,14 @@ export default class WASD {
             if (this.moveLeft || this.moveRight) this.velocity.x -= (this.direction.x * 400 * (this.time.delta * 0.001) * this.moveSpeed);
             this.PointerLockControls.moveRight(-this.velocity.x * (this.time.delta * 0.001) * this.moveSpeed);
             this.PointerLockControls.moveForward(-this.velocity.z * (this.time.delta * 0.001) * this.moveSpeed);
+
+            // Sprint
+            // if (this.sprint) {
+            //     this.moveSpeed = this.sprintSpeed;
+            // } else {
+            //     this.moveSpeed = this.originalSpeed;
+            // }
+
         }     
     }
 }

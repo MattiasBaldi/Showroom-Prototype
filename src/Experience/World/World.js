@@ -25,12 +25,12 @@ export default class World
         {   
             // Setup
             this.camera.position.set(0, 1, 150)
+            this.environment = new Environment()
             this.scene_3 = new Scene_3()
             this.scene_2 = new Scene_2()
             this.scene_1 = new Scene_1()
             this.teleportation = new Teleportation()
             this.lights = new Lights()
-            this.environment = new Environment()
             this.audio = new Audio()
             this.shadows = new Shadows()
         })

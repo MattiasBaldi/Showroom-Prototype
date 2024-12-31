@@ -1,8 +1,12 @@
-
-// What this does is, it creates an event listener, that works as a switch to toggle between orbitcontrols that pivots around specific object as the pivot point, this eventlistener is removed when camera steps out of the area, and the pivot is only avaiable in that radius as well, the eventlistener is a switch that switches between pointerlock and orbitcontrols
-
 import * as THREE from 'three'
 import Experience from '../Experience.js'
+
+/*
+    What this does is, it creates an event listener, 
+    that works as a switch to toggle between orbitcontrols with a pivot point around a specific object.
+    This eventlistener is removed when the camera steps out of the area, and the pivot is only avaiable in that radius as well, 
+    the eventlistener is a switch that switches between pointerlock and orbitcontrols.
+ */
 
 
 export default class Switch {

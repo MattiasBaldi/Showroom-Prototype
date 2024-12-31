@@ -1,7 +1,6 @@
 import Experience from '../Experience.js'
 import { OrbitControls } from 'three/examples/jsm/Addons.js'
 import  WASD from './WASD.js'
-import * as THREE from 'three'
 
 export default class Controls {
     constructor(camera, canvas) {
@@ -18,26 +17,31 @@ export default class Controls {
 
         // Debug
         if (this.debug.active)
-        {
-            this.debugFolder = this.debug.ui.addFolder('Controls')
-            this.debugFolder.close()
-        }
+            {
+                this.debugFolder = this.debug.ui.addFolder('Controls')
+                this.debugFolder.close()
+
+                            // this.debugFolder.add(this.wasd, 'move   Speed').min(0).max(2).step(0.01).name('Movement Speed');
+            // this.debugFolder.add(this.wasd.PointerLockControls, 'pointerSpeed').min(0.1).max(5).step(0.1).name('Pointer Speed');
+            }
+
         }
 
     reset()
     {
         if (this.OrbitControls) 
         {
-        this.OrbitControls.dispose();
-        this.OrbitControls = null; 
+            this.OrbitControls.dispose();
+            this.OrbitControls = null; 
         }
 
         if (this.wasd) 
         {
-            this.wasd.PointerLockControls.unlock()
+            this.wasd.PointerLockControls.unlock();
             this.wasd.PointerLockControls.dispose(); 
             this.wasd = null;
         }
+
     }
 
     setFullscreen()
@@ -47,7 +51,6 @@ export default class Controls {
 
     // Clicking on the fullscreen icon toggles fullscreen and removes blocker
      const experienceCanvas = document.body
-
     
     fullscreen.addEventListener('click', () =>
     {
@@ -167,29 +170,32 @@ export default class Controls {
                 this.setOrbitControls()
         }
 
-
-        //Debug
-        if (this.debug.active) {
-            const modes = { switchState: '' };
-            this.debugFolder
-                .add(modes, 'switchState', ['PointerLock', 'OrbitControls'])
-                .name('Switch')
-                .onChange((value) => {
-                    modes.switchState = value;
-                    this.setControls(value);
-                });
-        }
 }
 
     update() {
 
         if (this.OrbitControls) {
             this.OrbitControls.update()
-        }
 
+            // Remove debug of the old this.wasd instance
+            if (this.debug.active && this.debugFolder.children.length !== 0)
+            {
+                this.debugFolder.controllers.forEach(controller => controller.destroy());
+            } 
+        
+        }
+        
         if (this.wasd) {
             this.wasd.update()
+
+            // Add debug of the new this.wasd instance
+            if (this.debug.active && this.debugFolder.children.length === 0)
+            {
+            this.debugFolder.add(this.wasd, 'moveSpeed').min(0).max(2).step(0.01).name('Movement Speed');
+            this.debugFolder.add(this.wasd.PointerLockControls, 'pointerSpeed').min(0.1).max(5).step(0.1).name('Pointer Speed');
+            }
+
         }
 
-    }
+}
 }

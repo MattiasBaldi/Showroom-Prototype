@@ -18,6 +18,8 @@ export default class Lights
 
         this.poseSpeed = null
         this.sphereSpeed = null
+        this.scene_3Speed = null
+        
 
         // Debug
         if (this.debug.active) {
@@ -505,7 +507,7 @@ export default class Lights
         count: count // Add this line
     };
  
-    this[`${object.name}Speed`] = 0.05;
+    this[`${object.name}Speed`] = 0.01;
     
     debugFolder
         .add(this, `${object.name}Speed`)
@@ -801,6 +803,7 @@ export default class Lights
     {
         this.lightGroups.pose.rotation.y += this.poseSpeed
         this.lightGroups.sphere.rotation.y += this.sphereSpeed
+        this.lightGroups.scene_3.rotation.y +=  this.scene_3Speed
         
         // catWalk
         const speed = 1

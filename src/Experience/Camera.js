@@ -10,7 +10,15 @@ export default class Camera
         this.sizes = this.experience.sizes
         this.scene = this.experience.scene
         this.canvas = this.experience.canvas
+        this.debug = this.experience.debug
   
+       // Debug
+       if(this.debug.active)
+        {
+            this.debugFolder = this.debug.ui.addFolder('Camera')
+            this.debugFolder.close()
+        }
+
         // Set Controls
         this.setInstance()
         this.controls = new Controls(this.instance, this.canvas)
@@ -25,6 +33,15 @@ export default class Camera
         // this.instance.near = this.instance.near
         this.instance.far = 30
         this.scene.add(this.instance)
+
+        // Debug
+        if(this.debug.active)
+        {
+            this.debugFolder.add(this.instance, 'far').min(0).max(100).step(1).onChange((value) => {
+                this.instance.far = value
+                this.instance.updateProjectionMatrix()
+            })
+        }
     }
 
     resize()

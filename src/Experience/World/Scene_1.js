@@ -12,6 +12,7 @@ export default class Scene_1
         this.renderer = this.experience.renderer
         this.controls = this.camera.controls
         this.resources = this.experience.resources
+        this.environment = this.experience.world.environment
         this.time = this.experience.time
         this.debug = this.experience.debug
 
@@ -39,6 +40,7 @@ export default class Scene_1
         this.setFade()
         this.setWalls()
         // this.setBloom()
+        this.setMaterial()
 
         // Switch
         this.switch = new Switch(this.posedBody, 2, 10)
@@ -327,6 +329,12 @@ export default class Scene_1
             }
         });
 
+    }
+    
+    setMaterial()
+    {
+        this.animatedBody.material.envMap = this.environment.environmentMap
+        this.animatedBody.material.envMapIntensity = 1
     }
 
     setBloom()

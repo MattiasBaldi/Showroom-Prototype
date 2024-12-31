@@ -46,12 +46,11 @@ export default class Scene_3 {
         // Debug
         if(this.debug.active)
             {
-                this.debugFolder.add(this.sceneGroup.position, 'x').name('PositionX').step(1).min(-100).max(100)
-                this.debugFolder.add(this.sceneGroup.rotation, 'y').name('Rotation').step(Math.PI * 0.25).min(- 10).max(10)
-                this.debugFolder.add(this.sceneGroup.scale, 'x', 'y', 'z').name('Scale').step(0.01).min(0).max(2).onChange((value) => {
-                this.sceneGroup.scale.set(value, value, value)         })
-
-   
+                this.debugFolder.add(this.sceneModels.position, 'x').name('PositionX').step(1).min(-100).max(100)
+                this.debugFolder.add(this.sceneModels.rotation, 'y').name('Rotation').step(Math.PI * 0.25).min(-10).max(10)
+                this.debugFolder.add(this.sceneModels.scale, 'x').name('Scale').step(0.01).min(0).max(2).onChange((value) => {
+                    this.sceneModels.scale.set(value, value, value)
+                })
             }
     }
 
