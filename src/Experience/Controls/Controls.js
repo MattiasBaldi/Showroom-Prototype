@@ -21,7 +21,7 @@ export default class Controls {
                 this.debugFolder = this.debug.ui.addFolder('Controls')
                 this.debugFolder.close()
 
-                            // this.debugFolder.add(this.wasd, 'move   Speed').min(0).max(2).step(0.01).name('Movement Speed');
+            // this.debugFolder.add(this.wasd, 'move   Speed').min(0).max(2).step(0.01).name('Movement Speed');
             // this.debugFolder.add(this.wasd.PointerLockControls, 'pointerSpeed').min(0.1).max(5).step(0.1).name('Pointer Speed');
             }
 

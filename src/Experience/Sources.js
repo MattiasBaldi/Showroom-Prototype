@@ -1,9 +1,37 @@
 export default [
+
+// HDR'S
+    {
+        name: 'blockyStudio',
+        type: 'HDR',
+        path: 'HDR/blocky_photo_studio_1k.hdr'
+    },
     {
         name: 'blueStudio',
         type: 'HDR',
         path: 'HDR/blue_photo_studio_1k.hdr'
+    },
+    {
+        name: 'brownStudio',
+        type: 'HDR',
+        path: 'HDR/brown_photostudio_03_1k.hdr'
+    },
+    {
+        name: 'photoStudio',
+        type: 'HDR',
+        path: 'HDR/photo_studio_london_hall_1k.hdr'
+    },
+    {
+        name: 'studioSmall',
+        type: 'HDR',
+        path: 'HDR/studio_small_03_1k.hdr'
+    },
 
+// GLTF'S
+    {
+        name: 'Scene_0',
+        type: 'gltfModel',
+        path: 'models/scenes/scene_0.glb'
     },
     {
         name: 'Scene_1',
@@ -25,6 +53,8 @@ export default [
         type: 'gltfModel',
         path: 'models/floor.glb'
     },
+
+// AUDIO
     {
         name: 'Audio_Scene_1',
         type: 'audio',
@@ -40,6 +70,8 @@ export default [
         type: 'audio',
         path: 'audio/Scene_3.mp3'
     },
+
+// TEXTURES
     {
         name: 'floor1_color',
         type: 'texture',

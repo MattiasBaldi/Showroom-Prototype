@@ -797,6 +797,7 @@ export default class Lights
     });
 
     this.renderer.selectiveBloom.selection.add(bulb)
+
     }
 
     update()

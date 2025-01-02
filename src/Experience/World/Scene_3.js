@@ -41,16 +41,23 @@ export default class Scene_3 {
         this.sceneModels.scale.setScalar(1)
         this.sceneModels.name = 'scene_3'
         this.empty.name = 'scene_3'
+        this.lamp = this.empty.children[1]
         this.scene.add(this.sceneModels)
+        
+        console.log(this.lamp)
 
         // Debug
         if(this.debug.active)
             {
-                this.debugFolder.add(this.sceneModels.position, 'x').name('PositionX').step(1).min(-100).max(100)
                 this.debugFolder.add(this.sceneModels.rotation, 'y').name('Rotation').step(Math.PI * 0.25).min(-10).max(10)
                 this.debugFolder.add(this.sceneModels.scale, 'x').name('Scale').step(0.01).min(0).max(2).onChange((value) => {
                     this.sceneModels.scale.set(value, value, value)
                 })
+
+                const lampFolder = this.debugFolder.addFolder('Lamp')
+                lampFolder.add(this.lamp, 'visible').name('Lamp Visibility').listen()
+                lampFolder.add(this.lamp.position, 'y').name('Position Y').step(Math.PI * 0.25).min(-10).max(10)
+
             }
     }
 

@@ -20,7 +20,6 @@ export default class Environment
         }
 
         //Setup
-        this.environmentMap = this.resources.items.blueStudio
         // this.addGrid()
         // this.setFog()
         this.setEnvironmentMap()
@@ -30,6 +29,7 @@ export default class Environment
 
         setEnvironmentMap()
         {
+            this.environmentMap = this.resources.items.blueStudio
             this.environmentMap.mapping =  THREE.EquirectangularReflectionMapping
             this.scene.environment = this.environmentMap
             this.scene.environmentIntensity = 0.3
@@ -41,9 +41,17 @@ export default class Environment
                 const debugObject = {
                     showBackground: false,
                     gridHelper: true,
-                    intensity: this.scene.environmentIntensity
+                    intensity: this.scene.environmentIntensity,
+                    maps: {
+                        blueStudio: this.resources.items.blueStudio, 
+                        blockyStudio: this.resources.items.blockyStudio,
+                        brownStudio: this.resources.items.brownStudio,
+                        photoStudio: this.resources.items.photoStudio,
+                        studioSmall: this.resources.items.studioSmall
+                    }
+
                 };
-        
+
                 this.debugFolder
                 .add(debugObject, 'showBackground')
                 .name('Show Background')
@@ -56,12 +64,34 @@ export default class Environment
                 });
 
                 this.debugFolder
+                .add({ environmentMap: 'blueStudio' }, 'environmentMap', Object.keys(debugObject.maps))
+                .name('Environment Map')
+                .onChange((value) => {
+                    this.environmentMap = debugObject.maps[value];
+                    this.environmentMap.mapping =  THREE.EquirectangularReflectionMapping
+                    this.scene.environment = this.environmentMap
+                    this.scene.environmentIntensity = debugObject.intensity
+                    if (debugObject.showBackground) {
+                        this.scene.background = this.environmentMap;
+                    }
+                });
+                
+
+                this.debugFolder
                 .add(this.scene, 'environmentIntensity')
                 .name('Env Light Intensity')
                 .min(0)
                 .max(10)
-                .step(0.001);
+                .step(0.001)
+                .onChange((value) => { 
+                    this.scene.environmentIntensity = value;
+                    if (debugObject.showBackground) {
+                        this.scene.backgroundIntensity = value;
+                        this.scene.background.needsUpdate = true;
+                    }
+                });
             }
+
         }
 
         setFog()

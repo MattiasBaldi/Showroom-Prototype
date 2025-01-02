@@ -26,6 +26,7 @@ export default class Shadows {
 
         
         this.setCatWalkShadow()
+        this.setScene3Shadow()
 
  
     }
@@ -83,4 +84,32 @@ export default class Shadows {
         }
 
     }
+
+    setPosedShadow()
+    {
+
+        this.scene_1.posedModel.castShadow = true; 
+        this.scene_1.posedModel.traverse((child) => {
+            if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            }
+        });
+
+    }
+
+    setScene3Shadow()
+    {
+
+        console.log(this.scene_3.empty)
+
+        this.scene_3.empty.traverse((child) => {
+            if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            }
+        });
+
+    }
+
 }
