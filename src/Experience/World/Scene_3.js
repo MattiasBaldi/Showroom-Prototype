@@ -43,8 +43,6 @@ export default class Scene_3 {
         this.empty.name = 'scene_3'
         this.lamp = this.empty.children[1]
         this.scene.add(this.sceneModels)
-        
-        console.log(this.lamp)
 
         // Debug
         if(this.debug.active)
@@ -56,7 +54,7 @@ export default class Scene_3 {
 
                 const lampFolder = this.debugFolder.addFolder('Lamp')
                 lampFolder.add(this.lamp, 'visible').name('Lamp Visibility').listen()
-                lampFolder.add(this.lamp.position, 'y').name('Position Y').step(Math.PI * 0.25).min(-10).max(10)
+                lampFolder.add(this.lamp.position, 'y').name('Position Y').step(0.01).min(0).max(1000)
 
             }
     }

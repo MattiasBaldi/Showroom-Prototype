@@ -101,8 +101,6 @@ export default class Shadows {
     setScene3Shadow()
     {
 
-        console.log(this.scene_3.empty)
-
         this.scene_3.empty.traverse((child) => {
             if (child.isMesh) {
             child.castShadow = true;

@@ -24,6 +24,7 @@ export default class Environment
         // this.setFog()
         this.setEnvironmentMap()
         this.addFloor()
+        this.addWalls()
 
     }
 
@@ -259,6 +260,146 @@ export default class Environment
             .max(1)
             .min(0);
         }
+        }
+
+        addWalls()
+        {
+            const wallGeometry = new THREE.PlaneGeometry(10, 10)
+            const wallMaterial = new THREE.MeshStandardMaterial
+                ({
+                color: 'black', 
+                wireframe: false,
+                roughness: 0, 
+                envMap: this.environmentMap,
+                envMapIntensity: 0.01
+                })
+                
+            const wall = new THREE.Mesh(wallGeometry, wallMaterial)
+            wall.geometry.translate(0, wall.geometry.parameters.height / 2, 0) // Translate the geometry so the pivot point is at the center
+  
+            const addWall = ({ rotationX = 0, rotationY = 0, rotationZ = 0, positionX = 0, positionY = 0, positionZ = 0, width = 1, height = 1 }) =>
+            {
+                const clone = wall.clone()
+                clone.rotation.set(rotationX, rotationY, rotationZ)
+                clone.position.set(positionX, positionY, positionZ)
+                clone.scale.set(width, height, 1)
+                return clone
+            }
+
+            const wallOne = addWall({ width: 30, positionZ: -10 })
+            const wallTwo = new THREE.Group()
+            const wallTwoOne = addWall({ width: 30, positionZ: 10, rotationY: Math.PI })
+            const wallTwoTwo = addWall({ width: 30, positionZ: 10, rotationY: Math.PI })
+            wallTwo.add(wallTwoOne, wallTwoTwo)
+
+            const wallThree = addWall({ width: 2, positionX: -145, rotationY: Math.PI * 0.5 })
+            const wallFour = addWall({ width: 2, positionX: 145, rotationY: Math.PI * -0.5 })
+            const wallFive = addWall({ width: 15, positionX: -15, positionZ: 80, rotationY: Math.PI * 0.5 })
+            const wallSix = addWall({ width: 15, positionX: 15, positionZ: 80, rotationY: Math.PI * -0.5 })
+            const wallSeven = addWall({ width: 3, positionZ: 135, rotationY: -Math.PI })
+
+
+            const walls = new THREE.InstancedMesh()
+            this.scene.add(walls)
+
+            
+            // this.scene.add(wallOne, wallTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
+
+
+
+
+            if (this.debug.active) {
+
+                const debugObject =
+                {
+                    wallOne,
+                    wallTwo,
+                    wallThree,
+                    wallFour,
+                    wallFive,
+                    wallSix,
+                    wallSeven
+                }
+
+                const wallsFolder = this.debugFolder.addFolder('Walls');
+
+                const addWallWithDebug = (wall, name) => {
+                    const newWallFolder = wallsFolder.addFolder(name);
+                    newWallFolder.close()
+
+                    newWallFolder
+                        .add(wall.scale, 'x')
+                        .name('Scale X')
+                        .min(-50)
+                        .max(50)
+                        .step(0.1);
+
+                    newWallFolder
+                        .add(wall.scale, 'y')
+                        .name('Scale Y')
+                        .min(-50)
+                        .max(50)
+                        .step(0.1);
+
+                    newWallFolder
+                        .add(wall.scale, 'z')
+                        .name('Scale Z')
+                        .min(-50)
+                        .max(50)
+                        .step(0.1);
+
+                    newWallFolder
+                        .add(wall.position, 'x')
+                        .name('Position X')
+                        .min(-200)
+                        .max(200)
+                        .step(0.1);
+
+                    newWallFolder
+                        .add(wall.position, 'y')
+                        .name('Position Y')
+                        .min(-200)
+                        .max(200)
+                        .step(0.1);
+
+                    newWallFolder
+                        .add(wall.position, 'z')
+                        .name('Position Z')
+                        .min(-200)
+                        .max(200)
+                        .step(0.1);
+
+                    newWallFolder
+                        .add(wall.rotation, 'y')
+                        .name('Rotation')
+                        .min(-Math.PI)
+                        .max(Math.PI)
+                        .step(Math.PI / 4);
+                };
+
+                Object.keys(debugObject).forEach((key, index) => {
+                    addWallWithDebug(debugObject[key], `Wall ${index + 1}`);
+                });
+
+                wallsFolder
+                    .add({ showWalls: true }, 'showWalls')
+                    .name('Show Walls')
+                    .onChange((value) => {
+                        Object.values(debugObject).forEach(wall => {
+                            wall.visible = value;
+                        });
+                    });
+
+                    wallsFolder
+                        .add({ addWall: () => {
+                            const newWall = addWall({ width: 1, height: 1, positionX: 0, positionY: 0, positionZ: 0 });
+                            this.scene.add(newWall);
+                            addWallWithDebug(newWall, `Wall ${Object.keys(debugObject).length + 1}`);
+                            debugObject[`wall${Object.keys(debugObject).length + 1}`] = newWall;
+                        }}, 'addWall')
+                        .name('Add Wall');
+            }
+    
         }
         
         addGrid()

@@ -597,7 +597,7 @@ export default class Lights
     debugFolder
         .add({ radius }, 'radius')
         .name('Circle Radius')
-        .min(1)
+        .min(0)
         .max(20)
         .step(0.1)
         .onChange((value) => {
@@ -788,6 +788,8 @@ export default class Lights
     this.bloom.forEach((child) => {this.renderer.selectiveBloom.selection.add(child)})
 
     const bulb = this.scene_3.empty.children[1].children[0]
+    const frame = this.scene_3.empty.children[1].children[1]
+    
     bulb.material = new THREE.MeshStandardMaterial({
         emissive: new THREE.Color(0x808080),
         emissiveIntensity: 10,
@@ -796,7 +798,15 @@ export default class Lights
         metalness: 1 
     });
 
-    this.renderer.selectiveBloom.selection.add(bulb)
+    frame.material = new THREE.MeshStandardMaterial({
+        emissive: new THREE.Color(0x808080),
+        emissiveIntensity: 3,
+        color: new THREE.Color(0x0000000),
+        roughness: 0,
+        metalness: 1 
+    });
+
+    this.renderer.selectiveBloom.selection.add(bulb, frame)
 
     }
 
@@ -806,19 +816,19 @@ export default class Lights
         this.lightGroups.sphere.rotation.y += this.sphereSpeed
         this.lightGroups.scene_3.rotation.y +=  this.scene_3Speed
         
-        // catWalk
-        const speed = 1
+        // // catWalk
+        // const speed = 1
 
-        if (Math.random() < 0.01) { // 1% chance to update on each frame
-            this.lightGroups.catWalk.traverse(child => { 
-            if (child instanceof THREE.SpotLight) { 
-                child.intensity = 100 + Math.sin(Date.now() * speed) * 50;
-            }
-            if (child.children[0] && child.children[0].material && child.children[0].material.uniforms) {
-                child.children[0].material.uniforms.anglePower.value = 5 + Math.sin(Date.now() * speed) * 0.2;
-                child.children[0].material.uniforms.attenuation.value = 10.5 + Math.sin(Date.now() * speed) * 0.5;
-            }
-            });
-        }
+        // if (Math.random() < 0.01) { // 1% chance to update on each frame
+        //     this.lightGroups.catWalk.traverse(child => { 
+        //     if (child instanceof THREE.SpotLight) { 
+        //         child.intensity = 100 + Math.sin(Date.now() * speed) * 50;
+        //     }
+        //     if (child.children[0] && child.children[0].material && child.children[0].material.uniforms) {
+        //         child.children[0].material.uniforms.anglePower.value = 5 + Math.sin(Date.now() * speed) * 0.2;
+        //         child.children[0].material.uniforms.attenuation.value = 10.5 + Math.sin(Date.now() * speed) * 0.5;
+        //     }
+        //     });
+        // }
     }
 }

@@ -40,7 +40,7 @@ export default class Scene_1
         this.setFade()
         this.setWalls()
         // this.setBloom()
-        this.setMaterial()
+        this.setEnvMapIntensity()
 
         // Switch
         this.switch = new Switch(this.posedBody, 2, 10)
@@ -233,86 +233,86 @@ export default class Scene_1
         }   
     }
 
-    setCatwalkVisualizer()
-    {
-            // walkLength calculated
-            this.walkLength = (this.walkStart - this.walkEnd) * this.scale; 
+    // setCatwalkVisualizer()
+    // {
+    //         // walkLength calculated
+    //         this.walkLength = (this.walkStart - this.walkEnd) * this.scale; 
 
-            // Dispose
-            if (this.catwalk) 
-            {
-            this.scene.remove(this.catwalk);
-            this.catwalk.geometry.dispose();
-            this.catwalk.material.dispose();
-            }
+    //         // Dispose
+    //         if (this.catwalk) 
+    //         {
+    //         this.scene.remove(this.catwalk);
+    //         this.catwalk.geometry.dispose();
+    //         this.catwalk.material.dispose();
+    //         }
 
-            // Catwalk
-            this.catwalk = new THREE.Mesh
-            (
-                new THREE.PlaneGeometry(this.walkLength, 1),
-                new THREE.MeshBasicMaterial({color: 'white'})
-            )
+    //         // Catwalk
+    //         this.catwalk = new THREE.Mesh
+    //         (
+    //             new THREE.PlaneGeometry(this.walkLength, 1),
+    //             new THREE.MeshBasicMaterial({color: 'white'})
+    //         )
 
-            // Rotation
-            this.catwalk.rotation.x = Math.PI * 0.5;
-            this.catwalk.rotation.z = Math.PI * 0.5;
+    //         // Rotation
+    //         this.catwalk.rotation.x = Math.PI * 0.5;
+    //         this.catwalk.rotation.z = Math.PI * 0.5;
 
-            // Debug
-            if (this.debug.active) {
-                this.debugFolder
-                    .add(this.catwalk.rotation, 'z')
-                    .name('Catwalk Rotation Z')
-                    .step(0.01)
-                    .min(-Math.PI)
-                    .max(Math.PI);
+    //         // Debug
+    //         if (this.debug.active) {
+    //             this.debugFolder
+    //                 .add(this.catwalk.rotation, 'z')
+    //                 .name('Catwalk Rotation Z')
+    //                 .step(0.01)
+    //                 .min(-Math.PI)
+    //                 .max(Math.PI);
 
-                this.debugFolder
-                    .add(this.catwalk.rotation, 'y')
-                    .name('Catwalk Rotation Y')
-                    .step(0.01)
-                    .min(-Math.PI)
-                    .max(Math.PI);
+    //             this.debugFolder
+    //                 .add(this.catwalk.rotation, 'y')
+    //                 .name('Catwalk Rotation Y')
+    //                 .step(0.01)
+    //                 .min(-Math.PI)
+    //                 .max(Math.PI);
 
-                this.debugFolder
-                    .add(this.catwalk.rotation, 'x')
-                    .name('Catwalk Rotation X')
-                    .step(0.01)
-                    .min(-Math.PI)
-                    .max(Math.PI);
+    //             this.debugFolder
+    //                 .add(this.catwalk.rotation, 'x')
+    //                 .name('Catwalk Rotation X')
+    //                 .step(0.01)
+    //                 .min(-Math.PI)
+    //                 .max(Math.PI);
 
-                this.debugFolder
-                    .add(this.catwalk.position, 'z')
-                    .name('Catwalk Position Z')
-                    .step(0.01)
-                    .min(-100)
-                    .max(100);
+    //             this.debugFolder
+    //                 .add(this.catwalk.position, 'z')
+    //                 .name('Catwalk Position Z')
+    //                 .step(0.01)
+    //                 .min(-100)
+    //                 .max(100);
 
-                this.debugFolder
-                    .add(this.catwalk.position, 'y')
-                    .name('Catwalk Position Y')
-                    .step(0.01)
-                    .min(-100)
-                    .max(100);
+    //             this.debugFolder
+    //                 .add(this.catwalk.position, 'y')
+    //                 .name('Catwalk Position Y')
+    //                 .step(0.01)
+    //                 .min(-100)
+    //                 .max(100);
 
-                this.debugFolder
-                    .add(this.catwalk.position, 'x')
-                    .name('Catwalk Position X')
-                    .step(0.01)
-                    .min(-100)
-                    .max(100);
+    //             this.debugFolder
+    //                 .add(this.catwalk.position, 'x')
+    //                 .name('Catwalk Position X')
+    //                 .step(0.01)
+    //                 .min(-100)
+    //                 .max(100);
 
-            }
-
-
-            // Position
-            this.catwalk.position.z = (this.walkStart * this.scale) - (this.walkLength * 2 * this.scale);
-            this.catwalk.position.y = 0.01
+    //         }
 
 
+    //         // Position
+    //         this.catwalk.position.z = (this.walkStart * this.scale) - (this.walkLength * 2 * this.scale);
+    //         this.catwalk.position.y = 0.01
 
 
-            this.scene.add(this.catwalk)
-    }
+
+
+    //         this.scene.add(this.catwalk)
+    // }
 
     setFade()
     {
@@ -331,7 +331,7 @@ export default class Scene_1
 
     }
     
-    setMaterial()
+    setEnvMapIntensity()
     {
         this.animatedBody.material.envMap = this.environment.environmentMap
         this.animatedBody.material.envMapIntensity = 1
@@ -339,16 +339,14 @@ export default class Scene_1
 
     setBloom()
     {
-        console.log(this.renderer)
-        console.log(this.renderer.selectiveBloom)
         this.renderer.selectiveBloom.selection.add(this.posedBody)
     }
 
     update()
     {
-            this.animation.mixer.walking.update(this.time.delta * 0.001); 
-            this.updateWalk()
-            this.setFade()
+            // this.animation.mixer.walking.update(this.time.delta * 0.001); 
+            // this.updateWalk()
+            // this.setFade()
             this.switch.update()
     }
 }
