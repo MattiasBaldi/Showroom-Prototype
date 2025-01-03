@@ -11,6 +11,7 @@ export default class Audio {
         this.debug = this.experience.debug
         this.camera = this.experience.camera.instance
         this.scene = this.experience.scene
+        this.scene_0 = this.experience.world.scene_0
         this.scene_1 = this.experience.world.scene_1
         this.scene_2 = this.experience.world.scene_2
         this.scene_3 = this.experience.world.scene_3
@@ -26,12 +27,12 @@ export default class Audio {
             }
 
         // Positional Audio
-        this.setPositionalAudio('Audio_Scene_3', this.scene_1.posedBody, 5, 2)
+        this.setPositionalAudio('Audio_Scene_3', this.scene_1.model, 5, 2)
         this.setPositionalAudio('Audio_Scene_2', this.scene_2.sphere)
         this.setPositionalAudio('Audio_Scene_3', this.scene_3.sceneModels)
 
         // Directional Audio
-        this.setDirectionalAudio('Audio_Scene_1',  this.scene_1.walls, 2, 8, 0.1)
+        this.setDirectionalAudio('Audio_Scene_1',  this.scene_0.runwayThree, 2, 8, 0.1)
      
         // Mute Button
         this.toggleMute()

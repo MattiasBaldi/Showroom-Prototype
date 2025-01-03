@@ -34,16 +34,16 @@ export default class Shadows {
     setCatWalkShadow()
     {
 
-        this.scene_1.animatedModel.castShadow = true; 
-        this.scene_1.animatedModel.traverse((child) => {
-            if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            }
-        });
+        // this.scene_1.animatedModel.castShadow = true; 
+        // this.scene_1.animatedModel.traverse((child) => {
+        //     if (child.isMesh) {
+        //     child.castShadow = true;
+        //     child.receiveShadow = true;
+        //     }
+        // });
 
-        this.scene_1.posedModel.castShadow = true; 
-        this.scene_1.posedModel.traverse((child) => {
+        this.scene_1.model.castShadow = true; 
+        this.scene_1.model.traverse((child) => {
             if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
@@ -53,37 +53,39 @@ export default class Shadows {
 
         // Debug
         if (this.debug.active) {
-            const debugObject = {
-            receiveShadow: this.scene_1.animatedModel.receiveShadow
+            // const debugObject = {
+            // receiveShadow: this.scene_1.animatedModel.receiveShadow
+            // };
+
+            // // Set initial value based on default
+            // this.scene_1.animatedModel.traverse((child) => {
+            // if (child.isMesh) {
+            //     child.receiveShadow = debugObject.receiveShadow;
+            // }
+            // });
+
+            this.scene_1.model.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = debugObject.receiveShadow;
+            }
+            });
+
+            // this.debugFolder.add(debugObject, 'receiveShadow').onChange((value) => {
+            // this.scene_1.animatedModel.traverse((child) => {
+            //     if (child.isMesh) {
+            //     child.receiveShadow = value;
+            //     }
+            // });
+
+
+            this.scene_1.moodel.traverse((child) => {
+                if (child.isMesh) {
+                child.receiveShadow = value;
+                }
+            });
             };
-
-            // Set initial value based on default
-            this.scene_1.animatedModel.traverse((child) => {
-            if (child.isMesh) {
-                child.receiveShadow = debugObject.receiveShadow;
-            }
-            });
-            this.scene_1.posedModel.traverse((child) => {
-            if (child.isMesh) {
-                child.receiveShadow = debugObject.receiveShadow;
-            }
-            });
-
-            this.debugFolder.add(debugObject, 'receiveShadow').onChange((value) => {
-            this.scene_1.animatedModel.traverse((child) => {
-                if (child.isMesh) {
-                child.receiveShadow = value;
-                }
-            });
-            this.scene_1.posedModel.traverse((child) => {
-                if (child.isMesh) {
-                child.receiveShadow = value;
-                }
-            });
-            });
         }
 
-    }
 
     setPosedShadow()
     {

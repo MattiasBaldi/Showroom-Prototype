@@ -299,13 +299,10 @@ export default class Environment
             const wallSeven = addWall({ width: 3, positionZ: 135, rotationY: -Math.PI })
 
 
-            const walls = new THREE.InstancedMesh()
-            this.scene.add(walls)
-
+            // const walls = new THREE.InstancedMesh()
+            // this.scene.add(walls)
             
-            // this.scene.add(wallOne, wallTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
-
-
+            this.scene.add(wallOne, wallTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
 
 
             if (this.debug.active) {

@@ -32,7 +32,7 @@ export default class Lights
         this.lightGroups = {}
 
         // Methods
-        this.setObjectLight(this.scene_1.posedModel, 2, 5, 5, 50, 30)
+        this.setObjectLight(this.scene_1.model, 2, 5, 5, 50, 30)
         this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
         this.setObjectLight(this.scene_3.empty, 4, 5, 5, 50, 30)
         this.setNavigationallight(4, 40, 10)
