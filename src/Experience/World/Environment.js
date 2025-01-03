@@ -1,7 +1,6 @@
 import Experience from '../Experience.js'
 import * as THREE from 'three'
 
-
 export default class Environment
 {
     constructor()
@@ -264,6 +263,7 @@ export default class Environment
 
         addWalls()
         {
+
             const wallGeometry = new THREE.PlaneGeometry(10, 10)
             const wallMaterial = new THREE.MeshStandardMaterial
                 ({
@@ -283,6 +283,7 @@ export default class Environment
                 clone.rotation.set(rotationX, rotationY, rotationZ)
                 clone.position.set(positionX, positionY, positionZ)
                 clone.scale.set(width, height, 1)
+
                 return clone
             }
 
@@ -297,13 +298,9 @@ export default class Environment
             const wallFive = addWall({ width: 15, positionX: -15, positionZ: 80, rotationY: Math.PI * 0.5 })
             const wallSix = addWall({ width: 15, positionX: 15, positionZ: 80, rotationY: Math.PI * -0.5 })
             const wallSeven = addWall({ width: 3, positionZ: 135, rotationY: -Math.PI })
-
-
-            // const walls = new THREE.InstancedMesh()
-            // this.scene.add(walls)
             
             this.scene.add(wallOne, wallTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
-
+   
 
             if (this.debug.active) {
 
@@ -422,6 +419,5 @@ export default class Environment
             else {this.scene.remove(this.gridHelper) } 
             })
             }
-        }
-        
+        }   
     }

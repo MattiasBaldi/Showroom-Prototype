@@ -24,23 +24,12 @@ export default class Shadows {
             this.debugFolder.close();
         }
 
-        
-        this.setCatWalkShadow()
+        this.setPoseShadow()
         this.setScene3Shadow()
-
- 
     }
 
-    setCatWalkShadow()
+    setPoseShadow()
     {
-
-        // this.scene_1.animatedModel.castShadow = true; 
-        // this.scene_1.animatedModel.traverse((child) => {
-        //     if (child.isMesh) {
-        //     child.castShadow = true;
-        //     child.receiveShadow = true;
-        //     }
-        // });
 
         this.scene_1.model.castShadow = true; 
         this.scene_1.model.traverse((child) => {
@@ -53,16 +42,8 @@ export default class Shadows {
 
         // Debug
         if (this.debug.active) {
-            // const debugObject = {
-            // receiveShadow: this.scene_1.animatedModel.receiveShadow
-            // };
 
-            // // Set initial value based on default
-            // this.scene_1.animatedModel.traverse((child) => {
-            // if (child.isMesh) {
-            //     child.receiveShadow = debugObject.receiveShadow;
-            // }
-            // });
+            const debugObject = { receiveShadow: true }; // Define debugObject
 
             this.scene_1.model.traverse((child) => {
             if (child.isMesh) {
@@ -70,35 +51,8 @@ export default class Shadows {
             }
             });
 
-            // this.debugFolder.add(debugObject, 'receiveShadow').onChange((value) => {
-            // this.scene_1.animatedModel.traverse((child) => {
-            //     if (child.isMesh) {
-            //     child.receiveShadow = value;
-            //     }
-            // });
-
-
-            this.scene_1.moodel.traverse((child) => {
-                if (child.isMesh) {
-                child.receiveShadow = value;
-                }
-            });
-            };
         }
-
-
-    setPosedShadow()
-    {
-
-        this.scene_1.posedModel.castShadow = true; 
-        this.scene_1.posedModel.traverse((child) => {
-            if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            }
-        });
-
-    }
+        }
 
     setScene3Shadow()
     {
