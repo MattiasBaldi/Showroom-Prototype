@@ -35,7 +35,6 @@ export default class Scene_0
         this.runwayThree = this.sceneModels.children[6]
         this.audienceThree = this.sceneModels.children[5]
 
-
         // Call actions
         this.setScene()
         this.setAnimations()

@@ -24,7 +24,7 @@ export default class World
         this.resources.on('ready', () =>
         {   
             // Setup
-            this.camera.position.set(0, 1, 150)
+            this.camera.position.set(0, 1, 100)
             this.environment = new Environment()
             this.scene_3 = new Scene_3()
             this.scene_2 = new Scene_2()
@@ -61,14 +61,15 @@ export default class World
         this.scene_3.update()
     } 
 
-
-
-  
-        
-        if(this.lights)
+    if(this.environment)
         {
-            this.lights.update()
+            this.environment.update()
         } 
+
+    if(this.lights)
+    {
+        this.lights.update()
+    } 
 
     }
 }

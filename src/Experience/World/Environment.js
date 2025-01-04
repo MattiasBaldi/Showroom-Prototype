@@ -10,6 +10,10 @@ export default class Environment
         this.renderer = this.experience.renderer
         this.resources = this.experience.resources
         this.debug = this.experience.debug
+        this.camera = this.experience.camera.instance
+        this.time = this.experience.time
+        this.controls = this.experience.camera.controls
+
 
         // Debug
         if(this.debug.active)
@@ -261,17 +265,40 @@ export default class Environment
         }
         }
 
+        addGrid()
+        {
+            // Grid Helper 
+            this.gridHelper = new THREE.GridHelper(50, 50);
+        
+            // Debug
+            if (this.debug.active)
+            {
+            const debugObject = {showGridHelper: false}
+
+            if (debugObject.showGridHelper)
+            {
+            this.scene.add(this.gridHelper)
+            }
+
+            this.debugFolder
+            .add(debugObject, 'showGridHelper')
+            .name('Grid')
+            .onChange((value) => { 
+            if (value) {this.scene.add(this.gridHelper)} 
+            else {this.scene.remove(this.gridHelper) } 
+            })
+            }
+        }
+
         addWalls()
         {
 
             const wallGeometry = new THREE.PlaneGeometry(10, 10)
             const wallMaterial = new THREE.MeshStandardMaterial
                 ({
-                color: 'black', 
+                color: 'green', 
                 wireframe: false,
-                roughness: 0, 
-                envMap: this.environmentMap,
-                envMapIntensity: 0.01
+                side: THREE.DoubleSide, 
                 })
                 
             const wall = new THREE.Mesh(wallGeometry, wallMaterial)
@@ -289,18 +316,17 @@ export default class Environment
 
             const wallOne = addWall({ width: 30, positionZ: -10 })
             const wallTwo = new THREE.Group()
-            const wallTwoOne = addWall({ width: 30, positionZ: 10, rotationY: Math.PI })
-            const wallTwoTwo = addWall({ width: 30, positionZ: 10, rotationY: Math.PI })
-            wallTwo.add(wallTwoOne, wallTwoTwo)
-
+            const wallTwoOne = addWall({ width: 15, positionX: 90, positionZ: 10, rotationY: Math.PI })
+            const wallTwoTwo = addWall({ width: 15, positionX: -90, positionZ: 10, rotationY: Math.PI })
             const wallThree = addWall({ width: 2, positionX: -145, rotationY: Math.PI * 0.5 })
             const wallFour = addWall({ width: 2, positionX: 145, rotationY: Math.PI * -0.5 })
-            const wallFive = addWall({ width: 15, positionX: -15, positionZ: 80, rotationY: Math.PI * 0.5 })
-            const wallSix = addWall({ width: 15, positionX: 15, positionZ: 80, rotationY: Math.PI * -0.5 })
+            const wallFive = addWall({ width: 15, positionX: -15, positionZ: 85, rotationY: Math.PI * 0.5 })
+            const wallSix = addWall({ width: 15, positionX: 15, positionZ: 85, rotationY: Math.PI * -0.5 })
             const wallSeven = addWall({ width: 3, positionZ: 135, rotationY: -Math.PI })
-            
-            this.scene.add(wallOne, wallTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
-   
+
+            this.walls = new THREE.Group()
+            this.walls.add(wallOne, wallTwoOne, wallTwoTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
+            this.scene.add(this.walls)
 
             if (this.debug.active) {
 
@@ -395,29 +421,23 @@ export default class Environment
             }
     
         }
-        
-        addGrid()
+
+        addWallCollission()
         {
-            // Grid Helper 
-            this.gridHelper = new THREE.GridHelper(50, 50);
-        
-            // Debug
-            if (this.debug.active)
-            {
-            const debugObject = {showGridHelper: false}
+            this.walls.children.forEach((wall) => {
+                const wallBox = new THREE.Box3().setFromObject(wall);
+                const collisionDistance = 0.3; 
+                const cameraPosition = new THREE.Vector3().copy(this.camera.position);
 
-            if (debugObject.showGridHelper)
-            {
-            this.scene.add(this.gridHelper)
-            }
+                if (wallBox.distanceToPoint(cameraPosition) <= collisionDistance) {
+                    this.controls.wasd.PointerLockControls.moveRight(this.controls.wasd.velocity.x * (this.time.delta * 0.001) * this.controls.wasd.moveSpeed);
+                    this.controls.wasd.PointerLockControls.moveForward(this.controls.wasd.velocity.z * (this.time.delta * 0.001) * this.controls.wasd.moveSpeed);
+                }
+            });
+        }
 
-            this.debugFolder
-            .add(debugObject, 'showGridHelper')
-            .name('Grid')
-            .onChange((value) => { 
-            if (value) {this.scene.add(this.gridHelper)} 
-            else {this.scene.remove(this.gridHelper) } 
-            })
-            }
-        }   
+        update()
+        {
+            this.addWallCollission()
+        }
     }

@@ -150,7 +150,8 @@ export default class WASD {
 
     update()
     {
-        if (this.PointerLockControls.isLocked) {
+        if (this.PointerLockControls.isLocked) 
+            {
             // Velocity & direction
             this.velocity.x -= this.velocity.x * 10 * (0.001 * this.time.delta) * this.moveSpeed;
             this.velocity.z -= this.velocity.z * 10 * (0.001 * this.time.delta) * this.moveSpeed;
