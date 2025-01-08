@@ -38,7 +38,7 @@ export default class Sphere
         // this.setBloom()
 
         // Switch
-        this.switch = new Switch(this.sphere, 1.5, 10)
+        this.switch = new Switch(this.sphere, 10)
     }
 
     setVariations()

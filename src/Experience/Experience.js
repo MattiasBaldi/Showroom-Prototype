@@ -58,8 +58,8 @@ export default class Experience
         {
             document.body.appendChild(this.stats.dom)
             this.stats.dom.style.position = 'fixed';
-            this.stats.dom.style.left = '10px';
-            this.stats.dom.style.bottom = '10px';
+            this.stats.dom.style.left = '95%';
+            this.stats.dom.style.top = '95%';
         }
     }
 

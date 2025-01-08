@@ -10,7 +10,7 @@ import Experience from '../Experience.js'
 
 
 export default class Switch {
-    constructor(pivotPoint, height, radius, Orbitactive = false)
+    constructor(pivotPoint, radius, Orbitactive = false)
     {
 
         this.experience  = new Experience()
@@ -21,7 +21,6 @@ export default class Switch {
         //Setup
         this.pivotPoint = pivotPoint
         this.radius = radius
-        this.height = height
         this.active = null
 
         //Overlay
@@ -46,7 +45,6 @@ export default class Switch {
         this.controls.OrbitControls.autoRotate = true;
         this.controls.OrbitControls.autoRotateSpeed = 2;
         this.controls.OrbitControls.target.copy(localPosition)
-        // this.controls.OrbitControls.target.y = this.height
         this.controls.OrbitControls.maxDistance = this.radius - 0.1;
 
         // Set overlay 

@@ -32,7 +32,7 @@ export default class Audio {
         this.setPositionalAudio('Audio_Scene_3', this.scene_3.sceneModels)
 
         // Directional Audio
-        this.setDirectionalAudio('Audio_Scene_1',  this.scene_0.runwayThree, 2, 8, 0.1)
+        this.setDirectionalAudio('Audio_Scene_1',  this.scene_0.sceneModels, 2, 8, 0.1)
      
         // Mute Button
         this.toggleMute()

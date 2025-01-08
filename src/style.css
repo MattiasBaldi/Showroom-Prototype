@@ -79,13 +79,6 @@
     background-color: rgba(0, 0, 0, 0);
 }
 
-#ui-overlay #blocker .sound .on {
-    display: block; 
-}
-
-#ui-overlay #blocker .sound .off {
-    display: none; 
-}
 
 /* 
 #ui-overlay #orbit-objects

@@ -29,9 +29,10 @@ export default class Scene_3 {
 
         // Setup
         this.setScene()
+
         
         // Switch
-        this.switch = new Switch(this.empty , 1, 10)
+        this.switch = new Switch(this.empty, 10)
     }
 
     setScene()

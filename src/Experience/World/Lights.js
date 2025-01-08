@@ -12,14 +12,14 @@ export default class Lights
         this.world = this.experience.world
         this.debug = this.experience.debug
         this.scene = this.experience.scene
+        this.scene_0 = this.world.scene_0
         this.scene_1 = this.world.scene_1
         this.scene_2 = this.world.scene_2
         this.scene_3 = this.world.scene_3
 
         this.poseSpeed = null
         this.sphereSpeed = null
-        this.scene_3Speed = null
-        
+        this.scene_3Speed = 0.01
 
         // Debug
         if (this.debug.active) {
@@ -34,9 +34,9 @@ export default class Lights
         // Methods
         this.setObjectLight(this.scene_1.model, 2, 5, 5, 50, 30)
         this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
-        this.setObjectLight(this.scene_3.empty, 4, 5, 5, 50, 30)
+        this.setObjectLight(this.scene_3.empty, 1, 5, 5, 50, 30)
         this.setNavigationallight(4, 40, 10)
-        this.setCatwalk(4, 20)
+        this.setCatwalk(3, 10, 2)
         this.setBloom()
     }
 
@@ -52,6 +52,9 @@ export default class Lights
             const positionX = (i % 2 === 0) ? ((i / 2) * gap) + gap : -(Math.ceil(i / 2)) * gap;
             volumetricLight.position.x = positionX;
             volumetricLight.position.y = height;
+
+            volumetricLight.rotation.x += Math.PI * 0.25; 
+            volumetricLight.rotation.z += Math.PI * 0.25; 
 
             // Adjust light
             const spotLight = volumetricLight.children[1];
@@ -227,9 +230,11 @@ export default class Lights
         }
     }
 
-    setCatwalk(count, gap, height = 10, coneRadius = 3)
+    setCatwalk(count, height = 10, coneRadius = 3)
     {
     const group = new THREE.Group()
+    const gap = this.scene_0.walkLength  / (count - 1)
+    this.lightAreas = [];
 
     for (let i = 0; i < count; i++) {
 
@@ -251,7 +256,7 @@ export default class Lights
         coneUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
 
         // Position
-        volumetricLight.position.z += i * gap + (gap * 2); 
+        volumetricLight.position.z += i * gap + (this.scene_0.walkStart); 
         volumetricLight.position.y = height
         volumetricLight.position.x = 0
 
@@ -276,6 +281,14 @@ export default class Lights
                this.bloom.push(child)
             }
         });
+
+
+        // Calculate the area on the floor lit by the light
+        const lightArea = {
+            position: new THREE.Vector3(volumetricLight.position.x, 0, volumetricLight.position.z),
+            radius: coneRadius
+        };
+        this.lightAreas.push(lightArea);
 
         group.add(volumetricLight)
     }
@@ -408,14 +421,15 @@ export default class Lights
     setObjectLight(object, count, radius = 5, height = 10, coneLength = 10, coneRadius = 3, shadowEnabled = true)
     {
     const group = new THREE.Group()
-    const gap = 360 / count
 
     // calculate the lookAt object's world position
     const localPosition = new THREE.Vector3()
     object.localToWorld(localPosition)
 
+    const addLights = (count, radius, height, coneLength, coneRadius, shadowEnabled) => {
     for (let i = 0; i < count; i++)
     {
+    const gap = 360 / count
     const volumetricLight = new VolumetricSpotLight('white', coneRadius, coneLength, 10)
 
     // each light group positioned on a circle
@@ -465,6 +479,9 @@ export default class Lights
 
     group.add(volumetricLight)
     }
+    }
+
+    addLights(count, radius, height, coneLength, coneRadius, shadowEnabled)
 
     // add
     this.scene.add(group)
@@ -537,53 +554,9 @@ export default class Lights
                 });
                 group.remove(child);
             }
-            // Add new lights
-            for (let i = 0; i < value; i++) {
-                const volumetricLight = new VolumetricSpotLight('white', coneRadius, coneLength, 10);
-    
-                // each light group positioned on a circle
-                volumetricLight.position.x = Math.cos(THREE.MathUtils.degToRad((360 / value) * i)) * radius;
-                volumetricLight.position.z = Math.sin(THREE.MathUtils.degToRad((360 / value) * i)) * radius;
-                volumetricLight.position.y = height;
-    
-                // Adjust light
-                const spotLight = volumetricLight.children[1];
-                spotLight.intensity = 1000;
-                spotLight.penumbra = 1;
-                spotLight.decay = 1.5;
-                spotLight.distance = 15;
-    
-                // Adjust cone
-                const cone = volumetricLight.children[0];
-                const coneUniforms = cone.material.uniforms;
-                coneUniforms.attenuation.value = 10.5;
-                coneUniforms.anglePower.value = 5;
-                coneUniforms.edgeScale.value = 0.5;
-                coneUniforms.edgeConstractPower.value = 0.7;
-    
-                // Shadows
-                spotLight.castShadow = shadowEnabled;
-                spotLight.shadow.mapSize.set(1024, 1024);
-                spotLight.shadow.camera.fov = coneRadius;
-                spotLight.shadow.camera.near = 0.5;
-                spotLight.shadow.camera.far = 50;
-                spotLight.shadow.focus = 1;
-    
-                // lookAt the object
-                volumetricLight.lookAt(0, localPosition.y, 0);
-                spotLight.target = object;
-    
-                // bloom
-                const lightMesh = volumetricLight.children[2];
-                const reflector = lightMesh.children[0].children[5];
-                reflector.traverse((child) => {
-                    if (child.isMesh) {
-                        this.bloom.push(child);
-                    }
-                });
-    
-                group.add(volumetricLight);
-            }
+            addLights(value, radius, height, coneLength, coneRadius, shadowEnabled)
+        
+
         });
 
         debugFolder
@@ -810,25 +783,43 @@ export default class Lights
 
     }
 
+    updateEnvMap()
+    {
+        const animatedModel = this.scene_0.animatedModel;
+        const modelPosition = new THREE.Vector3();
+        animatedModel.getWorldPosition(modelPosition);
+    
+        let isWithinLightArea = false;
+    
+        for (const lightArea of this.lightAreas) {
+            const distance = modelPosition.distanceTo(lightArea.position);
+            if (distance <= lightArea.radius) {
+                isWithinLightArea = true;
+                break;
+            }
+        }
+    
+        animatedModel.traverse((child) => {
+            if (child.isMesh) {
+                const targetIntensity = isWithinLightArea ? 1 : 0;
+                const currentIntensity = child.material.envMapIntensity || 0;
+                const fadeIn = 0.0025
+                const fadeOut = 0.25
+                const fadeSpeed = isWithinLightArea ? fadeIn : fadeOut; // Faster fade out
+    
+                child.material.envMapIntensity = THREE.MathUtils.lerp(currentIntensity, targetIntensity, fadeSpeed);
+                child.material.envMap = this.resources.items.blueStudio;
+                child.material.needsUpdate = true;
+            }
+        });
+    }
+
     update()
     {
         this.lightGroups.pose.rotation.y += this.poseSpeed
         this.lightGroups.sphere.rotation.y += this.sphereSpeed
         this.lightGroups.scene_3.rotation.y +=  this.scene_3Speed
-        
-        // // catWalk
-        // const speed = 1
+        this.updateEnvMap()
 
-        // if (Math.random() < 0.01) { // 1% chance to update on each frame
-        //     this.lightGroups.catWalk.traverse(child => { 
-        //     if (child instanceof THREE.SpotLight) { 
-        //         child.intensity = 100 + Math.sin(Date.now() * speed) * 50;
-        //     }
-        //     if (child.children[0] && child.children[0].material && child.children[0].material.uniforms) {
-        //         child.children[0].material.uniforms.anglePower.value = 5 + Math.sin(Date.now() * speed) * 0.2;
-        //         child.children[0].material.uniforms.attenuation.value = 10.5 + Math.sin(Date.now() * speed) * 0.5;
-        //     }
-        //     });
-        // }
     }
 }

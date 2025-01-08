@@ -1,10 +1,12 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 export default class Scene_0
 {
     constructor() 
     {
+
         this.experience  = new Experience()
         this.scene = this.experience.scene
         this.camera = this.experience.camera
@@ -20,48 +22,37 @@ export default class Scene_0
         {
             this.debugFolder = this.debug.ui.addFolder('Scene 0 (Catwalk)')
             this.debugFolder.close()
-            // this.animationFolder = this.debugFolder.addFolder('Animation')
-            // this.animationFolder.close()
+            this.animationFolder = this.debugFolder.addFolder('Animation')
+            this.animationFolder.close()
         }
 
         // Setup
         this.resource = this.resources.items.Scene_0
         this.sceneModels = this.resource.scene
         this.animatedModel = this.sceneModels.children[0]
-        this.runwayOne = this.sceneModels.children[1]
-        this.audienceOne = this.sceneModels.children[2]
-        this.runwayTwo = this.sceneModels.children[3]
-        this.audienceTwo = this.sceneModels.children[4]
-        this.runwayThree = this.sceneModels.children[6]
-        this.audienceThree = this.sceneModels.children[5]
+        this.catWalk = this.sceneModels.children[1]
+        this.bench = this.sceneModels.children[2]
+        this.audience = this.sceneModels.children[3]
 
         // Call actions
         this.setScene()
         this.setAnimations()
-        // this.setWalk()
-        // this.setFade()
+        this.setWalk()
         this.setBloom()
-        this.setEnvIntensity()
+        this.setEnvMapIntensity()
+        // this.setInstancedMeshArray(50, 1)
 
     }
 
     setScene()
     {
-
-      // this.sceneGroup = new THREE.Group();
-      // this.sceneGroup.add(this.sceneModels)
-
-        this.scale = 0.15
+        // Creating the sccene and init positioning
+        this.scale = 0.05
+        this.sceneModels.position.y += 0.01 // avoiding z-fighting
         this.sceneModels.scale.set(this.scale, this.scale, this.scale)
-        this.sceneModels.position.y += 0.01
-        this.sceneModels.position.z = 100
+        this.sceneModels.position.z = 50
+        this.sceneModels.updateMatrixWorld(true)
         this.scene.add(this.sceneModels)
-
-        this.runwayOne.visible = false
-        this.audienceOne.visible = false
-        this.runwayTwo.visible = false
-        this.audienceTwo.visible = false
-   
 
         // Visibility
         if (this.debug.active) {
@@ -71,40 +62,138 @@ export default class Scene_0
                 scaleZ: 1,
                 groups: 
                 [
-                    { runway: this.runwayOne, audience: this.audienceOne },
-                    { runway: this.runwayTwo, audience: this.audienceTwo },
-                    { runway: this.runwayThree, audience: this.audienceThree }
+                    { runway: this.catWalk, audience: this.audience }
                 ]
             };
-
-            debugObject.groups.forEach((group, index) => {
-                const folder = this.debugFolder.addFolder(`Group ${index + 1}`);
-                folder.add(group.runway, 'visible').name('Runway Visible');
-                folder.add(group.audience, 'visible').name('Audience Visible');
-            });
 
             this.debugFolder.add(this.sceneModels.scale, 'x', 'y', 'z').name('Scale').step(0.01).min(0).max(2).onChange((value) => {
                 this.sceneModels.scale.set(value, value, value)})
 
             this.debugFolder.add(this.sceneModels.position, 'z').name('Position Z').step(0.01).min(-100).max(100);
-            this.debugFolder.add(this.sceneModels.position, 'y').name('Position Y').step(0.01).min(-100).max(100);
 
             this.debugFolder.add(debugObject, 'scaleZ').name('Scale Z').min(0.1).max(10).step(0.1).onChange((value) => {
-                this.runwayOne.scale.z = value;
-                this.runwayTwo.scale.z = value;
+                this.catWalk.scale.z = value;
             });
+
+
+
+            this.sceneModels.children.forEach((child, index) => {
+                const visibilityObject = { visible: true };
+                this.debugFolder.add(visibilityObject, 'visible').name(`Child ${index} Visibility`).onChange((value) => {
+                    child.visible = value;
+                });
+            });
+        }
     }
 
-    }
-
-    setEnvIntensity()
+    setInstancedMeshArray(count, distance)
     {
-        this.sceneModels.traverse((child) => {
+
+    // Calculate world position
+    const worldPosition = new THREE.Vector3();
+    this.audience.getWorldPosition(worldPosition);
+    this.audience.updateMatrixWorld(true)
+
+    // Retrieve materials
+    const materials = [
+        this.audience.children[0].material.clone(), // Clone material to avoid conflicts
+        this.audience.children[1].material.clone(),
+    ];
+
+    // Retrieve geometries
+    const geometries = [
+        this.audience.children[0].geometry.clone(),
+        this.audience.children[1].geometry.clone()
+    ];
+
+    // Merge geometries
+    const mergedGeometry = BufferGeometryUtils.mergeGeometries(geometries, false);
+
+    // Set up draw groups for the merged geometry
+    let offset = 0;
+    geometries.forEach((geometry, index) => {
+        mergedGeometry.addGroup(offset, geometry.index.count, index);
+        offset += geometry.index.count;
+    });
+
+    // Create an instanced mesh with multiple materials
+    const mesh = new THREE.InstancedMesh(mergedGeometry, materials, count)
+    this.sceneModels.add(mesh);
+
+    // Remove initial audience from the scene
+    this.audience.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+            child.geometry.dispose();
+            child.material.dispose();
+        }
+    });
+    this.audience.parent.remove(this.audience);
+
+    // Create the loop inside a function for debugging purposes
+    const addArray = (count, distance) => {
+    for (let i = 0; i < count; i++)
+    {
+        // Calculate z position for the pair
+        const zPosition = 0 + Math.floor(i / 2) * (distance / this.scale);
+
+        // Position
+        const position = new THREE.Vector3(
+            0,
+            0,
+            zPosition
+        )
+
+        // Rotation
+        const rotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+            0,
+            Math.PI, 
+            0
+        ))
+
+        // Create matrix
+        const matrix = new THREE.Matrix4()
+
+        // Mirror in pairs
+        if(i % 2 === 0) 
+        {
+            matrix.scale(new THREE.Vector3(-1, 1, 1));
+
+            // Correct the normals after mirroring
+            mesh.material.forEach(material => {
+                material.side = THREE.FrontSide;
+            });
+
+        }  
+
+
+        matrix.setPosition(position)
+        mesh.setMatrixAt(i, matrix)
+    }
+
+    }
+
+
+    // call function
+    addArray(count, distance)
+
+
+    if(this.debug.active)
+    {
+
+    }
+
+    }
+
+    setEnvMapIntensity()
+    {
+ 
+        this.audience.traverse((child) =>
+        {
             if (child instanceof THREE.Mesh && child.material) {
-            child.material.envMap = this.environment.environmentMap;
-            child.material.envMapIntensity = 0;
-            }
-        });
+                child.material.envMap = this.environment.environmentMap;
+                child.material.envMapIntensity = 0;
+                }
+        })
 
         if (this.debug.active) {
             const debugObject = {
@@ -132,17 +221,27 @@ export default class Scene_0
     }
 
     setWalk()
-    {
+    {   
+        // Compute the catWalk boundingBox
+        const catWalk = this.catWalk.children[0]
+        this.sceneModels.updateMatrixWorld(true)
+        catWalk.geometry.computeBoundingBox();
+
+        // Helper
+        const box = new THREE.BoxHelper(catWalk, 0xffff00);
+        box.visible = false
+        this.scene.add(box);
+
+        this.min = catWalk.localToWorld(catWalk.geometry.boundingBox.min);
+        this.max = catWalk.geometry.boundingBox.max.clone();
+        catWalk.localToWorld(this.max);
+
         this.walkAxis = 'z'; 
-        this.walkSpeed = 0.7;
+        this.walkSpeed = 1.5;
         this.action.walking.timeScale = 0.8; 
-        this.walkStart = 250;
-        this.walkEnd = 550;
-        this.length = null
-
-
-        // Set Initial start position of the model
-        this.animatedModel.position.z = this.walkStart
+        this.walkStart = this.min.z;
+        this.walkEnd = this.max.z;
+        this.walkLength = this.walkEnd  - this.walkStart
 
         // Debug
         if(this.debug.active)
@@ -153,35 +252,13 @@ export default class Scene_0
                 walkStart: this.walkStart,
                 walkEnd: this.walkEnd,
                 timeScale: this.action.walking.timeScale,
-                catwalkActive: false
             }
-            
-        this.animationFolder
-        .add(debugObject, 'catwalkActive')
-        .name('catwalkVisualizer')
-        .onChange((value) => {
-           if (value) {
-               this.setCatwalkVisualizer();
-           } else {
-              if (this.catwalk) 
-                  {
-                  this.scene.remove(this.catwalk);
-                  this.catwalk.geometry.dispose();
-                  this.catwalk.material.dispose();
-                  }
-          }
-        })
-
 
         this.animationFolder
         .add(debugObject, 'walkStart')
         .name('Walk Start')
         .onChange((value) => {
             this.walkStart = value;
-            if(this.catwalk)
-            {
-                this.setCatwalkVisualizer();
-            }
         })
         .step(0.01)
         .min(0)
@@ -192,10 +269,6 @@ export default class Scene_0
         .name('Walk End')
         .onChange((value) => {
             this.walkEnd = value;
-            if(this.catwalk)
-                {
-                    this.setCatwalkVisualizer();
-                }
         })
         .step(0.01)
         .min(10)
@@ -222,6 +295,8 @@ export default class Scene_0
         .min(0)
         .max(2)
 
+
+
     }
     
     }
@@ -229,21 +304,24 @@ export default class Scene_0
     updateWalk()
     {
         // Initiate
-        this.animatedModel.position[this.walkAxis] += (this.time.delta * 0.01) * this.walkSpeed;      
+        this.animatedModel.position[this.walkAxis] += (this.time.delta * 0.01) * this.walkSpeed;
+
+        // Convert position to world coordinates
+        const worldPosition = new THREE.Vector3();
+        this.animatedModel.getWorldPosition(worldPosition);
 
         // Reset walking
-        if (this.animatedModel.position[this.walkAxis] > this.walkEnd)
-        {
-            this.animatedModel.position[this.walkAxis] = this.walkStart; 
-        }   
+        if (worldPosition[this.walkAxis] > this.walkEnd) {
+            this.animatedModel.position[this.walkAxis] = this.walkStart - this.animatedModel.parent.position[this.walkAxis];
+        }
     }
 
-    setFade()
+    setWalkFade()
     {
         // Calculating fade
         this.walkPercentage = this.animatedModel.position[this.walkAxis] / (this.walkStart + this.walkEnd);
         this.fade = Math.sin(this.walkPercentage * Math.PI);
-        
+
         // Cloning and applying material opacity
         this.animatedModel.traverse(child => {
             if (child instanceof THREE.Mesh) {
@@ -252,57 +330,18 @@ export default class Scene_0
                 child.material.opacity = this.fade; 
             }
         });
-
     }
 
     setBloom()
     {
-
-        const catwalkOne = this.runwayOne.children[0];
-        const catwalkTwo = this.runwayTwo.children[0];
-        const catwalkThree = this.runwayThree.children[0];
-
-        if(this.debug.active)
-        {
-            const bloomFolder = this.debugFolder.addFolder('Bloom')
-
-            const debugObject = {
-            bloomCatwalkOne: false,
-            bloomCatwalkTwo: false,
-            bloomCatwalkThree: false
-            };
-
-            bloomFolder.add(debugObject, 'bloomCatwalkOne').name('Bloom Catwalk One').onChange((value) => {
-            if (value) {
-                this.renderer.selectiveBloom.selection.add(catwalkOne);
-            } else {
-                this.renderer.selectiveBloom.selection.delete(catwalkOne);
-            }
-            });
-
-            bloomFolder.add(debugObject, 'bloomCatwalkTwo').name('Bloom Catwalk Two').onChange((value) => {
-            if (value) {
-                this.renderer.selectiveBloom.selection.add(catwalkTwo);
-            } else {
-                this.renderer.selectiveBloom.selection.delete(catwalkTwo);
-            }
-            });
-
-            bloomFolder.add(debugObject, 'bloomCatwalkThree').name('Bloom Catwalk Three').onChange((value) => {
-                if (value) {
-                    this.renderer.selectiveBloom.selection.add(catwalkThree);
-                } else {
-                    this.renderer.selectiveBloom.selection.delete(catwalkThree);
-                }
-                });
-        }
-        
+        // this.renderer.selectiveBloom.selection.add(this.animatedModel.children[0]);
+        this.renderer.selectiveBloom.selection.add(this.catWalk.children[1]);
     }
 
     update()
     {
             this.animation.mixer.walking.update(this.time.delta * 0.001); 
-            // this.updateWalk()
-            // this.setFade()
+            this.updateWalk()
+            // this.setFade()  
     }
 }

@@ -1,4 +1,3 @@
-import * as THREE from 'three'
 import Experience from '../Experience.js'
 import Switch from '../Controls/Switch.js'
 
@@ -19,17 +18,15 @@ export default class Scene_1
         // Debug
         if (this.debug.active)
         {
-            this.debugFolder = this.debug.ui.addFolder('Scene 1 (Catwalk)')
+            this.debugFolder = this.debug.ui.addFolder('Scene 1 (Posed Model)')
             this.debugFolder.close()
-            this.animationFolder = this.debugFolder.addFolder('Animation')
-            this.animationFolder.close()
         }
 
         // Setup
         this.resource = this.resources.items.Scene_1
         this.sceneModels = this.resource.scene
         this.model = this.sceneModels.children[0]
-        this.body = this.sceneModels.children[0]
+        this.body = this.model.children[0]
 
         // Call actions
         this.setScene()
@@ -37,27 +34,23 @@ export default class Scene_1
         // this.setEnvMapIntensity()
 
         // Switch
-        this.switch = new Switch(this.body, 2, 10)
+        this.switch = new Switch(this.body, 10)
 
     }
 
     setScene()
     {
-        this.sceneGroup = new THREE.Group(); 
         this.scale = 0.2
-        this.sceneGroup.scale.set(this.scale, this.scale, this.scale)
-        this.sceneGroup.add(this.sceneModels)
-        this.scene.add(this.sceneGroup)
+        this.sceneModels.scale.set(this.scale, this.scale, this.scale)
+        this.scene.add(this.sceneModels)
 
         // Debug
         if(this.debug.active) {
         this.debugFolder.add(this.model.scale, 'x', 'y', 'z').name('Scale').step(0.01).min(0).max(2).onChange((value) => {
             this.model.scale.set(value, value, value)})
-    
 
         }
     }
-
 
     setBloom()
     {

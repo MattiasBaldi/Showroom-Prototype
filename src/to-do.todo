@@ -7,8 +7,8 @@ Switch
 -------
 ✔ Orbit position is weird for some objects @done (3.12.2024, 15.51.16)
 ☐ Set geometry origin as true pivotPoint (Issue being that, the max zoom, doesnt match the togggle radius), height parameter needs to be removed
-☐ Fix movement controls and speed
-☐ Debug
+✔ Fix movement controls and speed @done (5.1.2025, 14.53.39)
+✔ Debug @done (5.1.2025, 14.54.36)
 
 
 Teleportation
@@ -40,6 +40,7 @@ Scene_2
 ✔ Arts @done (29.12.2024, 08.59.34)
 ✔ Sphere setup @done (29.12.2024, 09.07.58)
 ✔ Tweak settings @done (29.12.2024, 09.07.59)
+☐ Add debug
 
 Scene_1
 ✔ Fade @done (26.11.2024, 23.33.36)
@@ -56,17 +57,19 @@ Environment
 ✔ Fog @done (29.12.2024, 09.08.15)
 ✔ Fix grid @done (27.11.2024, 23.28.56)
 ☐ Put walls together in an instanced mesh
-☐ Add Physics to walls
-
+✔ Add Physics to walls @done (5.1.2025, 14.53.50)
 
 Scene_0
 ---------
-Put catWalk audience together into one Mesh
+Put catWalk audience together into one instanced mesh
+Figure out the correct catwalk scene and textures
+Add audience as isntanced mesh
 
 Debug
 ------------------
 ✔ Godrays @done (29.12.2024, 08.57.32)
 ✔ PivotPoint on Orbitcontrols to the relevant scene @done (29.12.2024, 08.58.05)
+✔ Single click on soundButton @done (5.1.2025, 16.17.56)
 ☐ Setup debugging of all elements
 ☐ Adjust walk and pan speed
 ☐ Allow debug of each scene
@@ -75,6 +78,8 @@ Debug
 ☐ Debug: ToneMapping
 ☐ Debug: Bloom
 ☐ Debug: Antialiasing
+☐ Delay on loading
+
 
 Lights
 -------
@@ -96,7 +101,6 @@ Sound
 ☐ Fix distances
 ☐ Fix loader in shared loader thing
 ☐ Fix sound doubleclick
-
 
 ☐ Perfomance tips
 ------------------

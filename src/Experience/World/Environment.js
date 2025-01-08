@@ -5,6 +5,7 @@ export default class Environment
 {
     constructor()
     {
+
         this.experience = new Experience()
         this.scene = this.experience.scene
         this.renderer = this.experience.renderer
@@ -28,6 +29,7 @@ export default class Environment
         this.setEnvironmentMap()
         this.addFloor()
         this.addWalls()
+
 
     }
 
@@ -296,9 +298,13 @@ export default class Environment
             const wallGeometry = new THREE.PlaneGeometry(10, 10)
             const wallMaterial = new THREE.MeshStandardMaterial
                 ({
-                color: 'green', 
+                color: 'black', 
                 wireframe: false,
-                side: THREE.DoubleSide, 
+                side: THREE.DoubleSide,
+                roughness: 0.9, 
+                metalness: 0,
+                envMap: this.environmentMap,
+                envMapIntensity: 0
                 })
                 
             const wall = new THREE.Mesh(wallGeometry, wallMaterial)
@@ -322,7 +328,7 @@ export default class Environment
             const wallFour = addWall({ width: 2, positionX: 145, rotationY: Math.PI * -0.5 })
             const wallFive = addWall({ width: 15, positionX: -15, positionZ: 85, rotationY: Math.PI * 0.5 })
             const wallSix = addWall({ width: 15, positionX: 15, positionZ: 85, rotationY: Math.PI * -0.5 })
-            const wallSeven = addWall({ width: 3, positionZ: 135, rotationY: -Math.PI })
+            const wallSeven = addWall({ width: 3, positionZ: 100, rotationY: -Math.PI })
 
             this.walls = new THREE.Group()
             this.walls.add(wallOne, wallTwoOne, wallTwoTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
@@ -338,11 +344,31 @@ export default class Environment
                     wallFour,
                     wallFive,
                     wallSix,
-                    wallSeven
+                    wallSeven,
                 }
 
                 const wallsFolder = this.debugFolder.addFolder('Walls');
 
+
+                wallsFolder
+                .addColor({ color: wall.material.color.getHex() }, 'color')
+                .name('Color')
+                .onChange((value) => {
+                    this.walls.children.forEach((wall) => {
+                        wall.material.color.set(value);
+                    });
+                });
+
+
+                wallsFolder
+                    .add(this.walls.scale, 'x')
+                    .name('Scale')
+                    .min(0.1)
+                    .max(10)
+                    .step(0.1)
+                    .onChange((value) => {this.walls.scale.x = value, this.walls.scale.y = value, this.walls.z = value })
+
+   
                 const addWallWithDebug = (wall, name) => {
                     const newWallFolder = wallsFolder.addFolder(name);
                     newWallFolder.close()
@@ -424,20 +450,64 @@ export default class Environment
 
         addWallCollission()
         {
+
             this.walls.children.forEach((wall) => {
                 const wallBox = new THREE.Box3().setFromObject(wall);
-                const collisionDistance = 0.3; 
                 const cameraPosition = new THREE.Vector3().copy(this.camera.position);
-
+                const collisionDistance = 0.3
                 if (wallBox.distanceToPoint(cameraPosition) <= collisionDistance) {
                     this.controls.wasd.PointerLockControls.moveRight(this.controls.wasd.velocity.x * (this.time.delta * 0.001) * this.controls.wasd.moveSpeed);
                     this.controls.wasd.PointerLockControls.moveForward(this.controls.wasd.velocity.z * (this.time.delta * 0.001) * this.controls.wasd.moveSpeed);
                 }
+                
             });
+            
         }
+
+        updateWallVisiblity() {
+            let closestWall = null;
+            let minDistance = Infinity;
+        
+            this.walls.children.forEach((wall) => {
+                const wallBox = new THREE.Box3().setFromObject(wall);
+                const cameraPosition = new THREE.Vector3().copy(this.camera.position);
+                const distance = wallBox.distanceToPoint(cameraPosition);
+        
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestWall = wall;
+                }
+            });
+        
+            this.walls.children.forEach((wall) => {
+                if (wall === closestWall) {
+                    const maxDistance = 2; // Maximum distance to start increasing intensity
+                    const minDistanceThreshold = 0; // Minimum distance for maximum intensity
+        
+                    if (minDistance <= maxDistance) {
+                        const intensity = THREE.MathUtils.mapLinear(minDistance, minDistanceThreshold, maxDistance, 0, 1);
+                        wall.material.envMapIntensity = intensity;
+                        wall.material.needsUpdate = true;
+                        console.log('walls visible');
+                    } else {
+                        wall.material.envMapIntensity = 0; // Default intensity
+                        wall.material.needsUpdate = true;
+                        console.log('invisible');
+                    }
+                } else {
+                    wall.material.envMapIntensity = 0; // Default intensity for other walls
+                    wall.material.needsUpdate = true;
+                }
+            });
+
+
+
+        }
+
 
         update()
         {
             this.addWallCollission()
+            this.updateWallVisiblity()
         }
     }
