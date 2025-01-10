@@ -39,7 +39,7 @@ export default class Scene_0
         this.setAnimations()
         this.setWalk()
         this.setBloom()
-        this.setEnvMapIntensity()
+        this.applyMaterials()
         // this.setInstancedMeshArray(50, 1)
 
     }
@@ -184,8 +184,50 @@ export default class Scene_0
 
     }
 
-    setEnvMapIntensity()
+    applyMaterials()
     {
+// ...existing code...
+
+const getTextures = () => 
+    Object.fromEntries(
+        Object.entries(this.resources.items).filter(([_, value]) =>
+            Object.values(value).some(subValue => subValue instanceof THREE.Texture)
+        )
+    );
+
+const textures = getTextures();
+const catWalk = this.catWalk.children[0];
+
+const selectedTexture = textures.gravel;
+const applyTexture = (texture) => {
+    // Compute the bounding box if not already computed
+    if (!catWalk.geometry.boundingBox) {
+        catWalk.geometry.computeBoundingBox();
+    }
+
+    const boundingBox = catWalk.geometry.boundingBox;
+    const width = boundingBox.max.x - boundingBox.min.x;
+    const height = boundingBox.max.y - boundingBox.min.y;
+
+    for (const [name, map] of Object.entries(texture)) {
+        // Clone the texture to avoid modifying the original
+        const clonedMap = map.clone();
+        catWalk.material[name] = clonedMap;
+        Object.assign(clonedMap, {
+            wrapS: THREE.MirroredRepeatWrapping,
+            wrapT: THREE.MirroredRepeatWrapping,
+            generateMipmaps: false
+        });
+
+        clonedMap.repeat.set(width, height);
+    }
+};
+
+applyTexture(selectedTexture);
+catWalk.material.envMap = this.environment.environmentMap
+catWalk.material.envMapIntensity = 0
+
+// ...existing code...    
  
         this.audience.traverse((child) =>
         {
@@ -195,19 +237,40 @@ export default class Scene_0
                 }
         })
 
+
+        this.audience.children[0].material.envMap = this.environment.environmentMap;
+        this.audience.children[0].material.envMapIntensity = 0.01;
+
         if (this.debug.active) {
             const debugObject = {
-            envMapIntensity: 0
+            envMapIntensity: 0,
+            selectedTexture: selectedTexture,
+            texturename: Object.keys(textures).find(key => textures[key] === selectedTexture)
             };
 
-            this.debugFolder.add(debugObject, 'envMapIntensity').name('Env Map Intensity').min(0).max(1).step(0.01).onChange((value) => {
-            this.sceneModels.traverse((child) => {
-                if (child instanceof THREE.Mesh && child.material) {
-                child.material.envMapIntensity = value;
-                }
+            const catWalkFolder = this.debugFolder.addFolder('catWalk Material')
+            catWalkFolder.add(debugObject, 'envMapIntensity').name('Env Map Intensity').min(0).max(1).step(0.01).onChange((value) => {
+            catWalk.material.envMap = this.environment.environmentMap
+            catWalk.material.envMapIntensity = value
+            catWalk.material.needsUpdate = true;
             });
+    
+            catWalkFolder
+            .add(debugObject, 'texturename', Object.keys(textures))
+            .name('Select Texture')
+            .onChange((value) => {
+                const texture = textures[value];
+                applyTexture(texture);
+                catWalk.material.needsUpdate = true;
             });
+
+
+
         }
+
+
+
+
     }
 
     setAnimations()
@@ -335,8 +398,15 @@ export default class Scene_0
 
     setBloom()
     {
-        // this.renderer.selectiveBloom.selection.add(this.animatedModel.children[0]);
+
+        console.log(this.audience)
+
         this.renderer.selectiveBloom.selection.add(this.catWalk.children[1]);
+        this.catWalk.children[1].material.emissiveIntensity = 0.2
+
+        this.renderer.selectiveBloom.selection.add(this.audience);
+        this.audience.children[1].material.emissiveIntensity = 0.2
+        this.audience.children[0].material.emissiveIntensity = 0.2
 
         if (this.debug.active) {
             const debugObject = {
@@ -344,7 +414,7 @@ export default class Scene_0
             bloom: true
             };
 
-            this.debugFolder.add(debugObject, 'emissiveIntensity').name('Emissive Intensity, White Area').min(0).max(10).step(0.1).onChange((value) => {
+            this.debugFolder.add(debugObject, 'emissiveIntensity').name('Emissive Intensity, White Area').min(0).max(1).step(0.1).onChange((value) => {
             this.catWalk.children[1].material.emissiveIntensity = value;
             this.catWalk.children[0].material.emissiveIntensity = value;
             });

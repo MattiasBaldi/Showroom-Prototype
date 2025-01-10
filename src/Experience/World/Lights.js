@@ -36,11 +36,11 @@ export default class Lights
         this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
         this.setObjectLight(this.scene_3.empty, 1, 5, 5, 50, 30)
         this.setNavigationallight(4, 40, 10)
-        this.setCatwalk(3, 10, 2)
+        this.setCatwalk(5, 10, 2, 100)
         this.setBloom()
     }
 
-    setNavigationallight(count, gap, height = 10, coneRadius = 3) 
+    setNavigationallight(count, gap, height = 10, coneRadius = 3, intensity = 1000) 
     {
         const group = new THREE.Group()
 
@@ -58,7 +58,7 @@ export default class Lights
 
             // Adjust light
             const spotLight = volumetricLight.children[1];
-            spotLight.intensity = 1000;
+            spotLight.intensity = intensity;
             spotLight.penumbra = 1;
             spotLight.decay = 1.5;
             spotLight.distance = spotLight.distance;
@@ -230,7 +230,7 @@ export default class Lights
         }
     }
 
-    setCatwalk(count, height = 10, coneRadius = 3)
+    setCatwalk(count, height = 10, coneRadius = 3, intensity = 100)
     {
     const group = new THREE.Group()
     const gap = this.scene_0.walkLength  / (count - 1)
@@ -242,7 +242,7 @@ export default class Lights
 
         // Adjust light
         const spotLight = volumetricLight.children[1];
-        spotLight.intensity = 1000;
+        spotLight.intensity = intensity;
         spotLight.penumbra = 1;
         spotLight.decay = 1.5;
         spotLight.distance = spotLight.distance;
@@ -418,7 +418,7 @@ export default class Lights
 
     }
 
-    setObjectLight(object, count, radius = 5, height = 10, coneLength = 10, coneRadius = 3, shadowEnabled = true)
+    setObjectLight(object, count, radius = 5, height = 10, coneLength = 10, coneRadius = 3, shadowEnabled = true, intensity = 100)
     {
     const group = new THREE.Group()
 
@@ -439,7 +439,7 @@ export default class Lights
 
     // Adjust light
     const spotLight = volumetricLight.children[1];
-    spotLight.intensity = 1000;
+    spotLight.intensity = intensity;
     spotLight.penumbra = 1;
     spotLight.decay = 1.5;
     spotLight.distance = 15

@@ -149,25 +149,6 @@ export default class Environment
         addFloor()
         {
 
-        const textures = [
-            this.resources.items.aerial_asphalt,
-            this.resources.items.concrete_worn,
-            this.resources.items.cracked_concrete,
-            this.resources.items.dithered_concrete,
-            this.resources.items.dry_riverbed_rock,
-            this.resources.items.granular_concrete,
-            this.resources.items.gravel,
-            this.resources.items.gravel_concrete,
-            this.resources.items.painted_concrete,
-            this.resources.items.plastered_wall,
-            this.resources.items.purple_floor,
-            this.resources.items.rock_boulder,
-            this.resources.items.rocks,
-            this.resources.items.stones,
-        ];
-
-        
-        
         const floor = new THREE.Mesh(
             new THREE.PlaneGeometry(1000, 1000, 10, 10),
             new THREE.MeshStandardMaterial({
@@ -176,20 +157,36 @@ export default class Environment
                 envMap: this.environmentMap,
                 envMapIntensity: 0,  // Optional, still sets reflection strength
             })
-        );
-        
-        const selectedTexture = 1;
-        const texture = textures[selectedTexture - 1];
+        );        
 
-        // Apply textures and settings only for the selected property
-        Object.keys(texture).forEach(property => {
-            floor.material[property] = texture[property];
-            texture[property].wrapS = THREE.MirroredRepeatWrapping;
-            texture[property].wrapT = THREE.MirroredRepeatWrapping;
-            texture[property].generateMipmaps = false;
-            texture[property].repeat.set(floor.geometry.parameters.width, floor.geometry.parameters.height);
-        });
-    
+        console.log(floor.geometry)
+
+
+        const getTextures = () => 
+            Object.fromEntries(
+                Object.entries(this.resources.items).filter(([_, value]) =>
+                    Object.values(value).some(subValue => subValue instanceof THREE.Texture)
+                )
+            );
+        
+        const textures = getTextures();
+        const selectedTexture = textures.concrete_worn;
+        
+        const applyTexture = (texture) => {
+        for (const [name, map] of Object.entries(texture)) {
+            // Clone the texture to avoid modifying the original
+            const clonedMap = map.clone();
+            floor.material[name] = clonedMap;
+            Object.assign(clonedMap, {
+                wrapS: THREE.MirroredRepeatWrapping,
+                wrapT: THREE.MirroredRepeatWrapping,
+                generateMipmaps: false
+            });
+            clonedMap.repeat.set(floor.geometry.parameters.width, floor.geometry.parameters.height);
+        }
+        };
+        
+        applyTexture(selectedTexture);    
         floor.rotation.x = Math.PI * - 0.5
         floor.receiveShadow = true; 
         this.scene.add(floor)
@@ -201,47 +198,19 @@ export default class Environment
             const debugObject = {
             color: floor.material.color.getHex(),
             emissive: floor.material.emissive.getHex(),
-            emissiveIntensity: floor.material.emissiveIntensity || 1,
-            selectedTexture: selectedTexture
+            envMapIntensity: floor.material.envMapIntensity,
+            selectedTexture: selectedTexture,
+            texturename: Object.keys(textures).find(key => textures[key] === selectedTexture)
             };
 
             const floorFolder = this.debugFolder.addFolder('Floor');
 
-            const textureNames = {
-                AerialAsphalt: 1,
-                ConcreteWorn: 2,
-                CrackedConcrete: 3,
-                DitheredConcrete: 4,
-                DryRiverbedRock: 5,
-                GranularConcrete: 6,
-                Gravel: 7,
-                GravelConcrete: 8,
-                PaintedConcrete: 9,
-                PlasteredWall: 10,
-                PurpleFloor: 11,
-                RockBoulder: 12,
-                Rocks: 13,
-                Stones: 14
-            };
-
             floorFolder
-            .add(debugObject, 'selectedTexture', textureNames)
+            .add(debugObject, 'texturename', Object.keys(textures))
             .name('Select Texture')
             .onChange((value) => {
-
-                // Dispose of the old material
-                if (floor.material) {
-                    floor.material.dispose();
-                }
-
-                const texture = textures[value - 1];
-                Object.keys(texture).forEach(property => {
-                    floor.material[property] = texture[property];
-                    texture[property].wrapS = THREE.MirroredRepeatWrapping;
-                    texture[property].wrapT = THREE.MirroredRepeatWrapping;
-                    texture[property].generateMipmaps = false;
-                    texture[property].repeat.set(floor.geometry.parameters.width, floor.geometry.parameters.height);
-                });
+                const texture = textures[value];
+                applyTexture(texture);
                 floor.material.needsUpdate = true;
             });
 
@@ -257,6 +226,7 @@ export default class Environment
             .name('Overlay Color')
             .onChange((value) => {
                 floor.material.color.set(value);
+                floor.material.needsUpdate = true;
             });
 
 
@@ -265,6 +235,7 @@ export default class Environment
             .name('Roughness')
             .onChange((value) => {
                 floor.material.roughness = value;
+                floor.material.needsUpdate = true;
             })
             .step(0.01)
             .max(1)
@@ -275,19 +246,21 @@ export default class Environment
             .name('Metalness')
             .onChange((value) => {
                 floor.material.metalness = value;
+                floor.material.needsUpdate = true;
             })
             .step(0.01)
             .max(1)
             .min(0);
 
             floorFolder
-            .add(debugObject, 'emissiveIntensity')
+            .add(debugObject, 'envMapIntensity')
             .name('Emissive Intensity')
             .min(0)
             .max(10)
             .step(0.1)
             .onChange((value) => {
-                floor.material.emissiveIntensity = value;
+                floor.material.envMapIntensity = value;
+                floor.material.needsUpdate = true;
             });
 
             floorFolder

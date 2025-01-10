@@ -56,9 +56,9 @@ export default [
 
 // AUDIO
     {
-        name: 'Audio_Scene_1',
+        name: 'Audio_Scene_0',
         type: 'audio',
-        path: 'audio/Scene_1.mp3'
+        path: 'audio/Scene_0.mp3'
     },
     {
         name: 'Audio_Scene_2',
@@ -141,6 +141,11 @@ export default [
     name: 'stones',
     type: 'texture',
     folder: 'textures/stones'
+},
+{
+    name: 'steel',
+    type: 'texture',
+    folder: 'textures/steel'
 }
 ]
 

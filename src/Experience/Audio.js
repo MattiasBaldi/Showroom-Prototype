@@ -29,10 +29,10 @@ export default class Audio {
         // Positional Audio
         this.setPositionalAudio('Audio_Scene_3', this.scene_1.model, 5, 2)
         this.setPositionalAudio('Audio_Scene_2', this.scene_2.sphere)
-        this.setPositionalAudio('Audio_Scene_3', this.scene_3.sceneModels)
+        this.setPositionalAudio('Audio_Scene_3', this.scene_3.empty)
 
         // Directional Audio
-        this.setDirectionalAudio('Audio_Scene_1',  this.scene_0.sceneModels, 2, 8, 0.1)
+        this.setDirectionalAudio('Audio_Scene_0',  this.scene_0.catWalk, 2, 8, 0.1)
      
         // Mute Button
         this.toggleMute()
@@ -119,10 +119,12 @@ export default class Audio {
         sound.play();
         sound.setLoop(true);
 
-        sound.rotation.y = Math.PI * - 1
+        // sound.rotation.y = Math.PI
         sound.position.z = 12
 
         // add to scene
+        object.updateWorldMatrix(true, true)
+        console.log(object.position)
         object.add(sound);
         this.sounds.push(sound)
 
@@ -133,7 +135,7 @@ export default class Audio {
             // helper
             const helper = new PositionalAudioHelper(sound, refDistance)
             sound.add(helper)
-            sound.visible = false;
+            sound.visible = true;
 
             const soundFolder = this.debugFolder.addFolder(`Audio: ${object.name}`)
 
@@ -164,7 +166,7 @@ export default class Audio {
                 helper.update();
             });
 
-            soundFolder.add(sound.panner, 'refDistance').min(0).max(100).step(0.01).name('Ref Distance').onChange((value) => {
+            soundFolder.add(sound.panner, 'refDistance').min(0).max(1000).step(0.01).name('Ref Distance').onChange((value) => {
                 sound.setRefDistance(value);
                 helper.range = value
                 helper.update();
