@@ -30,9 +30,9 @@ export default class Scene_0
         this.resource = this.resources.items.Scene_0
         this.sceneModels = this.resource.scene
         this.animatedModel = this.sceneModels.children[0]
-        this.catWalk = this.sceneModels.children[1]
-        this.bench = this.sceneModels.children[2]
-        this.audience = this.sceneModels.children[3]
+        this.catWalk = this.sceneModels.children[3]
+        this.bench = this.sceneModels.children[1]
+        this.audience = this.sceneModels.children[2]
 
         // Call actions
         this.setScene()
@@ -50,7 +50,7 @@ export default class Scene_0
         this.scale = 0.05
         this.sceneModels.position.y += 0.01 // avoiding z-fighting
         this.sceneModels.scale.set(this.scale, this.scale, this.scale)
-        this.sceneModels.position.z = 50
+        this.sceneModels.position.z = 25
         this.sceneModels.updateMatrixWorld(true)
         this.scene.add(this.sceneModels)
 
@@ -79,7 +79,7 @@ export default class Scene_0
 
             this.sceneModels.children.forEach((child, index) => {
                 const visibilityObject = { visible: true };
-                this.debugFolder.add(visibilityObject, 'visible').name(`Child ${index} Visibility`).onChange((value) => {
+                this.debugFolder.add(visibilityObject, 'visible').name(`${child.name} Visibility`).onChange((value) => {
                     child.visible = value;
                 });
             });
@@ -303,31 +303,32 @@ export default class Scene_0
 
     updateWalk()
     {
-        // Initiate
-        this.animatedModel.position[this.walkAxis] += (this.time.delta * 0.01) * this.walkSpeed;
-
-        // Convert position to world coordinates
+        // // Convert position to world coordinates
         const worldPosition = new THREE.Vector3();
         this.animatedModel.getWorldPosition(worldPosition);
+
+        // Initiate
+        this.animatedModel.position[this.walkAxis] += (this.time.delta * 0.01) * this.walkSpeed;
 
         // Reset walking
         if (worldPosition[this.walkAxis] > this.walkEnd) {
             this.animatedModel.position[this.walkAxis] = this.walkStart - this.animatedModel.parent.position[this.walkAxis];
         }
+
     }
 
-    setWalkFade()
+    updateFade()
     {
-        // Calculating fade
-        this.walkPercentage = this.animatedModel.position[this.walkAxis] / (this.walkStart + this.walkEnd);
+        // Calculate the fade
+        this.walkPercentage = (this.animatedModel.position[this.walkAxis] * this.scale) /  this.walkLength; 
         this.fade = Math.sin(this.walkPercentage * Math.PI);
 
-        // Cloning and applying material opacity
+        // Applying fade on material opacity
         this.animatedModel.traverse(child => {
             if (child instanceof THREE.Mesh) {
-                child.material = child.material.clone();
                 child.material.transparent = true;
                 child.material.opacity = this.fade; 
+                // console.log(`Walk Percentage: ${Math.floor(this.walkPercentage * 100)} %, Material Opacity: ${Math.floor(child.material.opacity * 100)}%`);
             }
         });
     }
@@ -336,12 +337,32 @@ export default class Scene_0
     {
         // this.renderer.selectiveBloom.selection.add(this.animatedModel.children[0]);
         this.renderer.selectiveBloom.selection.add(this.catWalk.children[1]);
+
+        if (this.debug.active) {
+            const debugObject = {
+            emissiveIntensity: this.catWalk.children[1].material.emissiveIntensity || 1,
+            bloom: true
+            };
+
+            this.debugFolder.add(debugObject, 'emissiveIntensity').name('Emissive Intensity, White Area').min(0).max(10).step(0.1).onChange((value) => {
+            this.catWalk.children[1].material.emissiveIntensity = value;
+            this.catWalk.children[0].material.emissiveIntensity = value;
+            });
+
+            this.debugFolder.add(debugObject, 'bloom').name('Toggle Bloom').onChange((value) => {
+            if (value) {
+                this.renderer.selectiveBloom.selection.add(this.catWalk.children[1]);
+            } else {
+                this.renderer.selectiveBloom.selection.delete(this.catWalk.children[1]);
+            }
+            });
+        }
     }
 
     update()
     {
             this.animation.mixer.walking.update(this.time.delta * 0.001); 
             this.updateWalk()
-            // this.setFade()  
+            this.updateFade()  
     }
 }

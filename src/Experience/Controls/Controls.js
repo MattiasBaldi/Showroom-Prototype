@@ -191,7 +191,8 @@ export default class Controls {
             // Add debug of the new this.wasd instance
             if (this.debug.active && this.debugFolder.children.length === 0)
             {
-            this.debugFolder.add(this.wasd, 'moveSpeed').min(0).max(2).step(0.01).name('Movement Speed');
+            this.debugFolder.add(this.wasd, 'accelerate').min(0).max(2).step(0.01).name('Acceleration');
+            this.debugFolder.add(this.wasd, 'decelerate').min(0).max(20).step(0.01).name('Deceleration');
             this.debugFolder.add(this.wasd.PointerLockControls, 'pointerSpeed').min(0.1).max(5).step(0.1).name('Pointer Speed');
             }
 

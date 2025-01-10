@@ -6,7 +6,7 @@ Controls / W-A-S-D Movement
 Switch
 -------
 ✔ Orbit position is weird for some objects @done (3.12.2024, 15.51.16)
-☐ Set geometry origin as true pivotPoint (Issue being that, the max zoom, doesnt match the togggle radius), height parameter needs to be removed
+✔ Set geometry origin as true pivotPoint (Issue being that, the max zoom, doesnt match the togggle radius), height parameter needs to be removed @done (9.1.2025, 21.07.49)
 ✔ Fix movement controls and speed @done (5.1.2025, 14.53.39)
 ✔ Debug @done (5.1.2025, 14.54.36)
 
@@ -56,7 +56,6 @@ Environment
 ✔ Base models @done (26.11.2024, 11.04.02)
 ✔ Fog @done (29.12.2024, 09.08.15)
 ✔ Fix grid @done (27.11.2024, 23.28.56)
-☐ Put walls together in an instanced mesh
 ✔ Add Physics to walls @done (5.1.2025, 14.53.50)
 
 Scene_0

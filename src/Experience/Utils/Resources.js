@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { RGBELoader } from 'three/examples/jsm/Addons.js'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import EventEmitter from './EventEmitter.js'
 import { gsap } from 'gsap'
 
@@ -75,16 +75,40 @@ export default class Resources extends EventEmitter
                     }
                 )
             }
-            else if(source.type === 'texture')
-            {
-                this.loaders.textureLoader.load(
-                    source.path,
-                    (file) =>
-                    {
-                        this.sourceLoaded(source, file)
-                    }
-                )
+            else if (source.type === 'texture') {
+                const folderPath = source.folder;
+                const textureNamesJPG = ['aoMap', 'map'];
+                const textureNamesPNG = ['normalMap'];
+                const textures = {};
+                const totalTextures = textureNamesJPG.length + textureNamesPNG.length;
+                let loadedTextures = 0;
+            
+                const loadTexture = (textureName, extension) => {
+                    const texturePath = `${folderPath}/${textureName}.${extension}`;
+                    this.loaders.textureLoader.load(
+                        texturePath,
+                        (loadedFile) => {
+                            textures[textureName] = loadedFile;
+                            loadedTextures++;
+                            if (loadedTextures === totalTextures) {
+                                this.sourceLoaded(source, textures);
+                            }
+                        },
+                        undefined,
+                        (error) => {
+                            console.warn(`Texture not found at path: ${texturePath}`, error);
+                            loadedTextures++;
+                            if (loadedTextures === totalTextures) {
+                                this.sourceLoaded(source, textures);
+                            }
+                        }
+                    );
+                };
+            
+                textureNamesJPG.forEach((textureName) => loadTexture(textureName, 'jpg'));
+                textureNamesPNG.forEach((textureName) => loadTexture(textureName, 'png'));
             }
+            
             else if(source.type === 'cubeTexture')
             {
                 this.loaders.cubeTextureLoader.load(
@@ -96,25 +120,25 @@ export default class Resources extends EventEmitter
                 )
             }
             else if(source.type === 'HDR')
-                {
-                    this.loaders.rgbeLoader.load(
-                        source.path,
-                        (file) =>
-                        {
-                            this.sourceLoaded(source, file)
-                        }
-                    )
-                }
+            {
+                this.loaders.rgbeLoader.load(
+                    source.path,
+                    (file) =>
+                    {
+                        this.sourceLoaded(source, file)
+                    }
+                )
+            }
             else if(source.type === 'audio')
-                {
-                    this.loaders.audioLoader.load(
-                        source.path,
-                        (file) =>
-                        {
-                            this.sourceLoaded(source, file)
-                        }
-                    )
-                }
+            {
+                this.loaders.audioLoader.load(
+                    source.path,
+                    (file) =>
+                    {
+                        this.sourceLoaded(source, file)
+                    }
+                )
+            }
         }
     }
 

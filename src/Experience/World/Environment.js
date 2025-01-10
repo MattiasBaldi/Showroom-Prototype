@@ -38,7 +38,6 @@ export default class Environment
             this.environmentMap = this.resources.items.blueStudio
             this.environmentMap.mapping =  THREE.EquirectangularReflectionMapping
             this.scene.environment = this.environmentMap
-            this.scene.environmentIntensity = 0.3
             this.scene.background = new THREE.Color('black')
             
             // Debug
@@ -151,24 +150,23 @@ export default class Environment
         {
 
         const textures = [
-            {
-            map: this.resources.items.floor1_color,
-            normalMap: this.resources.items.floor1_normal,
-            aoMap: this.resources.items.floor1_ao
-            },
-            {
-            map: this.resources.items.floor2_color,
-            normalMap: this.resources.items.floor2_normal,
-            aoMap: this.resources.items.floor2_ao,
-            roughnessMap: this.resources.items.floor2_roughness
-            },
-            {
-            map: this.resources.items.floor3_color,
-            normalMap: this.resources.items.floor3_normal,
-            aoMap: this.resources.items.floor3_ao,
-            roughnessMap: this.resources.items.floor3_roughness
-            }
+            this.resources.items.aerial_asphalt,
+            this.resources.items.concrete_worn,
+            this.resources.items.cracked_concrete,
+            this.resources.items.dithered_concrete,
+            this.resources.items.dry_riverbed_rock,
+            this.resources.items.granular_concrete,
+            this.resources.items.gravel,
+            this.resources.items.gravel_concrete,
+            this.resources.items.painted_concrete,
+            this.resources.items.plastered_wall,
+            this.resources.items.purple_floor,
+            this.resources.items.rock_boulder,
+            this.resources.items.rocks,
+            this.resources.items.stones,
         ];
+
+        
         
         const floor = new THREE.Mesh(
             new THREE.PlaneGeometry(1000, 1000, 10, 10),
@@ -209,8 +207,25 @@ export default class Environment
 
             const floorFolder = this.debugFolder.addFolder('Floor');
 
+            const textureNames = {
+                AerialAsphalt: 1,
+                ConcreteWorn: 2,
+                CrackedConcrete: 3,
+                DitheredConcrete: 4,
+                DryRiverbedRock: 5,
+                GranularConcrete: 6,
+                Gravel: 7,
+                GravelConcrete: 8,
+                PaintedConcrete: 9,
+                PlasteredWall: 10,
+                PurpleFloor: 11,
+                RockBoulder: 12,
+                Rocks: 13,
+                Stones: 14
+            };
+
             floorFolder
-            .add(debugObject, 'selectedTexture', { Purple: 1, Concrete: 2, Stones: 3 })
+            .add(debugObject, 'selectedTexture', textureNames)
             .name('Select Texture')
             .onChange((value) => {
 
@@ -264,6 +279,29 @@ export default class Environment
             .step(0.01)
             .max(1)
             .min(0);
+
+            floorFolder
+            .add(debugObject, 'emissiveIntensity')
+            .name('Emissive Intensity')
+            .min(0)
+            .max(10)
+            .step(0.1)
+            .onChange((value) => {
+                floor.material.emissiveIntensity = value;
+            });
+
+            floorFolder
+            .add({ toggleBloom: true }, 'toggleBloom')
+            .name('Toggle Bloom')
+            .onChange((value) => {
+                if (value) {
+                    this.renderer.selectiveBloom.selection.add(floor);
+                } else {
+                    this.renderer.selectiveBloom.selection.delete(floor);
+                }
+            });
+
+
         }
         }
 
@@ -328,7 +366,7 @@ export default class Environment
             const wallFour = addWall({ width: 2, positionX: 145, rotationY: Math.PI * -0.5 })
             const wallFive = addWall({ width: 15, positionX: -15, positionZ: 85, rotationY: Math.PI * 0.5 })
             const wallSix = addWall({ width: 15, positionX: 15, positionZ: 85, rotationY: Math.PI * -0.5 })
-            const wallSeven = addWall({ width: 3, positionZ: 100, rotationY: -Math.PI })
+            const wallSeven = addWall({ width: 3, positionZ: 80, rotationY: -Math.PI })
 
             this.walls = new THREE.Group()
             this.walls.add(wallOne, wallTwoOne, wallTwoTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
@@ -488,11 +526,11 @@ export default class Environment
                         const intensity = THREE.MathUtils.mapLinear(minDistance, minDistanceThreshold, maxDistance, 0, 1);
                         wall.material.envMapIntensity = intensity;
                         wall.material.needsUpdate = true;
-                        console.log('walls visible');
+             a           // console.log('walls visible');
                     } else {
                         wall.material.envMapIntensity = 0; // Default intensity
                         wall.material.needsUpdate = true;
-                        console.log('invisible');
+                        // console.log('invisible');
                     }
                 } else {
                     wall.material.envMapIntensity = 0; // Default intensity for other walls
@@ -504,10 +542,9 @@ export default class Environment
 
         }
 
-
         update()
         {
             this.addWallCollission()
-            this.updateWallVisiblity()
+            // this.updateWallVisiblity()
         }
     }

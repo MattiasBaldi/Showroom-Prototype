@@ -24,12 +24,12 @@ export default class World
         this.resources.on('ready', () =>
         {   
             // Setup
-            this.camera.position.set(0, 1, 100)
+            this.camera.position.set(0, 1, 75)
             this.environment = new Environment()
-            this.scene_3 = new Scene_3()
-            this.scene_2 = new Scene_2()
-            this.scene_1 = new Scene_1()
             this.scene_0 = new Scene_0()
+            this.scene_1 = new Scene_1()
+            this.scene_2 = new Scene_2()
+            this.scene_3 = new Scene_3()
             this.teleportation = new Teleportation()
             this.lights = new Lights()
             this.audio = new Audio()

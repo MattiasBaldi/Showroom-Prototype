@@ -18,13 +18,18 @@ export default class WASD {
         this.direction = new THREE.Vector3();
 
         // Movement flags
-        this.moveSpeed =  0.6;
+        this.accelerate =  0.5;
+        this.decelerate =  15;
+        this.pointerSpeed  = 2;
         this.moveForward = false;
         this.moveBackward = false;
         this.moveLeft = false;
         this.moveRight = false;
         this.canJump = false;
-        // this.sprintSpeed = this.moveSpeed * 1.5
+
+        this.originalSpeed = this.accelerate
+        this.sprint = false; 
+        this.sprintSpeed = this.accelerate * 1.5
 
         this.setKeyMap()
         this.setPointerLockControls()
@@ -95,11 +100,11 @@ export default class WASD {
                     this.canJump = false;
                     break;
 
-                // case 'ShiftLeft':
-                // case 'ShiftRight':
-                //     this.sprint = true;
-                //     console.log('shift clicked')
-                //     break;
+                case 'ShiftLeft':
+                case 'ShiftRight':
+                    this.sprint = true;
+                    console.log('shift clicked')
+                    break;
             }
         }
 
@@ -130,11 +135,11 @@ export default class WASD {
                     this.canJump = false;
                     break;
 
-                // case 'ShiftLeft':
-                // case 'ShiftRight':
-                //     console.log('shift up')
-                //     this.sprint = false;
-                //     break;
+                case 'ShiftLeft':
+                case 'ShiftRight':
+                    console.log('shift up')
+                    this.sprint = false;
+                    break;
             }
         }
 
@@ -145,7 +150,7 @@ export default class WASD {
     setPointerLockControls() {
         this.camera.position.y = 1; 
         this.PointerLockControls = new PointerLockControls(this.camera, this.canvas)
-        this.PointerLockControls.pointerSpeed  = 2;
+        this.PointerLockControls.pointerSpeed  = this.pointerSpeed; 
     }
 
     update()
@@ -153,25 +158,25 @@ export default class WASD {
         if (this.PointerLockControls.isLocked) 
             {
             // Velocity & direction
-            this.velocity.x -= this.velocity.x * 10 * (0.001 * this.time.delta) * this.moveSpeed;
-            this.velocity.z -= this.velocity.z * 10 * (0.001 * this.time.delta) * this.moveSpeed;
+            this.velocity.x -= this.velocity.x * this.decelerate * (0.001 * this.time.delta) * this.accelerate;
+            this.velocity.z -= this.velocity.z * this.decelerate * (0.001 * this.time.delta) * this.accelerate;
 
             this.direction.z = Number(this.moveForward) - Number(this.moveBackward);
             this.direction.x = Number(this.moveRight) - Number(this.moveLeft);
             this.direction.normalize(); // this ensures consistent movements in all directions
 
             // Movement
-            if (this.moveForward || this.moveBackward) this.velocity.z -= (this.direction.z * 400 * (this.time.delta * 0.001) * this.moveSpeed);
-            if (this.moveLeft || this.moveRight) this.velocity.x -= (this.direction.x * 400 * (this.time.delta * 0.001) * this.moveSpeed);
-            this.PointerLockControls.moveRight(-this.velocity.x * (this.time.delta * 0.001) * this.moveSpeed);
-            this.PointerLockControls.moveForward(-this.velocity.z * (this.time.delta * 0.001) * this.moveSpeed);
+            if (this.moveForward || this.moveBackward) this.velocity.z -= (this.direction.z * 400 * (this.time.delta * 0.001) * this.accelerate);
+            if (this.moveLeft || this.moveRight) this.velocity.x -= (this.direction.x * 400 * (this.time.delta * 0.001) * this.accelerate);
+            this.PointerLockControls.moveRight(-this.velocity.x * (this.time.delta * 0.001) * this.accelerate);
+            this.PointerLockControls.moveForward(-this.velocity.z * (this.time.delta * 0.001) * this.accelerate);
 
             // Sprint
-            // if (this.sprint) {
-            //     this.moveSpeed = this.sprintSpeed;
-            // } else {
-            //     this.moveSpeed = this.originalSpeed;
-            // }
+            if (this.sprint) {
+                this.accelerate = this.sprintSpeed;
+            } else {
+                this.accelerate = this.originalSpeed;
+            }
 
         }     
     }

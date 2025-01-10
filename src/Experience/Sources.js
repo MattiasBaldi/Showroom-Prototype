@@ -72,64 +72,75 @@ export default [
     },
 
 // TEXTURES
-    {
-        name: 'floor1_color',
-        type: 'texture',
-        path: 'textures/floor/floor1_color.png'
-    },
-    {
-        name: 'floor1_ao',
-        type: 'texture',
-        path: 'textures/floor/floor1_ao.png'
-    },
-    {
-        name: 'floor1_normal',
-        type: 'texture',
-        path: 'textures/floor/floor1_normal.png'
-    },
-    {
-        name: 'floor2_color',
-        type: 'texture',
-        path: 'textures/floor/floor2_color.jpg'
-    },
-    {
-        name: 'floor2_ao',
-        type: 'texture',
-        path: 'textures/floor/floor2_ao.jpg'
-    },
-    {
-        name: 'floor2_normal',
-        type: 'texture',
-        path: 'textures/floor/floor2_normal.png'
-    },
-    {
-        name: 'floor2_displacement',
-        type: 'texture',
-        path: 'textures/floor/floor2_displacement.jpg'
-    },
-    {
-        name: 'floor2_roughness',
-        type: 'texture',
-        path: 'textures/floor/floor2_roughness.jpg'
-    },
-    {
-        name: 'floor3_color',
-        type: 'texture',
-        path: 'textures/floor/floor3_color.jpg'
-    },
-    {
-        name: 'floor3_ao',
-        type: 'texture',
-        path: 'textures/floor/floor3_ao.jpg'
-    },
-    {
-        name: 'floor3_normal',
-        type: 'texture',
-        path: 'textures/floor/floor3_normal.png'
-    },
-    {
-        name: 'floor3_roughness',
-        type: 'texture',
-        path: 'textures/floor/floor3_roughness.jpg'
-    }
+{
+    name: 'aerial_asphalt',
+    type: 'texture',
+    folder: 'textures/aerial_asphalt'
+},
+{
+    name: 'concrete_worn',
+    type: 'texture',
+    folder: 'textures/concrete_worn'
+},
+{
+    name: 'cracked_concrete',
+    type: 'texture',
+    folder: 'textures/cracked_concrete'
+},
+{
+    name: 'dithered_concrete',
+    type: 'texture',
+    folder: 'textures/dry_riverbed_rock'
+},
+{
+    name: 'dry_riverbed_rock',
+    type: 'texture',
+    folder: 'textures/dry_riverbed_rock'
+},
+{
+    name: 'granular_concrete',
+    type: 'texture',
+    folder: 'textures/granular_concrete'
+},
+{
+    name: 'gravel',
+    type: 'texture',
+    folder: 'textures/gravel'
+},
+{
+    name: 'gravel_concrete',
+    type: 'texture',
+    folder: 'textures/gravel_concrete'
+},
+{
+    name: 'painted_concrete',
+    type: 'texture',
+    folder: 'textures/painted_concrete'
+},
+{
+    name: 'plastered_wall',
+    type: 'texture',
+    folder: 'textures/plastered_wall'
+},
+{
+    name: 'purple_floor',
+    type: 'texture',
+    folder: 'textures/purple_floor'
+},
+{
+    name: 'rock_boulder',
+    type: 'texture',
+    folder: 'textures/rock_boulder'
+},
+{
+    name: 'rocks',
+    type: 'texture',
+    folder: 'textures/rocks'
+},
+{
+    name: 'stones',
+    type: 'texture',
+    folder: 'textures/stones'
+}
 ]
+
