@@ -527,7 +527,7 @@ export default class Environment
 
         update()
         {
-            this.addWallCollission()
+            // this.addWallCollission()
             // this.updateWallVisiblity()
         }
     }

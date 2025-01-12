@@ -32,11 +32,19 @@ export default class Lights
         this.lightGroups = {}
 
         // Methods
-        this.setObjectLight(this.scene_1.model, 2, 5, 5, 50, 30)
+        this.setObjectLight(this.scene_1.model, 2, 5, 5, 50, 30, 10)
         this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
-        this.setObjectLight(this.scene_3.empty, 1, 5, 5, 50, 30)
         this.setNavigationallight(4, 40, 10)
         this.setCatwalk(5, 10, 2, 100)
+
+        // Testing roomLight
+        if(this.debug.active)
+        {
+            this.scene3Folder = this.debugFolder.addFolder('scene 3')
+        }
+        this.setRoomSpotlight()
+        this.setRoomPointLight()
+
         this.setBloom()
     }
 
@@ -521,7 +529,8 @@ export default class Lights
         anglePower: group.children[0].children[0].material.uniforms.anglePower.value,
         edgeScale: group.children[0].children[0].material.uniforms.edgeScale.value,
         edgeConstractPower: group.children[0].children[0].material.uniforms.edgeConstractPower.value,
-        count: count // Add this line
+        count: count, // Add this line
+        coneRadius: coneRadius
     };
  
     this[`${object.name}Speed`] = 0.01;
@@ -555,8 +564,6 @@ export default class Lights
                 group.remove(child);
             }
             addLights(value, radius, height, coneLength, coneRadius, shadowEnabled)
-        
-
         });
 
         debugFolder
@@ -610,6 +617,28 @@ export default class Lights
         });
         updateSpotLightHelpers()
         });
+
+
+    debugFolder
+    .add(debugObject, 'coneRadius')
+    .name('Cone Radius')
+    .min(0)
+    .max(20)
+    .step(1)
+    .onChange((value) => {
+        // Clear existing lights
+        while (group.children.length > 0) {
+            const child = group.children[0];
+            child.traverse((object) => {
+                if (object.isMesh) {
+                    object.geometry.dispose();
+                    object.material.dispose();
+                }
+            });
+            group.remove(child);
+        }
+        addLights(count, radius, height, coneLength, value, shadowEnabled)
+    });
 
     debugFolder
         .add(debugObject, 'intensity')
@@ -674,86 +703,255 @@ export default class Lights
     
     }
 
-    setRoomLight()
+    setRoomSpotlight()
     {
-        const spotLight = new THREE.SpotLight(0xffffff, 25, 0,  50 * (Math.PI / 180), 0.5, 2)
-        const localPosition = new THREE.Vector3();
-        this.scene_3.bulb.localToWorld(localPosition);
+        // Spotlight
+        const spotLight = new THREE.SpotLight(0xffffff, 25, 0, 50 * (Math.PI / 180), 0.5, 2)
+        const worldPosition = new THREE.Vector3();
+        this.scene_3.bulb.getWorldPosition(worldPosition);
 
-        spotLight.position.copy(localPosition)
+        spotLight.position.copy(worldPosition)
         spotLight.position.y += 0.5
         spotLight.target.position.set(spotLight.position.x, spotLight.position.y - 1, spotLight.position.z);
-        spotLight.target.updateMatrixWorld();
-
-        // spotLight.castShadow = true; 
-        // const spotLightHelper = new THREE.SpotLightHelper(spotLight)
+        spotLight.target.updateMatrixWorld();        
         this.scene.add(spotLight)
+
+        // Shadow
+        spotLight.castShadow = true
 
         // Debug
         if (this.debug.active)
         {
-            const scene3Folder = this.debugFolder.addFolder('Scene 3, Light')
+            const scene3Folder = this.scene3Folder.addFolder('Spotlight')
             scene3Folder.close()
 
             const debugObject = {
-                intensity: spotLight.intensity,
-                distance: spotLight.distance,
-                angle: spotLight.angle,
-                penumbra: spotLight.penumbra,
-                decay: spotLight.decay
+            intensity: spotLight.intensity,
+            distance: spotLight.distance,
+            angle: spotLight.angle,
+            penumbra: spotLight.penumbra,
+            decay: spotLight.decay,
+            active: true,
+            shadows: true
             };
 
+            // Add checkbox to toggle point light
             scene3Folder
-                .add(debugObject, 'intensity')
-                .name('Intensity')
-                .min(0)
-                .max(1000)
-                .step(0.1)
-                .onChange((value) => {
-                    spotLight.intensity = value;
-                });
+            .add(debugObject, 'active')
+            .name('Active')
+            .onChange((value) => {
+                spotLight.visible = value;
+            });
+
+            // Add checkbox to toggle shadows
+            scene3Folder
+            .add(debugObject, 'shadows')
+            .name('Shadows')
+            .onChange((value) => {
+                spotLight.castShadow = value;
+            });
+
+            // Helpers
+            const shadowCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+            shadowCameraHelper.visible = false;
+            const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+            spotLightHelper.visible = false;
+            this.scene.add(shadowCameraHelper, spotLightHelper);
 
             scene3Folder
-                .add(debugObject, 'distance')
-                .name('Distance')
-                .min(0)
-                .max(1000)
-                .step(0.1)
-                .onChange((value) => {
-                    spotLight.distance = value;
-                });
+            .add({ showHelpers: false }, 'showHelpers')
+            .name('Show Helpers')
+            .onChange((value) => {
+                shadowCameraHelper.visible = value;
+                spotLightHelper.visible = value;
+            });
 
             scene3Folder
-                .add(debugObject, 'angle')
-                .name('Angle')
-                .min(0)
-                .max(Math.PI / 2)
-                .step(0.01)
-                .onChange((value) => {
-                    spotLight.angle = value;
-                });
+            .add(debugObject, 'intensity')
+            .name('Intensity')
+            .min(0)
+            .max(1000)
+            .step(0.1)
+            .onChange((value) => {
+                spotLight.intensity = value;
+                spotLightHelper.update();
+            });
 
             scene3Folder
-                .add(debugObject, 'penumbra')
-                .name('Penumbra')
-                .min(0)
-                .max(1)
-                .step(0.01)
-                .onChange((value) => {
-                    spotLight.penumbra = value;
-                });
+            .add(debugObject, 'distance')
+            .name('Distance')
+            .min(0)
+            .max(1000)
+            .step(0.1)
+            .onChange((value) => {
+                spotLight.distance = value;
+                spotLightHelper.update();
+            });
 
             scene3Folder
-                .add(debugObject, 'decay')
-                .name('Decay')
-                .min(0)
-                .max(2)
-                .step(0.01)
-                .onChange((value) => {
-                    spotLight.decay = value;
-                });
+            .add(debugObject, 'angle')
+            .name('Angle')
+            .min(0)
+            .max(Math.PI / 2)
+            .step(0.01)
+            .onChange((value) => {
+                spotLight.angle = value;
+                spotLightHelper.update();
+            });
+
+            scene3Folder
+            .add(debugObject, 'penumbra')
+            .name('Penumbra')
+            .min(0)
+            .max(1)
+            .step(0.01)
+            .onChange((value) => {
+                spotLight.penumbra = value;
+                spotLightHelper.update();
+            });
+
+            scene3Folder
+            .add(debugObject, 'decay')
+            .name('Decay')
+            .min(0)
+            .max(2)
+            .step(0.01)
+            .onChange((value) => {
+                spotLight.decay = value;
+                spotLightHelper.update();
+            });
+
+            // Add controls for shadow camera near and far
+            scene3Folder
+            .add(spotLight.shadow.camera, 'near')
+            .name('Shadow Near')
+            .min(0.1)
+            .max(100)
+            .step(0.1)
+            .onChange(() => {
+                spotLight.shadow.camera.updateProjectionMatrix();
+                shadowCameraHelper.update();
+            });
+
+            scene3Folder
+            .add(spotLight.shadow.camera, 'far')
+            .name('Shadow Far')
+            .min(0.1)
+            .max(100)
+            .step(0.1)
+            .onChange(() => {
+                spotLight.shadow.camera.updateProjectionMatrix();
+                shadowCameraHelper.update();
+            });
+
+            scene3Folder
+            .add(spotLight.shadow.camera, 'fov')
+            .name('Shadow FOV')
+            .min(1)
+            .max(120)
+            .step(1)
+            .onChange(() => {
+                spotLight.shadow.camera.updateProjectionMatrix();
+                shadowCameraHelper.update();
+            });
+
+            scene3Folder
+            .add(spotLight.shadow, 'bias')
+            .name('Shadow Bias')
+            .min(-0.01)
+            .max(0.01)
+            .step(0.0001)
+            .onChange(() => {
+                shadowCameraHelper.update();
+            });
+
+            scene3Folder
+            .add(spotLight.shadow, 'radius')
+            .name('Shadow Radius')
+            .min(0)
+            .max(10)
+            .step(0.1)
+            .onChange(() => {
+                shadowCameraHelper.update();
+            });
         }
+    }
 
+    setRoomPointLight()
+    {
+        // Point Light
+        const pointLight = new THREE.PointLight(0xffffff, 5, 100, 2);
+        const worldPosition = new THREE.Vector3();
+        this.scene_3.bulb.getWorldPosition(worldPosition);
+
+        pointLight.position.copy(worldPosition)
+        pointLight.position.y += 0.5
+        this.scene.add(pointLight)
+
+        // Debug
+        if (this.debug.active)
+        {
+            const scene3Folder = this.scene3Folder.addFolder('PointLight')
+            scene3Folder.close()
+
+            const debugObject = {
+            intensity: pointLight.intensity,
+            distance: pointLight.distance,
+            decay: pointLight.decay,
+            active: true, // Add active property to control the light
+            shadows: false
+            };
+
+            // Add checkbox to toggle point light
+            scene3Folder
+            .add(debugObject, 'active')
+            .name('Active')
+            .onChange((value) => {
+                pointLight.visible = value;
+            });
+
+
+            // Add checkbox to toggle shadows
+            scene3Folder
+            .add(debugObject, 'shadows')
+            .name('Shadows')
+            .onChange((value) => {
+                pointLight.castShadow = value;
+            });
+
+            scene3Folder
+            .add(debugObject, 'intensity')
+            .name('Intensity')
+            .min(0)
+            .max(1000)
+            .step(0.1)
+            .onChange((value) => {
+                pointLight.intensity = value;
+                shadowCameraHelper.update();
+            });
+
+            scene3Folder
+            .add(debugObject, 'distance')
+            .name('Distance')
+            .min(0)
+            .max(100)
+            .step(0.1)
+            .onChange((value) => {
+                pointLight.distance = value;
+                shadowCameraHelper.update();
+            });
+
+            scene3Folder
+            .add(debugObject, 'decay')
+            .name('Decay')
+            .min(0)
+            .max(2)
+            .step(0.01)
+            .onChange((value) => {
+                pointLight.decay = value;
+                shadowCameraHelper.update();
+            });
+        }
     }
 
     setBloom()
@@ -780,7 +978,6 @@ export default class Lights
     // });
 
     // this.renderer.selectiveBloom.selection.add(bulb, frame)
-
     }
 
     updateEnvMap()
@@ -818,7 +1015,10 @@ export default class Lights
     {
         this.lightGroups.pose.rotation.y += this.poseSpeed
         this.lightGroups.sphere.rotation.y += this.sphereSpeed
+        if(this.lightGroups.furniture)
+        {
         this.lightGroups.furniture.rotation.y +=  this.furnitureSpeed
+        }
         // this.updateEnvMap()
     }
 }

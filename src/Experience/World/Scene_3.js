@@ -30,7 +30,7 @@ export default class Scene_3 {
             this.tableFolder.close()
         }
 
-        // Scene 
+        // Setup 
         this.resource = this.resources.items.Scene_3
         this.sceneModels = this.resource.scene
         this.sceneGroup = new THREE.Group()
@@ -39,8 +39,11 @@ export default class Scene_3 {
         this.lamp = this.empty.children[1] 
         this.models = this.empty.children[2] 
         this.table = this.empty.children[3] 
+        this.bulb = this.empty.children[1].children[0]
+        this.frame = this.empty.children[1].children[1]
+        this.rotationSpeed = 0.005
 
-        // Setup
+        // Init
         this.setScene()
         this.setMaterials()
         this.setBloom()
@@ -65,6 +68,7 @@ export default class Scene_3 {
                     this.sceneModels.scale.set(value, value, value)
                 })
 
+                this.debugFolder.add(this, 'rotationSpeed').name('Rotation Speed').step(0.01).min(0).max(0.1)
                 this.floorFolder.add(this.floor, 'visible').name('Floor Visibility').listen()
 
                 this.lampFolder.add(this.lamp, 'visible').name('Lamp Visibility').listen()
@@ -74,16 +78,76 @@ export default class Scene_3 {
                 })
 
                 this.modelFolder.add(this.models, 'visible').name('Models Visibility').listen()
-
                 this.tableFolder.add(this.table, 'visible').name('Table Visibility').listen()
 
             }
     }
 
+    setFloor()
+    {
+        const getTextures = () => 
+            Object.fromEntries(
+            Object.entries(this.resources.items).filter(([_, value]) =>
+                Object.values(value).some(subValue => subValue instanceof THREE.Texture)
+            )
+            );
+        
+        const textures = getTextures();
+        const selectedTexture = textures.concrete_worn;
+        const applyTexture = (texture) => {
+            // Compute the bounding box if not already computed
+            if (!this.floor.geometry.boundingBox) {
+                this.floor.geometry.computeBoundingBox();
+            }
+
+            const boundingBox = this.floor.geometry.boundingBox;
+            const radius = (boundingBox.max.x - boundingBox.min.x) / 2;
+            const circumference = 2 * Math.PI * radius;
+
+            for (const [name, map] of Object.entries(texture)) {
+                // Clone the texture to avoid modifying the original
+                const clonedMap = map.clone();
+                this.floor.material[name] = clonedMap;
+                Object.assign(clonedMap, {
+                    wrapS: THREE.MirroredRepeatWrapping,
+                    wrapT: THREE.MirroredRepeatWrapping,
+                    generateMipmaps: false
+                });
+
+                clonedMap.repeat.set(circumference, circumference);
+            }
+        };
+
+
+        applyTexture(selectedTexture);    
+        this.floor.rotation.x = Math.PI * - 0.5
+        this.floor.receiveShadow = true; 
+        this.scene.add(this.floor)
+
+        if (this.debug.active) {
+            const debugObject = {
+            color: this.floor.material.color.getHex(),
+            emissive: this.floor.material.emissive.getHex(),
+            envMapIntensity: this.floor.material.envMapIntensity,
+            selectedTexture: selectedTexture,
+            texturename: Object.keys(textures).find(key => textures[key] === selectedTexture)
+            };
+
+            const floorFolder = this.debugFolder.addFolder('Floor');
+
+            floorFolder
+            .add(debugObject, 'texturename', Object.keys(textures))
+            .name('Select Texture')
+            .onChange((value) => {
+                const texture = textures[value];
+                applyTexture(texture);
+                this.floor.material.needsUpdate = true;
+            });
+        }
+    }
+
     setMaterials()
     {
-
-
         // Env Map Intensity
         // this.empty.traverse((child) => {
         //     if (child.isMesh && child.material) {
@@ -130,9 +194,6 @@ export default class Scene_3 {
                 this.floor.material.envMapIntensity = value
             })
             
-            console.log(this.table)
-            console.log(this.models.children[0].children[0].children[3])
-
             this.tableFolder
             .add(this.table.children[1].material, 'metalness')
             .min(0)
@@ -166,15 +227,12 @@ export default class Scene_3 {
  
 
         }
-}
+    }
 
     setBloom()
     {
-
-    const bulb = this.empty.children[1].children[0]
-    const frame = this.empty.children[1].children[1]
     
-    bulb.material = new THREE.MeshStandardMaterial({
+    this.bulb.material = new THREE.MeshStandardMaterial({
         emissive: new THREE.Color(0x808080),
         emissiveIntensity: 10,
         color: new THREE.Color(0x0000000),
@@ -182,7 +240,7 @@ export default class Scene_3 {
         metalness: 1 
     });
 
-    frame.material = new THREE.MeshStandardMaterial({
+    this.frame.material = new THREE.MeshStandardMaterial({
         emissive: new THREE.Color(0x808080),
         emissiveIntensity: 3,
         color: new THREE.Color(0x0000000),
@@ -190,14 +248,12 @@ export default class Scene_3 {
         metalness: 1 
     });
 
-    this.renderer.selectiveBloom.selection.add(bulb, frame)
+    this.renderer.selectiveBloom.selection.add(this.bulb, this.frame)
 
     if(this.debug.active)
     {
-
-
         const bulbFolder = this.lampFolder.addFolder('Bulb')
-        bulbFolder.add(bulb.material, 'emissiveIntensity')
+        bulbFolder.add(this.bulb.material, 'emissiveIntensity')
             .min(0)
             .max(10)
             .step(0.1)
@@ -205,20 +261,35 @@ export default class Scene_3 {
 
         bulbFolder.add({ bloom: true }, 'bloom').name('Toggle Bloom').onChange((value) => {
             if (value) {
-                this.renderer.selectiveBloom.selection.add(bulb);
-                this.renderer.selectiveBloom.selection.add(frame);
+                this.renderer.selectiveBloom.selection.add(this.bulb);
+                this.renderer.selectiveBloom.selection.add(this.frame);
             } else {
-                this.renderer.selectiveBloom.selection.delete(bulb);
-                this.renderer.selectiveBloom.selection.delete(frame);
+                this.renderer.selectiveBloom.selection.delete(this.bulb);
+                this.renderer.selectiveBloom.selection.delete(this.frame);
             }
         });
 
         const frameFolder = this.lampFolder.addFolder('Frame')
-        frameFolder.add(frame.material, 'emissiveIntensity')
+        frameFolder.add(this.frame.material, 'emissiveIntensity')
             .min(0)
             .max(10)
             .step(0.1)
             .name('Emissive Intensity')
+
+            const floorEmissiveFolder = this.floorFolder.addFolder('Floor Emissive')
+            floorEmissiveFolder.add(this.floor.material, 'emissiveIntensity')
+                .min(0)
+                .max(10)
+                .step(0.1)
+                .name('Emissive Intensity')
+
+            floorEmissiveFolder.add({ bloom: true }, 'bloom').name('Toggle Bloom').onChange((value) => {
+                if (value) {
+                this.renderer.selectiveBloom.selection.add(this.floor);
+                } else {
+                this.renderer.selectiveBloom.selection.delete(this.floor);
+                }
+            });
     }
 
     }
@@ -226,6 +297,6 @@ export default class Scene_3 {
     update()
     {
         this.switch.update()
-        this.empty.rotation.y += 0.01
+        this.empty.rotation.y += this.rotationSpeed
     }
 }
