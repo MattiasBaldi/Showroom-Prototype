@@ -159,8 +159,6 @@ export default class Environment
             })
         );        
 
-        console.log(floor.geometry)
-
 
         const getTextures = () => 
             Object.fromEntries(
@@ -360,6 +358,18 @@ export default class Environment
 
                 const wallsFolder = this.debugFolder.addFolder('Walls');
 
+                wallsFolder
+                    .add(wallMaterial, 'envMapIntensity')
+                    .name('EnvMap Intensity')
+                    .min(0)
+                    .max(10)
+                    .step(0.1)
+                    .onChange((value) => {
+                        this.walls.children.forEach((wall) => {
+                            wall.material.envMapIntensity = value;
+                            wall.material.needsUpdate = true;
+                        });
+                    });
 
                 wallsFolder
                 .addColor({ color: wall.material.color.getHex() }, 'color')

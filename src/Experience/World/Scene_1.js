@@ -20,6 +20,10 @@ export default class Scene_1
         {
             this.debugFolder = this.debug.ui.addFolder('Scene 1 (Posed Model)')
             this.debugFolder.close()
+            this.clothesFolder = this.debugFolder.addFolder('Clothes')
+            this.clothesFolder.close()
+            this.bodyFolder = this.debugFolder.addFolder('Body');
+            this.bodyFolder.close()
         }
 
         // Setup
@@ -30,7 +34,8 @@ export default class Scene_1
 
         // Call actions
         this.setScene()
-        // this.setBloom()
+        this.setMaterial()
+        this.setBloom()
         // this.setEnvMapIntensity()
 
         // Switch
@@ -52,9 +57,70 @@ export default class Scene_1
         }
     }
 
+    setMaterial()
+    {
+                // Debug
+                if(this.debug.active) {
+          
+                   const chromeModels = this.model.children.slice(1, 6)
+                    this.clothesFolder.addColor({ color: chromeModels[0].material.color.getHex() }, 'color').name('Material Color').onChange((value) => {
+                        chromematerials.forEach(child => child.material.color.set(value))
+                    })
+                    this.clothesFolder.add({ metalness: chromeModels[0].material.metalness }, 'metalness').min(0).max(1).step(0.01).name('Metalness').onChange((value) => {
+                        chromeModels.forEach(child => child.material.metalness = value)
+                    })
+                    this.clothesFolder.add({ roughness: chromeModels[0].material.roughness }, 'roughness').min(0).max(1).step(0.01).name('Roughness').onChange((value) => {
+                        chromeModels.forEach(child => child.material.roughness = value)
+                    })
+                    this.clothesFolder.add({ envMapIntensity: chromeModels[0].material.envMapIntensity }, 'envMapIntensity').min(0).max(1).step(0.1).name('Env Map Intensity').onChange((value) => {
+                        chromeModels.forEach(child => {
+                            child.material.envMap = this.environment.environmentMap;
+                            child.material.envMapIntensity = value;
+                        })
+                    })
+
+                    const body = this.model.children[0]
+                    const bodyMaterial = body.material;
+                    this.bodyFolder.addColor({ color: bodyMaterial.color.getHex() }, 'color').name('Material Color').onChange((value) => {
+                        bodyMaterial.color.set(value);
+                    });
+                    this.bodyFolder.add({ metalness: bodyMaterial.metalness }, 'metalness').min(0).max(1).step(0.01).name('Metalness').onChange((value) => {
+                        bodyMaterial.metalness = value;
+                    });
+                    this.bodyFolder.add({ roughness: bodyMaterial.roughness }, 'roughness').min(0).max(1).step(0.01).name('Roughness').onChange((value) => {
+                        bodyMaterial.roughness = value;
+                    });
+                    this.bodyFolder.add({ envMapIntensity: bodyMaterial.envMapIntensity }, 'envMapIntensity').min(0).max(1).step(0.1).name('Env Map Intensity').onChange((value) => {
+                        bodyMaterial.envMap = this.environment.environmentMap;
+                        bodyMaterial.envMapIntensity = value;
+                    });
+
+
+
+                    }
+    }
+
     setBloom()
     {
         this.renderer.selectiveBloom.selection.add(this.body)
+
+        if (this.debug.active)
+        {
+            this.bodyFolder.add({ bloom: true }, 'bloom').name('Toggle Bloom').onChange((value) => {
+                if (value) {
+                    this.renderer.selectiveBloom.selection.add(this.body);
+                } else {
+                    this.renderer.selectiveBloom.selection.delete(this.body);
+                }
+            });
+
+            this.bodyFolder.addColor({ emissive: this.body.material.emissive.getHex() }, 'emissive').name('Emissive Color').onChange((value) => {
+                this.body.material.emissive.set(value);
+            });
+            this.bodyFolder.add({ emissiveIntensity: this.body.material.emissiveIntensity }, 'emissiveIntensity').min(0).max(1).step(0.1).name('Emissive Intensity').onChange((value) => {
+                this.body.material.emissiveIntensity = value;
+            });
+        }
     }
 
     update()

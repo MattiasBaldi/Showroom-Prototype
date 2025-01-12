@@ -43,7 +43,7 @@ export default class Shadows {
         // Debug
         if (this.debug.active) {
             const debugObject = { receiveShadow: true }; // Define debugObject
-            this.debugFolder.add(debugObject, 'receiveShadow').name('Posed Model Receive Shadow').onChange((value) => {
+            this.debugFolder.add(debugObject, 'receiveShadow').name('Posed Model').onChange((value) => {
                 this.scene_1.model.traverse((child) => {
                     if (child.isMesh) {
                         child.receiveShadow = value;
@@ -67,7 +67,7 @@ export default class Shadows {
         // Debug
         if (this.debug.active) {
             const debugObject = { receiveShadow: true }; // Define debugObject
-            this.debugFolder.add(debugObject, 'receiveShadow').name('Animated Model Receive Shadow').onChange((value) => {
+            this.debugFolder.add(debugObject, 'receiveShadow').name('Animated Model').onChange((value) => {
                 this.scene_0.animatedModel.traverse((child) => {
                     if (child.isMesh) {
                         child.receiveShadow = value;
@@ -89,7 +89,7 @@ export default class Shadows {
         // Debug
         if (this.debug.active) {
             const debugObject = { receiveShadow: true }; // Define debugObject
-            this.debugFolder.add(debugObject, 'receiveShadow').name('Scene 3 Receive Shadow').onChange((value) => {
+            this.debugFolder.add(debugObject, 'receiveShadow').name('Furniture space').onChange((value) => {
                 this.scene_3.empty.traverse((child) => {
                     if (child.isMesh) {
                         child.receiveShadow = value;

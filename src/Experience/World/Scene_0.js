@@ -24,22 +24,32 @@ export default class Scene_0
             this.debugFolder.close()
             this.animationFolder = this.debugFolder.addFolder('Animation')
             this.animationFolder.close()
+            this.catWalkFolder = this.debugFolder.addFolder('Catwalk')
+            this.catWalkFolder.close()
+            this.audienceFolder = this.debugFolder.addFolder('Audience')
+            this.audienceFolder.close()
+            this.benchFolder = this.debugFolder.addFolder('Bench')
+            this.benchFolder.close()
+            this.clothFolder = this.debugFolder.addFolder('Cloth')
+            this.clothFolder.close()
+
         }
 
         // Setup
         this.resource = this.resources.items.Scene_0
         this.sceneModels = this.resource.scene
         this.animatedModel = this.sceneModels.children[0]
-        this.catWalk = this.sceneModels.children[3]
         this.bench = this.sceneModels.children[1]
         this.audience = this.sceneModels.children[2]
+        this.catWalk = this.sceneModels.children[3]
+        this.cloth = this.sceneModels.children[4]
 
         // Call actions
         this.setScene()
         this.setAnimations()
         this.setWalk()
-        this.setBloom()
         this.applyMaterials()
+        this.setBloom()
         // this.setInstancedMeshArray(50, 1)
 
     }
@@ -71,18 +81,33 @@ export default class Scene_0
 
             this.debugFolder.add(this.sceneModels.position, 'z').name('Position Z').step(0.01).min(-100).max(100);
 
-            this.debugFolder.add(debugObject, 'scaleZ').name('Scale Z').min(0.1).max(10).step(0.1).onChange((value) => {
+            this.catWalkFolder.add(this.catWalk, 'visible').name('Catwalk Visibility');
+
+            this.catWalkFolder.add(debugObject, 'scaleZ').name('Scale Z').min(0.1).max(10).step(0.1).onChange((value) => {
                 this.catWalk.scale.z = value;
             });
 
 
+            this.audienceFolder.add(this.audience, 'visible').name('Audience Visibility');
+            this.benchFolder.add(this.bench, 'visible').name('Bench Visibility');
+            this.clothFolder.add(this.cloth, 'visible').name('Cloth Visibility');
 
-            this.sceneModels.children.forEach((child, index) => {
-                const visibilityObject = { visible: true };
-                this.debugFolder.add(visibilityObject, 'visible').name(`${child.name} Visibility`).onChange((value) => {
-                    child.visible = value;
-                });
+            this.clothFolder.add(this.cloth.scale, 'x').name('Cloth Scale Z').min(0.1).max(10).step(0.1).onChange(() => {
+                this.cloth.scale.x = this.cloth.scale.z;
+                this.cloth.updateMatrixWorld(true);
             });
+
+            this.clothFolder.add(this.cloth.scale, 'y').name('Cloth Scale Y').min(0.1).max(10).step(0.1).onChange(() => {
+                this.cloth.scale.y = this.cloth.scale.y;
+                this.cloth.updateMatrixWorld(true);
+            });
+
+
+            this.clothFolder.add(this.cloth.position, 'y').name('Cloth Position Y').min(-10).max(10).step(0.1).onChange(() => {
+                this.cloth.position.y = this.cloth.position.y;
+                this.cloth.updateMatrixWorld(true);
+            });
+
         }
     }
 
@@ -186,49 +211,49 @@ export default class Scene_0
 
     applyMaterials()
     {
-// ...existing code...
 
-const getTextures = () => 
-    Object.fromEntries(
-        Object.entries(this.resources.items).filter(([_, value]) =>
-            Object.values(value).some(subValue => subValue instanceof THREE.Texture)
-        )
-    );
+        // Catwalk
+        const getTextures = () => 
+            Object.fromEntries(
+                Object.entries(this.resources.items).filter(([_, value]) =>
+                    Object.values(value).some(subValue => subValue instanceof THREE.Texture)
+                )
+            );
 
-const textures = getTextures();
-const catWalk = this.catWalk.children[0];
+        const textures = getTextures();
+        const catWalk = this.catWalk.children[0];
 
-const selectedTexture = textures.gravel;
-const applyTexture = (texture) => {
-    // Compute the bounding box if not already computed
-    if (!catWalk.geometry.boundingBox) {
-        catWalk.geometry.computeBoundingBox();
-    }
+        const selectedTexture = textures.gravel;
+        const applyTexture = (texture) => {
+            // Compute the bounding box if not already computed
+            if (!catWalk.geometry.boundingBox) {
+                catWalk.geometry.computeBoundingBox();
+            }
 
-    const boundingBox = catWalk.geometry.boundingBox;
-    const width = boundingBox.max.x - boundingBox.min.x;
-    const height = boundingBox.max.y - boundingBox.min.y;
+            const boundingBox = catWalk.geometry.boundingBox;
+            const width = boundingBox.max.x - boundingBox.min.x;
+            const height = boundingBox.max.y - boundingBox.min.y;
 
-    for (const [name, map] of Object.entries(texture)) {
-        // Clone the texture to avoid modifying the original
-        const clonedMap = map.clone();
-        catWalk.material[name] = clonedMap;
-        Object.assign(clonedMap, {
-            wrapS: THREE.MirroredRepeatWrapping,
-            wrapT: THREE.MirroredRepeatWrapping,
-            generateMipmaps: false
-        });
+            for (const [name, map] of Object.entries(texture)) {
+                // Clone the texture to avoid modifying the original
+                const clonedMap = map.clone();
+                catWalk.material[name] = clonedMap;
+                Object.assign(clonedMap, {
+                    wrapS: THREE.MirroredRepeatWrapping,
+                    wrapT: THREE.MirroredRepeatWrapping,
+                    generateMipmaps: false
+                });
 
-        clonedMap.repeat.set(width, height);
-    }
-};
+                clonedMap.repeat.set(width, height);
+            }
+        };
 
-applyTexture(selectedTexture);
-catWalk.material.envMap = this.environment.environmentMap
-catWalk.material.envMapIntensity = 0
-
-// ...existing code...    
+        applyTexture(selectedTexture);
+        catWalk.material.envMap = this.environment.environmentMap
+        catWalk.material.envMapIntensity = 0 
  
+
+        // Audience
         this.audience.traverse((child) =>
         {
             if (child instanceof THREE.Mesh && child.material) {
@@ -237,9 +262,14 @@ catWalk.material.envMapIntensity = 0
                 }
         })
 
-
         this.audience.children[0].material.envMap = this.environment.environmentMap;
         this.audience.children[0].material.envMapIntensity = 0.01;
+
+        // Cloth
+        this.cloth.material.roughness = 0
+        this.cloth.material.metalness = 1
+        this.cloth.envMap = this.environment.environmentMap;
+        this.cloth.envMapIntensity = 0
 
         if (this.debug.active) {
             const debugObject = {
@@ -248,14 +278,14 @@ catWalk.material.envMapIntensity = 0
             texturename: Object.keys(textures).find(key => textures[key] === selectedTexture)
             };
 
-            const catWalkFolder = this.debugFolder.addFolder('catWalk Material')
-            catWalkFolder.add(debugObject, 'envMapIntensity').name('Env Map Intensity').min(0).max(1).step(0.01).onChange((value) => {
+            
+            this.catWalkFolder.add(debugObject, 'envMapIntensity').name('Env Map Intensity').min(0).max(1).step(0.01).onChange((value) => {
             catWalk.material.envMap = this.environment.environmentMap
             catWalk.material.envMapIntensity = value
             catWalk.material.needsUpdate = true;
             });
     
-            catWalkFolder
+            this.catWalkFolder
             .add(debugObject, 'texturename', Object.keys(textures))
             .name('Select Texture')
             .onChange((value) => {
@@ -264,13 +294,40 @@ catWalk.material.envMapIntensity = 0
                 catWalk.material.needsUpdate = true;
             });
 
+            this.clothFolder
+            .add(this.cloth.material, 'roughness')
+            .name('Roughness')
+            .min(0)
+            .max(1)
+            .step(0.01)
+            .onChange(() => {
+                this.cloth.material.needsUpdate = true;
+            });
+
+            this.clothFolder
+            .add(this.cloth.material, 'metalness')
+            .name('Metalness')
+            .min(0)
+            .max(1)
+            .step(0.01)
+            .onChange(() => {
+                this.cloth.material.needsUpdate = true;
+            });
+
+            this.clothFolder
+            .add(debugObject, 'envMapIntensity')
+            .name('Cloth Env Map Intensity')
+            .min(0)
+            .max(1)
+            .step(0.01)
+            .onChange((value) => {
+                this.cloth.material.envMap = this.environment.environmentMap;
+                this.cloth.material.envMapIntensity = value;
+                this.cloth.material.needsUpdate = true;
+            });
 
 
         }
-
-
-
-
     }
 
     setAnimations()
@@ -399,8 +456,6 @@ catWalk.material.envMapIntensity = 0
     setBloom()
     {
 
-        console.log(this.audience)
-
         this.renderer.selectiveBloom.selection.add(this.catWalk.children[1]);
         this.catWalk.children[1].material.emissiveIntensity = 0.2
 
@@ -414,12 +469,12 @@ catWalk.material.envMapIntensity = 0
             bloom: true
             };
 
-            this.debugFolder.add(debugObject, 'emissiveIntensity').name('Emissive Intensity, White Area').min(0).max(1).step(0.1).onChange((value) => {
+            this.catWalkFolder.add(debugObject, 'emissiveIntensity').name('Emissive Intensity, White Area').min(0).max(1).step(0.1).onChange((value) => {
             this.catWalk.children[1].material.emissiveIntensity = value;
             this.catWalk.children[0].material.emissiveIntensity = value;
             });
 
-            this.debugFolder.add(debugObject, 'bloom').name('Toggle Bloom').onChange((value) => {
+            this.catWalkFolder.add(debugObject, 'bloom').name('Toggle Bloom').onChange((value) => {
             if (value) {
                 this.renderer.selectiveBloom.selection.add(this.catWalk.children[1]);
             } else {

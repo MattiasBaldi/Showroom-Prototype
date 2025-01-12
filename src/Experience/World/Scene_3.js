@@ -12,13 +12,22 @@ export default class Scene_3 {
         this.scene = this.experience.scene
         this.time = this.experience.time
         this.debug = this.experience.debug
+        this.environment = this.experience.world.environment
         this.resources = this.experience.resources
 
         // Debug
         if(this.debug.active)
         {
-            this.debugFolder = this.debug.ui.addFolder('Scene 3 (Interior room)')
+            this.debugFolder = this.debug.ui.addFolder('Scene 3 (Furniture Space)')
             this.debugFolder.close()
+            this.modelFolder = this.debugFolder.addFolder('Models')
+            this.modelFolder.close()
+            this.floorFolder = this.debugFolder.addFolder('Floor')
+            this.floorFolder.close()
+            this.lampFolder = this.debugFolder.addFolder('Lamp')
+            this.lampFolder.close()
+            this.tableFolder = this.debugFolder.addFolder('Table')
+            this.tableFolder.close()
         }
 
         // Scene 
@@ -26,10 +35,15 @@ export default class Scene_3 {
         this.sceneModels = this.resource.scene
         this.sceneGroup = new THREE.Group()
         this.empty = this.sceneModels.children[0]
+        this.floor = this.empty.children[0] 
+        this.lamp = this.empty.children[1] 
+        this.models = this.empty.children[2] 
+        this.table = this.empty.children[3] 
 
         // Setup
         this.setScene()
-
+        this.setMaterials()
+        this.setBloom()
         
         // Switch
         this.switch = new Switch(this.empty, 10)
@@ -40,9 +54,7 @@ export default class Scene_3 {
         // Position
         this.sceneModels.position.x = 120
         this.sceneModels.scale.setScalar(1)
-        this.sceneModels.name = 'scene_3'
-        this.empty.name = 'scene_3'
-        this.lamp = this.empty.children[1]
+        this.empty.name = 'furniture'
         this.scene.add(this.sceneModels)
 
         // Debug
@@ -53,15 +65,167 @@ export default class Scene_3 {
                     this.sceneModels.scale.set(value, value, value)
                 })
 
-                const lampFolder = this.debugFolder.addFolder('Lamp')
-                lampFolder.add(this.lamp, 'visible').name('Lamp Visibility').listen()
-                lampFolder.add(this.lamp.position, 'y').name('Position Y').step(0.01).min(0).max(1000)
+                this.floorFolder.add(this.floor, 'visible').name('Floor Visibility').listen()
+
+                this.lampFolder.add(this.lamp, 'visible').name('Lamp Visibility').listen()
+                this.lampFolder.add(this.lamp.position, 'y').name('Position Y').step(0.01).min(0).max(1000)
+                this.lampFolder.add(this.lamp.scale, 'x').name('Scale').step(0.01).min(0).max(2).onChange((value) => {
+                    this.lamp.scale.set(value, value, value)
+                })
+
+                this.modelFolder.add(this.models, 'visible').name('Models Visibility').listen()
+
+                this.tableFolder.add(this.table, 'visible').name('Table Visibility').listen()
 
             }
+    }
+
+    setMaterials()
+    {
+
+
+        // Env Map Intensity
+        // this.empty.traverse((child) => {
+        //     if (child.isMesh && child.material) {
+        //         child.material.envMap = this.environment.environmentMap
+        //         child.material.envMapIntensity = 1
+        //     }
+        // })
+   
+        if(this.debug.active)
+        {
+
+            this.debugFolder.add({ envMapIntensity: 1 }, 'envMapIntensity')
+                .min(0)
+                .max(1)
+                .step(0.01)
+                .onChange((value) => {
+                    this.empty.traverse((child) => {
+                        if (child.isMesh && child.material) {
+                            child.material.envMap = this.environment.environmentMap
+                            child.material.envMapIntensity = value
+                        }
+                    })
+                })
+
+            this.floorFolder
+            .add(this.floor.material, 'metalness')
+            .min(0)
+            .max(1)
+            .step(0.01)
+
+            this.floorFolder
+            .add(this.floor.material, 'roughness')
+            .min(0)
+            .max(1)
+            .step(0.01)
+
+            this.floorFolder
+            .add(this.floor.material, 'envMapIntensity')
+            .min(0)
+            .max(1)
+            .step(0.01)
+            .onChange((value) => {
+                this.floor.material.envMap = this.environment.environmentMap
+                this.floor.material.envMapIntensity = value
+            })
+            
+            console.log(this.table)
+            console.log(this.models.children[0].children[0].children[3])
+
+            this.tableFolder
+            .add(this.table.children[1].material, 'metalness')
+            .min(0)
+            .max(1)
+            .step(0.01)
+            .onChange((value) => {
+                this.table.children[1].material.metalness = value
+                this.models.children[0].children[0].children[3].material.metalness = value
+            })
+
+            this.tableFolder
+            .add(this.table.children[1].material, 'roughness')
+            .min(0)
+            .max(1)
+            .step(0.01)
+            .onChange((value) => {
+                this.table.children[1].material.roughness = value
+                this.models.children[0].children[0].children[3].material.roughness = value
+            })
+
+            this.tableFolder
+            .add(this.table.children[1].material, 'envMapIntensity')
+            .min(0)
+            .max(1)
+            .step(0.01)
+            .onChange((value) => {
+                this.table.children[1].material.envMap = this.environment.environmentMap
+                this.table.children[1].material.envMapIntensity = value
+            })
+
+ 
+
+        }
+}
+
+    setBloom()
+    {
+
+    const bulb = this.empty.children[1].children[0]
+    const frame = this.empty.children[1].children[1]
+    
+    bulb.material = new THREE.MeshStandardMaterial({
+        emissive: new THREE.Color(0x808080),
+        emissiveIntensity: 10,
+        color: new THREE.Color(0x0000000),
+        roughness: 0,
+        metalness: 1 
+    });
+
+    frame.material = new THREE.MeshStandardMaterial({
+        emissive: new THREE.Color(0x808080),
+        emissiveIntensity: 3,
+        color: new THREE.Color(0x0000000),
+        roughness: 0,
+        metalness: 1 
+    });
+
+    this.renderer.selectiveBloom.selection.add(bulb, frame)
+
+    if(this.debug.active)
+    {
+
+
+        const bulbFolder = this.lampFolder.addFolder('Bulb')
+        bulbFolder.add(bulb.material, 'emissiveIntensity')
+            .min(0)
+            .max(10)
+            .step(0.1)
+            .name('Emissive Intensity')
+
+        bulbFolder.add({ bloom: true }, 'bloom').name('Toggle Bloom').onChange((value) => {
+            if (value) {
+                this.renderer.selectiveBloom.selection.add(bulb);
+                this.renderer.selectiveBloom.selection.add(frame);
+            } else {
+                this.renderer.selectiveBloom.selection.delete(bulb);
+                this.renderer.selectiveBloom.selection.delete(frame);
+            }
+        });
+
+        const frameFolder = this.lampFolder.addFolder('Frame')
+        frameFolder.add(frame.material, 'emissiveIntensity')
+            .min(0)
+            .max(10)
+            .step(0.1)
+            .name('Emissive Intensity')
+    }
+
     }
 
     update()
     {
         this.switch.update()
+        this.empty.rotation.y += 0.01
     }
 }

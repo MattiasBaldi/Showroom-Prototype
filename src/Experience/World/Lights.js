@@ -19,7 +19,7 @@ export default class Lights
 
         this.poseSpeed = null
         this.sphereSpeed = null
-        this.scene_3Speed = 0.01
+        this.furnitureSpeed = 0.01
 
         // Debug
         if (this.debug.active) {
@@ -760,26 +760,26 @@ export default class Lights
     {
     this.bloom.forEach((child) => {this.renderer.selectiveBloom.selection.add(child)})
 
-    const bulb = this.scene_3.empty.children[1].children[0]
-    const frame = this.scene_3.empty.children[1].children[1]
+    // const bulb = this.scene_3.empty.children[1].children[0]
+    // const frame = this.scene_3.empty.children[1].children[1]
     
-    bulb.material = new THREE.MeshStandardMaterial({
-        emissive: new THREE.Color(0x808080),
-        emissiveIntensity: 10,
-        color: new THREE.Color(0x0000000),
-        roughness: 0,
-        metalness: 1 
-    });
+    // bulb.material = new THREE.MeshStandardMaterial({
+    //     emissive: new THREE.Color(0x808080),
+    //     emissiveIntensity: 10,
+    //     color: new THREE.Color(0x0000000),
+    //     roughness: 0,
+    //     metalness: 1 
+    // });
 
-    frame.material = new THREE.MeshStandardMaterial({
-        emissive: new THREE.Color(0x808080),
-        emissiveIntensity: 3,
-        color: new THREE.Color(0x0000000),
-        roughness: 0,
-        metalness: 1 
-    });
+    // frame.material = new THREE.MeshStandardMaterial({
+    //     emissive: new THREE.Color(0x808080),
+    //     emissiveIntensity: 3,
+    //     color: new THREE.Color(0x0000000),
+    //     roughness: 0,
+    //     metalness: 1 
+    // });
 
-    this.renderer.selectiveBloom.selection.add(bulb, frame)
+    // this.renderer.selectiveBloom.selection.add(bulb, frame)
 
     }
 
@@ -818,8 +818,7 @@ export default class Lights
     {
         this.lightGroups.pose.rotation.y += this.poseSpeed
         this.lightGroups.sphere.rotation.y += this.sphereSpeed
-        this.lightGroups.scene_3.rotation.y +=  this.scene_3Speed
-        this.updateEnvMap()
-
+        this.lightGroups.furniture.rotation.y +=  this.furnitureSpeed
+        // this.updateEnvMap()
     }
 }
