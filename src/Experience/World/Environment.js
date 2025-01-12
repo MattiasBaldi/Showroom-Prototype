@@ -39,6 +39,7 @@ export default class Environment
             this.environmentMap = this.resources.items.blueStudio
             this.environmentMap.mapping =  THREE.EquirectangularReflectionMapping
             this.scene.environment = this.environmentMap
+            this.scene.environmentIntensity = 1; 
             this.scene.background = new THREE.Color('black')
             
             // Debug
@@ -302,9 +303,6 @@ export default class Environment
             }
         }
 
-
-
-
         addWallCollission()
         {
 
@@ -321,6 +319,7 @@ export default class Environment
             
         }
 
+
         addWalls()
         {
 
@@ -328,40 +327,91 @@ export default class Environment
             this.wallMaterial = new THREE.ShaderMaterial({
                 uniforms: {
                     playerPosition: { value: new THREE.Vector3() },
-                    fadeDistance: { value: 20.0 },
+                    near: { value: 0.0 },
+                    far: { value: 10.0 },
+                    wallTexture: { value: this.resources.items.concrete_worn.map },
+                    normalMap: { value: this.resources.items.concrete_worn.normalMap },
+                    aoMap: { value: this.resources.items.concrete_worn.aoMap },
+                    metalness: { value: 0.5 },
+                    roughness: { value: 0.5 }
                 },
                 vertexShader: `
                     varying vec3 vWorldPosition;
+                    varying vec2 vUv;
                     varying vec3 vNormal;
+            
                     void main() {
-                        vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+                        vUv = uv;
                         vNormal = normalize(normalMatrix * normal);
+                        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                        vWorldPosition = worldPosition.xyz;
                         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                     }
                 `,
                 fragmentShader: `
                     uniform vec3 playerPosition;
-                    uniform float fadeDistance;
+                    uniform float far;
+                    uniform float near;
+                    uniform sampler2D wallTexture;
+                    uniform sampler2D normalMap;
+                    uniform sampler2D aoMap;
+                    uniform float metalness;
+                    uniform float roughness;
+            
+                    varying vec2 vUv;
                     varying vec3 vWorldPosition;
                     varying vec3 vNormal;
+            
                     void main() {
+                        // Calculate view direction
+                        vec3 viewDir = normalize(playerPosition - vWorldPosition);
+            
+                        // Sample textures
+                        vec4 albedo = texture2D(wallTexture, vUv);
+                        vec3 normalTex = texture2D(normalMap, vUv).rgb * 2.0 - 1.0; // Normal map in tangent space
+                        vec3 ao = texture2D(aoMap, vUv).rgb;
+            
+                        // Combine normals
+                        vec3 normal = normalize(normalTex);
+            
+                        // Metalness and reflectivity
+                        vec3 baseColor = albedo.rgb * ao; // Base color modulated by AO
+                        vec3 reflectivity = mix(vec3(0.04), baseColor, metalness); // Dielectric reflectance (0.04 for non-metals)
+            
+                        // Roughness-based diffusion
+                        float NdotV = max(dot(normal, viewDir), 0.0);
+                        float roughFactor = pow(1.0 - roughness, 2.0);
+                        vec3 diffuse = baseColor * NdotV * (1.0 - roughFactor);
+            
+                        // Specular highlights
+                        vec3 reflectedDir = reflect(-viewDir, normal);
+                        float specular = pow(max(dot(reflectedDir, viewDir), 0.0), 1.0 / (roughFactor + 0.001));
+            
+                        // Combine lighting components
+                        vec3 color = diffuse + reflectivity * specular;
+            
+                        // Distance fade (factor blending based on distance)
                         float distance = length(vWorldPosition - playerPosition);
-                        float factor = 1 - smoothstep(0.0, fadeDistance, distance);
-                        vec3 color = vec3(0.5, 0.5, 0.5); // Grey color
-
+                        float factor = distance > far ? 0.0 : smoothstep(far, near, distance);
+            
+                        // Final color output
                         if (gl_FrontFacing) {
-                            gl_FragColor = vec4(color, factor); // Interpolate between grey and opaque for front side
+                            gl_FragColor = vec4(color, factor);
                         } else {
-                            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black color for back side
+                            gl_FragColor = vec4(0, 0, 0, 1);
                         }
                     }
                 `,
-                side: THREE.DoubleSide, // Render both sides of the wall
+                side: THREE.DoubleSide,
                 transparent: true,
             });
+            
+            
             const wall = new THREE.Mesh(wallGeometry, this.wallMaterial)
             wall.geometry.translate(0, wall.geometry.parameters.height / 2, 0) // Translate the geometry so the pivot point is at the center
-  
+
+
+
             const addWall = ({ rotationX = 0, rotationY = 0, rotationZ = 0, positionX = 0, positionY = 0, positionZ = 0, width = 1, height = 1 }) =>
             {
                 const clone = wall.clone()
@@ -385,6 +435,7 @@ export default class Environment
             this.walls = new THREE.Group()
             this.walls.add(wallOne, wallTwoOne, wallTwoTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
             this.scene.add(this.walls)
+
 
             // if (this.debug.active) {
 
@@ -514,21 +565,13 @@ export default class Environment
 
         update()
         {
-            // Update the player's position in the shader material
-            this.updatePlayerPosition = (playerPosition) => {
-                this.wallMaterial.uniforms.playerPosition.value.copy(playerPosition);
-            };
-
             // Calculate the distance between the camera and each wall, and update the opacity
             this.walls.children.forEach((wall) => {
-                const distance = this.camera.position.distanceTo(wall.position);
-                const fadeDistance = this.wallMaterial.uniforms.fadeDistance.value;
-                const opacity = 1.0 - THREE.MathUtils.clamp(distance / fadeDistance, 0.0, 1.0);
-                wall.material.uniforms.playerPosition.value.copy(this.camera.position);
-                wall.material.uniforms.fadeDistance.value = fadeDistance;
-                wall.material.needsUpdate = true;
+            wall.material.uniforms.playerPosition.value.copy(this.camera.position);
+            wall.material.needsUpdate = true;
             });
 
              this.addWallCollission()
+
         }
     }

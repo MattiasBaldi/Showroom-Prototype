@@ -61,6 +61,7 @@ export default class Renderer
         // Shadows
         this.instance.shadowMap.enabled = true;
         this.instance.shadowMap.type = THREE.PCFSoftShadowMap;
+
     }
 
     resize()
