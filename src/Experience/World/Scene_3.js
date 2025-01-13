@@ -148,13 +148,23 @@ export default class Scene_3 {
 
     setMaterials()
     {
-        // Env Map Intensity
-        // this.empty.traverse((child) => {
-        //     if (child.isMesh && child.material) {
-        //         child.material.envMap = this.environment.environmentMap
-        //         child.material.envMapIntensity = 1
-        //     }
-        // })
+
+        this.empty.traverse((child) => {
+            if (child.isMesh && child.material) {
+                child.material.envMap = this.environment.environmentMap
+                child.material.envMapIntensity = 0.2
+            }
+        })
+
+        // Adjusting materials
+        this.table.children[1].material.metalness = 1
+        this.models.children[0].children[0].children[3].material.metalness = 1
+
+        this.table.children[1].material.roughness = 0.2
+        this.models.children[0].children[0].children[3].material.roughness = 0.2
+
+
+
    
         if(this.debug.active)
         {
@@ -234,7 +244,7 @@ export default class Scene_3 {
     
     this.bulb.material = new THREE.MeshStandardMaterial({
         emissive: new THREE.Color(0x808080),
-        emissiveIntensity: 10,
+        emissiveIntensity: 5,
         color: new THREE.Color(0x0000000),
         roughness: 0,
         metalness: 1 
@@ -242,11 +252,13 @@ export default class Scene_3 {
 
     this.frame.material = new THREE.MeshStandardMaterial({
         emissive: new THREE.Color(0x808080),
-        emissiveIntensity: 3,
+        emissiveIntensity: 3.5,
         color: new THREE.Color(0x0000000),
         roughness: 0,
         metalness: 1 
     });
+
+
 
     this.renderer.selectiveBloom.selection.add(this.bulb, this.frame)
 

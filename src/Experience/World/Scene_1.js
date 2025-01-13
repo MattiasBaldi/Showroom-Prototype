@@ -59,6 +59,22 @@ export default class Scene_1
 
     setMaterial()
     {
+
+        // Setting Clothes Material
+        this.model.children.slice(1, 6).forEach((child) => 
+        {
+            child.material.envMap = this.environment.environmentMap
+            child.material.envMapIntensity = 0.4
+            child.material.roughness = 0.1
+            child.material.metalness = 1
+        })
+
+        // Setting body material
+        this.body.material.roughness = 0
+        this.body.material.metalness = 0
+        this.body.material.envMap = this.environment.environmentMap
+        this.body.material.envMapIntensity = 0.15
+
                 // Debug
                 if(this.debug.active) {
           
@@ -102,7 +118,9 @@ export default class Scene_1
 
     setBloom()
     {
+
         this.renderer.selectiveBloom.selection.add(this.body)
+        this.body.material.emissiveIntensity = 0; 
 
         if (this.debug.active)
         {

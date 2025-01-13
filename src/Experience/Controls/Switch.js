@@ -10,7 +10,7 @@ import Experience from '../Experience.js'
 
 
 export default class Switch {
-    constructor(pivotPoint, radius, Orbitactive = false)
+    constructor(pivotPoint, radiusMax)
     {
 
         this.experience  = new Experience()
@@ -20,7 +20,7 @@ export default class Switch {
 
         //Setup
         this.pivotPoint = pivotPoint
-        this.radius = radius
+        this.radiusMax = radiusMax
         this.active = null
 
         //Overlay
@@ -45,7 +45,12 @@ export default class Switch {
         this.controls.OrbitControls.autoRotate = true;
         this.controls.OrbitControls.autoRotateSpeed = 2;
         this.controls.OrbitControls.target.copy(localPosition)
-        this.controls.OrbitControls.maxDistance = this.radius - 0.1;
+        this.controls.OrbitControls.maxDistance = this.radiusMax - 0.01;
+        
+        // Adjust the initial orbit position
+        this.camera.instance.position.x += 3; 
+        this.camera.instance.position.z += 3;
+        this.camera.instance.position.y += 1; 
 
         // Set overlay 
         this.overlay.classList.add('active')
@@ -105,7 +110,7 @@ export default class Switch {
         this.distance = this.camera.instance.position.distanceTo(this.pivotPoint.localToWorld(new THREE.Vector3()));
 
         // if the camera is within radius of the pivotpoint
-        if (this.distance <= this.radius)
+        if (this.distance <= this.radiusMax)
         {   
             // if the listener is not already there, then add it 
             if (!this.listenerAdded)

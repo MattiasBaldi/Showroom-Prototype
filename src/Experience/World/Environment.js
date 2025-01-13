@@ -319,7 +319,6 @@ export default class Environment
             
         }
 
-
         addWalls()
         {
 
@@ -405,11 +404,21 @@ export default class Environment
                 side: THREE.DoubleSide,
                 transparent: true,
             });
-            
+
+   
             
             const wall = new THREE.Mesh(wallGeometry, this.wallMaterial)
             wall.geometry.translate(0, wall.geometry.parameters.height / 2, 0) // Translate the geometry so the pivot point is at the center
 
+            // Unwrap the texture correctly
+            const wallTexture = this.wallMaterial.uniforms.wallTexture.value;
+            Object.assign(wallTexture, {
+                wrapS: THREE.MirroredRepeatWrapping,
+                wrapT: THREE.MirroredRepeatWrapping,
+                generateMipmaps: false
+            });
+            wallTexture.repeat.set(1, 1);
+            
 
 
             const addWall = ({ rotationX = 0, rotationY = 0, rotationZ = 0, positionX = 0, positionY = 0, positionZ = 0, width = 1, height = 1 }) =>
@@ -430,7 +439,7 @@ export default class Environment
             const wallFour = addWall({ width: 2, positionX: 145, rotationY: Math.PI * -0.5 })
             const wallFive = addWall({ width: 15, positionX: -15, positionZ: 85, rotationY: Math.PI * 0.5 })
             const wallSix = addWall({ width: 15, positionX: 15, positionZ: 85, rotationY: Math.PI * -0.5 })
-            const wallSeven = addWall({ width: 3, positionZ: 80, rotationY: -Math.PI })
+            const wallSeven = addWall({ width: 3, positionZ: 125, rotationY: -Math.PI })
 
             this.walls = new THREE.Group()
             this.walls.add(wallOne, wallTwoOne, wallTwoTwo, wallThree, wallFour, wallFive, wallSix, wallSeven)
@@ -566,10 +575,10 @@ export default class Environment
         update()
         {
             // Calculate the distance between the camera and each wall, and update the opacity
-            this.walls.children.forEach((wall) => {
-            wall.material.uniforms.playerPosition.value.copy(this.camera.position);
-            wall.material.needsUpdate = true;
-            });
+            // this.walls.children.forEach((wall) => {
+            // wall.material.uniforms.playerPosition.value.copy(this.camera.position);
+            // wall.material.needsUpdate = true;
+            // });
 
              this.addWallCollission()
 

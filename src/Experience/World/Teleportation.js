@@ -36,9 +36,8 @@ export default class Teleportation {
                     this.camera.lookAt(this.scene_2.sphere.position)
                     break;
                 case '3':
-                    this.camera.position.x = this.scene_3.sceneModels.position.x;
-                    this.camera.position.z = 12
-                    this.camera.lookAt(this.scene_3.sceneModels.position)
+                    this.camera.position.copy(this.scene_3.empty.getWorldPosition(new THREE.Vector3()));  
+                    this.camera.lookAt(this.scene_3.empty.getWorldPosition(new THREE.Vector3()))
                     break;
                     }
             

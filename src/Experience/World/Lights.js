@@ -17,8 +17,8 @@ export default class Lights
         this.scene_2 = this.world.scene_2
         this.scene_3 = this.world.scene_3
 
-        this.poseSpeed = null
-        this.sphereSpeed = null
+        this.poseSpeed = 0.01
+        this.sphereSpeed = 0.01
         this.furnitureSpeed = 0.01
 
         // Debug
@@ -32,9 +32,9 @@ export default class Lights
         this.lightGroups = {}
 
         // Methods
-        this.setObjectLight(this.scene_1.model, 2, 5, 5, 50, 30, 10)
-        this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false)
-        this.setNavigationallight(4, 40, 10)
+        this.setObjectLight(this.scene_1.model, 2, 5, 5, 10, 10, true, 25, 6.5)
+        this.setObjectLight(this.scene_2.sphere, 3, 10, 0.16, 10, undefined, false, undefined)
+        this.setNavigationallight(4, 40, 10, 3, 500)
         this.setCatwalk(5, 10, 2, 100)
 
         // Testing roomLight
@@ -44,7 +44,6 @@ export default class Lights
         }
         this.setRoomSpotlight()
         this.setRoomPointLight()
-
         this.setBloom()
     }
 
@@ -52,6 +51,7 @@ export default class Lights
     {
         const group = new THREE.Group()
 
+        const createLights = (count, gap, height, coneRadius, intensity) => {
         for (let i = 0; i < count; i++)
         {
             const volumetricLight = new VolumetricSpotLight('white', coneRadius, height, 100);
@@ -69,13 +69,14 @@ export default class Lights
             spotLight.intensity = intensity;
             spotLight.penumbra = 1;
             spotLight.decay = 1.5;
+            spotLight.angle = 0.26;
             spotLight.distance = spotLight.distance;
 
             // Adjust cone
             const cone = volumetricLight.children[0];
             const coneUniforms = cone.material.uniforms;
-            coneUniforms.attenuation.value = 12.5;
-            coneUniforms.anglePower.value = 2;
+            coneUniforms.attenuation.value = 11;
+            coneUniforms.anglePower.value = 2.5;
             coneUniforms.edgeScale.value = 0.5; // Adjust this value as needed
             coneUniforms.edgeConstractPower.value = 1; // Adjust this value as needed
 
@@ -97,12 +98,13 @@ export default class Lights
                 }
             });
 
-
             group.add(volumetricLight)
-            }
-    
+        }
         this.scene.add(group)
         this.lightGroups['navLights'] = group; // Store the group by object name or ID
+        }
+
+        createLights(count, gap, height, coneRadius, intensity); 
 
         // Debug
         if (this.debug.active) {
@@ -119,6 +121,7 @@ export default class Lights
             height: 10,
             };
 
+
             const navFolder = this.debugFolder.addFolder('Navigational Lights');
             navFolder.close();
 
@@ -130,6 +133,30 @@ export default class Lights
                 spotLightHelper.visible = false
                 spotLightHelpers.push(spotLightHelper);
             });
+
+            navFolder
+            .add(debugObject, 'radiusBottom')
+            .name('Cone Radius')
+            .min(0)
+            .max(20)
+            .step(0.01)
+            .onChange((value) => {
+                // Clear existing lights
+                while (group.children.length > 0) {
+                    const child = group.children[0];
+                    child.traverse((object) => {
+                        if (object.isMesh) {
+                            object.geometry.dispose();
+                            object.material.dispose();
+                        }
+                    });
+                    group.remove(child);
+                    this.scene.remove(group)
+                }
+                createLights(count, gap, height, value, intensity); 
+            })
+
+            
             
             navFolder
             .add({ showHelpers: false }, 'showHelpers')
@@ -145,7 +172,7 @@ export default class Lights
             .name('Attenuation')
             .step(0.001)
             .min(0)
-            .max(20)
+            .max(100)
             .onChange((value) => {
                 group.children.forEach((spotLight) => {
                 spotLight.children[0].material.uniforms.attenuation.value = value;
@@ -269,12 +296,14 @@ export default class Lights
         volumetricLight.position.x = 0
 
         // Shadows
-        spotLight.castShadow = true; 
-        spotLight.shadow.mapSize.set(1024, 1024) // the resolution of the shadow map for the spotlight to 512x512 pixels. Higher values result in better shadow quality but can impact performance.
-        spotLight.shadow.camera.near = 0.5; // Objects closer than this distance to the camera will not cast shadows.
-        spotLight.shadow.camera.far = 15; // Objects farther than this distance from the camera will not cast shadows.
-        spotLight.shadow.camera.fov = 30 // Match the spotlight's cone angle
-        spotLight.shadow.focus = 1; // This line sets the focus of the shadow map. A value of 1 means the shadow map is focused on the center of the light's cone. Adjusting this value can help improve shadow quality in certain situations.
+        spotLight.castShadow = true
+        spotLight.shadow.mapSize.width = 1024;
+        spotLight.shadow.mapSize.height = 1024;
+        spotLight.shadow.bias = -0.01
+        spotLight.shadow.camera.near = 8
+        spotLight.shadow.camera.far = 10
+        spotLight.shadow.camera.fov = 10
+        spotLight.shadow.radius = 1
 
         // LookAt
         spotLight.target = new THREE.Object3D();
@@ -338,18 +367,91 @@ export default class Lights
             shadowCameraHelper.visible = false; 
             shadowHelpers.push(shadowCameraHelper);
         });
-        
-        catWalkFolder
-        .add({ showHelpers: false }, 'showHelpers')
-        .name('Show Helpers')
-        .onChange((value) => {
-            spotLightHelpers.forEach((helper) => {
-            helper.visible = value;
-            });
-            shadowHelpers.forEach((helper) => {
-            helper.visible = value;
-            });
-        });
+
+                catWalkFolder
+                .add({ showHelpers: false }, 'showHelpers')
+                .name('Show Helpers')
+                .onChange((value) => {
+                    spotLightHelpers.forEach((helper) => {
+                        helper.visible = value;
+                    });
+                    shadowHelpers.forEach((helper) => {
+                        helper.visible = value;
+                    });
+                });
+
+                // Add controls for shadow camera near and far
+                catWalkFolder
+                .add(group.children[0].children[1].shadow.camera, 'near')
+                .name('Shadow Near')
+                .min(0.1)
+                .max(100)
+                .step(0.1)
+                .onChange((value) => {
+                    group.children.forEach((light) => {
+                        light.children[1].shadow.camera.near = value;
+                        light.children[1].shadow.camera.updateProjectionMatrix();
+                    });
+                    shadowHelpers.forEach(helper => helper.update());
+                });
+
+                catWalkFolder
+                .add(group.children[0].children[1].shadow.camera, 'far')
+                .name('Shadow Far')
+                .min(0.1)
+                .max(100)
+                .step(0.1)
+                .onChange((value) => {
+                    group.children.forEach((light) => {
+                        light.children[1].shadow.camera.far = value;
+                        light.children[1].shadow.camera.updateProjectionMatrix();
+                    });
+                    shadowHelpers.forEach(helper => helper.update());
+                });
+
+                catWalkFolder
+                .add(group.children[0].children[1].shadow.camera, 'fov')
+                .name('Shadow FOV')
+                .min(1)
+                .max(120)
+                .step(1)
+                .onChange((value) => {
+                    group.children.forEach((light) => {
+                        light.children[1].shadow.camera.fov = value;
+                        light.children[1].shadow.camera.updateProjectionMatrix();
+                    });
+                    shadowHelpers.forEach(helper => helper.update());
+                });
+
+                catWalkFolder
+                .add(group.children[0].children[1].shadow, 'bias')
+                .name('Shadow Bias')
+                .min(-0.01)
+                .max(0.01)
+                .step(0.0001)
+                .onChange((value) => {
+                    group.children.forEach((light) => {
+                        light.children[1].shadow.camera.bias = value;
+                        light.children[1].shadow.camera.updateProjectionMatrix();
+                    });
+
+                    shadowHelpers.forEach(helper => helper.update());
+                });
+
+                catWalkFolder
+                .add(group.children[0].children[1].shadow, 'radius')
+                .name('Shadow Radius')
+                .min(0)
+                .max(10)
+                .step(0.1)
+                .onChange((value) => {
+                    group.children.forEach((light) => {
+                        light.children[1].shadow.camera.radius = value;
+                        light.children[1].shadow.camera.updateProjectionMatrix();
+                    });
+                    shadowHelpers.forEach(helper => helper.update());
+                });
+
   
         catWalkFolder
             .add(debugObject, 'attenuation')
@@ -426,7 +528,7 @@ export default class Lights
 
     }
 
-    setObjectLight(object, count, radius = 5, height = 10, coneLength = 10, coneRadius = 3, shadowEnabled = true, intensity = 100)
+    setObjectLight(object, count, radius = 5, height = 10, coneLength = 10, coneRadius = 3, shadowEnabled = true, intensity = 100, attenuation = 5)
     {
     const group = new THREE.Group()
 
@@ -434,7 +536,7 @@ export default class Lights
     const localPosition = new THREE.Vector3()
     object.localToWorld(localPosition)
 
-    const addLights = (count, radius, height, coneLength, coneRadius, shadowEnabled) => {
+    const addLights = (count, radius, height, coneLength, coneRadius, shadowEnabled, intensity, attenuation) => {
     for (let i = 0; i < count; i++)
     {
     const gap = 360 / count
@@ -455,7 +557,7 @@ export default class Lights
     // Adjust cone
     const cone = volumetricLight.children[0];
     const coneUniforms = cone.material.uniforms;
-    coneUniforms.attenuation.value = 10.5;
+    coneUniforms.attenuation.value = attenuation;
     coneUniforms.anglePower.value = 5;
     coneUniforms.edgeScale.value = 0.5; // Adjust this value as needed
     coneUniforms.edgeConstractPower.value = 0.7; // Adjust this value as needed
@@ -489,7 +591,7 @@ export default class Lights
     }
     }
 
-    addLights(count, radius, height, coneLength, coneRadius, shadowEnabled)
+    addLights(count, radius, height, coneLength, coneRadius, shadowEnabled, intensity, attenuation)
 
     // add
     this.scene.add(group)
@@ -563,7 +665,7 @@ export default class Lights
                 });
                 group.remove(child);
             }
-            addLights(value, radius, height, coneLength, coneRadius, shadowEnabled)
+            addLights(value, radius, height, coneLength, coneRadius, shadowEnabled, intensity, attenuation)
         });
 
         debugFolder
@@ -637,14 +739,14 @@ export default class Lights
             });
             group.remove(child);
         }
-        addLights(count, radius, height, coneLength, value, shadowEnabled)
+        addLights(count, radius, height, coneLength, value, shadowEnabled, intensity, attenuation)
     });
 
     debugFolder
         .add(debugObject, 'intensity')
         .name('Intensity')
         .min(0)
-        .max(1000)
+        .max(100)
         .step(0.1)
         .onChange((value) => {
             group.children.forEach((volumetricLight) => {
@@ -716,8 +818,21 @@ export default class Lights
         spotLight.target.updateMatrixWorld();        
         this.scene.add(spotLight)
 
+        // Params
+        spotLight.intensity = 20
+        spotLight.distance = 0
+        spotLight.angle = 1
+        spotLight.decay = 2
+
         // Shadow
         spotLight.castShadow = true
+        spotLight.shadow.mapSize.width = 2048;
+        spotLight.shadow.mapSize.height = 2048;
+        spotLight.shadow.bias = -0.01
+        spotLight.shadow.camera.near = 0.1
+        spotLight.shadow.camera.far = 3
+        spotLight.shadow.camera.fov = 1
+        spotLight.shadow.radius = 1
 
         // Debug
         if (this.debug.active)
@@ -888,6 +1003,11 @@ export default class Lights
         pointLight.position.y += 0.5
         this.scene.add(pointLight)
 
+        // Params
+        pointLight.intensity = 20
+        pointLight.distance = 40
+        pointLight.decay = 2
+
         // Debug
         if (this.debug.active)
         {
@@ -927,7 +1047,6 @@ export default class Lights
             .step(0.1)
             .onChange((value) => {
                 pointLight.intensity = value;
-                shadowCameraHelper.update();
             });
 
             scene3Folder
@@ -938,7 +1057,6 @@ export default class Lights
             .step(0.1)
             .onChange((value) => {
                 pointLight.distance = value;
-                shadowCameraHelper.update();
             });
 
             scene3Folder
@@ -949,7 +1067,6 @@ export default class Lights
             .step(0.01)
             .onChange((value) => {
                 pointLight.decay = value;
-                shadowCameraHelper.update();
             });
         }
     }
@@ -984,6 +1101,8 @@ export default class Lights
     {
         const animatedModel = this.scene_0.animatedModel;
         const modelPosition = new THREE.Vector3();
+        const inLightIntensity = 0.8
+        const outsideLightIntensity = 0.01
         animatedModel.getWorldPosition(modelPosition);
     
         let isWithinLightArea = false;
@@ -998,7 +1117,7 @@ export default class Lights
     
         animatedModel.traverse((child) => {
             if (child.isMesh) {
-                const targetIntensity = isWithinLightArea ? 1 : 0;
+                const targetIntensity = isWithinLightArea ? inLightIntensity : outsideLightIntensity;
                 const currentIntensity = child.material.envMapIntensity || 0;
                 const fadeIn = 0.0025
                 const fadeOut = 0.25
@@ -1019,6 +1138,6 @@ export default class Lights
         {
         this.lightGroups.furniture.rotation.y +=  this.furnitureSpeed
         }
-        // this.updateEnvMap()
+        this.updateEnvMap()
     }
 }

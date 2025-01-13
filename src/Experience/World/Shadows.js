@@ -63,6 +63,11 @@ export default class Shadows {
         });
 
         this.scene_0.catWalk.receiveShadow = true;
+        this.scene_0.catWalk.traverse((child) => {
+            if (child.isMesh) {
+            child.receiveShadow = true;
+            }
+        });
 
         // Debug
         if (this.debug.active) {

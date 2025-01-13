@@ -35,7 +35,7 @@ export default class Sphere
         this.setOffset()
         this.setMaterial()
         this.setSphere()
-        // this.setBloom()
+        this.setBloom()
 
         // Switch
         this.switch = new Switch(this.sphere, 10)
