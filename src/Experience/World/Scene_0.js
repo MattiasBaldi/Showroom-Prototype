@@ -57,8 +57,11 @@ export default class Scene_0
     {
         // Creating the sccene and init positioning
         this.scale = 0.05
-        this.sceneModels.position.y += 0.01 // avoiding z-fighting
         this.sceneModels.scale.set(this.scale, this.scale, this.scale)
+
+
+        this.sceneModels.position.y += 0.01 // avoiding z-fighting
+
         this.sceneModels.position.z = 50
         this.sceneModels.updateMatrixWorld(true)
         this.scene.add(this.sceneModels)
@@ -384,6 +387,7 @@ export default class Scene_0
         const worldPosition = new THREE.Vector3();
         this.animatedModel.getWorldPosition(worldPosition);
 
+        console.log(this.animatedModel)
         // Initiate
         this.animatedModel.position[this.walkAxis] += (this.time.delta * 0.01) * this.walkSpeed;
 

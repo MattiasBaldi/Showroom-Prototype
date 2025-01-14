@@ -22,7 +22,7 @@ export default class Audio {
         // Debug
         if (this.debug.active)
             {
-                this.debugFolder = this.debug.ui.addFolder('Sound')
+                this.debugFolder = this.debug.ui.addFolder('Audio')
                 this.debugFolder.close()
             }
 
@@ -30,6 +30,7 @@ export default class Audio {
         this.setPositionalAudio('Audio_Scene_3', this.scene_1.model, 5, 2)
         this.setPositionalAudio('Audio_Scene_2', this.scene_2.sphere)
         this.setPositionalAudio('Audio_Scene_3', this.scene_3.empty)
+        // this.setPositionalAudio('Audio_Scene_0',  this.scene_0.catWalk, 10, 8)
 
         // Directional Audio
         this.setDirectionalAudio('Audio_Scene_0',  this.scene_0.catWalk, 2, 8, 0.1)
@@ -54,7 +55,7 @@ export default class Audio {
         }
     }
 
-    setPositionalAudio(audioName, object, refDistance = 40, rollOffFactor = 5, distanceModel = 'exponential'  )
+    setPositionalAudio(audioName, object, refDistance = 40, rollOffFactor = 5, distanceModel = 'exponential', applyScale = object.scale)
     {
         const audio = this.resources.items[audioName]
 
@@ -75,6 +76,7 @@ export default class Audio {
         sound.setLoop(true);
 
         // add to scene
+        object.updateWorldMatrix(true, true)
         object.add(sound);
         this.sounds.push(sound)
 
@@ -86,6 +88,9 @@ export default class Audio {
             const helper = new PositionalAudioHelper(sound, refDistance)
             sound.add(helper)
             sound.visible = true;
+            helper.position.y = 0.5
+
+
 
             const soundFolder = this.debugFolder.addFolder(`Audio: ${object.name}`)
             soundFolder.close()
@@ -97,10 +102,23 @@ export default class Audio {
                 rollOff: sound.panner.rolloffFactor,
                 distanceModel: sound.panner.distanceModel
             }
-            soundFolder.add(debugObject, 'refDistance').min(0).max(100).step(0.01).name('Ref Distance').onChange((value) => sound.setRefDistance(value))
-            soundFolder.add(debugObject, 'maxDistance').min(0).max(10).step(0.01).name('Max Distance').onChange((value) => sound.setMaxDistance(value))
-            soundFolder.add(debugObject, 'rollOff').min(0).max(100).step(0.01).name('Roll Off').onChange((value) => sound.setRolloffFactor(value))
-            soundFolder.add(debugObject, 'distanceModel', ['linear', 'inverse', 'exponential']).name('Distance Model').onChange((value) => sound.setDistanceModel(value))
+            soundFolder.add(debugObject, 'refDistance').min(0).max(100).step(0.01).name('Ref Distance').onChange((value) => {
+                sound.setRefDistance(value);
+                helper.range = value;
+                helper.update();
+            });
+            soundFolder.add(debugObject, 'maxDistance').min(0).max(10).step(0.01).name('Max Distance').onChange((value) => {
+                sound.setMaxDistance(value);
+                helper.update();
+            });
+            soundFolder.add(debugObject, 'rollOff').min(0).max(100).step(0.01).name('Roll Off').onChange((value) => {
+                sound.setRolloffFactor(value);
+                helper.update();
+            });
+            soundFolder.add(debugObject, 'distanceModel', ['linear', 'inverse', 'exponential']).name('Distance Model').onChange((value) => {
+                sound.setDistanceModel(value);
+                helper.update();
+            });
             soundFolder.add({ visible: true }, 'visible').name('Toggle Visibility').onChange((value) => {
                 sound.visible = value;
                 helper.visible = value;
@@ -132,11 +150,10 @@ export default class Audio {
         sound.setLoop(true);
 
         // sound.rotation.y = Math.PI
-        sound.position.z = 12
+        // sound.position.z = 12
 
         // add to scene
         object.updateWorldMatrix(true, true)
-        console.log(object.position)
         object.add(sound);
         this.sounds.push(sound)
 
@@ -144,9 +161,11 @@ export default class Audio {
         if (this.debug.active)
         {
 
-            // helper
+            // helper         
             const helper = new PositionalAudioHelper(sound, refDistance)
             sound.add(helper)
+            // helper.scale.divideScalar(this.scene_0.scale)
+            helper.position.y += 0.5/this.scene_0.scale
             sound.visible = true;
 
             const soundFolder = this.debugFolder.addFolder(`Audio: ${object.name}`)

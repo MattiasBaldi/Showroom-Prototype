@@ -103,7 +103,6 @@ export default class WASD {
                 case 'ShiftLeft':
                 case 'ShiftRight':
                     this.sprint = true;
-                    console.log('shift clicked')
                     break;
             }
         }
@@ -137,7 +136,6 @@ export default class WASD {
 
                 case 'ShiftLeft':
                 case 'ShiftRight':
-                    console.log('shift up')
                     this.sprint = false;
                     break;
             }

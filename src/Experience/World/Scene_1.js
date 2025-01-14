@@ -45,13 +45,13 @@ export default class Scene_1
 
     setScene()
     {
-        this.scale = 0.2
+        this.scale = 1
         this.sceneModels.scale.set(this.scale, this.scale, this.scale)
         this.scene.add(this.sceneModels)
 
         // Debug
         if(this.debug.active) {
-        this.debugFolder.add(this.model.scale, 'x', 'y', 'z').name('Scale').step(0.01).min(0).max(2).onChange((value) => {
+        this.debugFolder.add(this.model.scale, 'x', 'y', 'z').name('Scale').step(0.01).min(0).max(100).onChange((value) => {
             this.model.scale.set(value, value, value)})
 
         }
