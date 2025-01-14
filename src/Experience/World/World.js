@@ -32,7 +32,7 @@ export default class World
             this.scene_3 = new Scene_3()
             this.teleportation = new Teleportation()
             this.lights = new Lights()
-            // this.audio = new Audio()
+            this.audio = new Audio()
             this.shadows = new Shadows()
         })
 

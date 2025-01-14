@@ -305,7 +305,8 @@ export default class Environment
 
         addWallCollission()
         {
-
+            if(this.controls.wasd)
+            {
             this.walls.children.forEach((wall) => {
                 const wallBox = new THREE.Box3().setFromObject(wall);
                 const cameraPosition = new THREE.Vector3().copy(this.camera.position);
@@ -316,7 +317,7 @@ export default class Environment
                     this.controls.wasd.PointerLockControls.moveForward(this.controls.wasd.velocity.z * (this.time.delta * 0.001) * this.controls.wasd.accelerate);
                 }
             });
-            
+        }
         }
 
         addWalls()
@@ -580,6 +581,7 @@ export default class Environment
             // wall.material.needsUpdate = true;
             // });
 
+            
              this.addWallCollission()
 
         }

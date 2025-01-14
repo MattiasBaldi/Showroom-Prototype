@@ -82,7 +82,13 @@ export default class Audio {
         if (this.debug.active)
         {
 
+            // helper
+            const helper = new PositionalAudioHelper(sound, refDistance)
+            sound.add(helper)
+            sound.visible = true;
+
             const soundFolder = this.debugFolder.addFolder(`Audio: ${object.name}`)
+            soundFolder.close()
 
             const debugObject = 
             {
@@ -95,6 +101,12 @@ export default class Audio {
             soundFolder.add(debugObject, 'maxDistance').min(0).max(10).step(0.01).name('Max Distance').onChange((value) => sound.setMaxDistance(value))
             soundFolder.add(debugObject, 'rollOff').min(0).max(100).step(0.01).name('Roll Off').onChange((value) => sound.setRolloffFactor(value))
             soundFolder.add(debugObject, 'distanceModel', ['linear', 'inverse', 'exponential']).name('Distance Model').onChange((value) => sound.setDistanceModel(value))
+            soundFolder.add({ visible: true }, 'visible').name('Toggle Visibility').onChange((value) => {
+                sound.visible = value;
+                helper.visible = value;
+                helper.update();
+            });
+            
 
         }
     }
@@ -138,7 +150,8 @@ export default class Audio {
             sound.visible = true;
 
             const soundFolder = this.debugFolder.addFolder(`Audio: ${object.name}`)
-
+            soundFolder.close()
+            
             const debugObject = 
             {
                 coneInnerAngle: sound.panner.coneInnerAngle,

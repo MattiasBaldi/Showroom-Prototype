@@ -36,6 +36,7 @@ export default class Sphere
         this.setMaterial()
         this.setSphere()
         this.setBloom()
+        this.setVariations()
 
         // Switch
         this.switch = new Switch(this.sphere, 10)
@@ -135,20 +136,20 @@ export default class Sphere
         // Light A
         this.lights.a = {}
 
-        this.lights.a.intensity = 1.85
+        this.lights.a.intensity = 0.7
         this.lights.a.color = {}
         this.lights.a.color.value = '#ffffff'
         this.lights.a.color.instance = new THREE.Color(this.lights.a.color.value)
-        this.lights.a.spherical = new THREE.Spherical(1, 0.615, 2.049)
+        this.lights.a.spherical = new THREE.Spherical(1, 2, -2.915)
 
         // Light B
         this.lights.b = {}
 
-        this.lights.b.intensity = 1.4
+        this.lights.b.intensity = 0.7
         this.lights.b.color = {}
         this.lights.b.color.value = '#ffffff'
         this.lights.b.color.instance = new THREE.Color(this.lights.b.color.value)
-        this.lights.b.spherical = new THREE.Spherical(1, 2.561, - 1.844)
+        this.lights.b.spherical = new THREE.Spherical(1, 0.5, - 0.185)
 
         if(this.debug.active)
         {
@@ -224,14 +225,14 @@ export default class Sphere
 
                 uOffset: { value: new THREE.Vector3() },
 
-                uDistortionFrequency: { value: 1.5 },
-                uDistortionStrength: { value: 0.65 },
-                uDisplacementFrequency: { value: 3.520 },
-                uDisplacementStrength: { value: 0.152 },
+                uDistortionFrequency: { value: 1 },
+                uDistortionStrength: { value: 0.5 },
+                uDisplacementFrequency: { value: 2 },
+                uDisplacementStrength: { value: 0.5 },
 
-                uFresnelOffset: { value: -1.609 },
-                uFresnelMultiplier: { value: 3.587 },
-                uFresnelPower: { value: 0 },
+                uFresnelOffset: { value: 1 },
+                uFresnelMultiplier: { value: 2.519 },
+                uFresnelPower: { value: 0.2 },
 
                 uTime: { value: 0 },
 
@@ -325,6 +326,7 @@ export default class Sphere
         if(this.switch.active && !this.microphone.ready) {
             this.microphone.setMicrophone()
             this.setVariations()
+
 
             this.experience.world.audio.sounds.forEach((sound) => {
                 const currentTime = sound.gain.context.currentTime;

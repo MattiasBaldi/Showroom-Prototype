@@ -75,45 +75,45 @@ export default class Scene_1
         this.body.material.envMap = this.environment.environmentMap
         this.body.material.envMapIntensity = 0.15
 
-                // Debug
-                if(this.debug.active) {
-          
-                   const chromeModels = this.model.children.slice(1, 6)
-                    this.clothesFolder.addColor({ color: chromeModels[0].material.color.getHex() }, 'color').name('Material Color').onChange((value) => {
-                        chromematerials.forEach(child => child.material.color.set(value))
-                    })
-                    this.clothesFolder.add({ metalness: chromeModels[0].material.metalness }, 'metalness').min(0).max(1).step(0.01).name('Metalness').onChange((value) => {
-                        chromeModels.forEach(child => child.material.metalness = value)
-                    })
-                    this.clothesFolder.add({ roughness: chromeModels[0].material.roughness }, 'roughness').min(0).max(1).step(0.01).name('Roughness').onChange((value) => {
-                        chromeModels.forEach(child => child.material.roughness = value)
-                    })
-                    this.clothesFolder.add({ envMapIntensity: chromeModels[0].material.envMapIntensity }, 'envMapIntensity').min(0).max(1).step(0.1).name('Env Map Intensity').onChange((value) => {
-                        chromeModels.forEach(child => {
-                            child.material.envMap = this.environment.environmentMap;
-                            child.material.envMapIntensity = value;
-                        })
-                    })
+        // Debug
+        if(this.debug.active) {
 
-                    const body = this.model.children[0]
-                    const bodyMaterial = body.material;
-                    this.bodyFolder.addColor({ color: bodyMaterial.color.getHex() }, 'color').name('Material Color').onChange((value) => {
-                        bodyMaterial.color.set(value);
-                    });
-                    this.bodyFolder.add({ metalness: bodyMaterial.metalness }, 'metalness').min(0).max(1).step(0.01).name('Metalness').onChange((value) => {
-                        bodyMaterial.metalness = value;
-                    });
-                    this.bodyFolder.add({ roughness: bodyMaterial.roughness }, 'roughness').min(0).max(1).step(0.01).name('Roughness').onChange((value) => {
-                        bodyMaterial.roughness = value;
-                    });
-                    this.bodyFolder.add({ envMapIntensity: bodyMaterial.envMapIntensity }, 'envMapIntensity').min(0).max(1).step(0.1).name('Env Map Intensity').onChange((value) => {
-                        bodyMaterial.envMap = this.environment.environmentMap;
-                        bodyMaterial.envMapIntensity = value;
-                    });
+        const chromeModels = this.model.children.slice(1, 6)
+            this.clothesFolder.addColor({ color: chromeModels[0].material.color.getHex() }, 'color').name('Material Color').onChange((value) => {
+                chromematerials.forEach(child => child.material.color.set(value))
+            })
+            this.clothesFolder.add({ metalness: chromeModels[0].material.metalness }, 'metalness').min(0).max(1).step(0.01).name('Metalness').onChange((value) => {
+                chromeModels.forEach(child => child.material.metalness = value)
+            })
+            this.clothesFolder.add({ roughness: chromeModels[0].material.roughness }, 'roughness').min(0).max(1).step(0.01).name('Roughness').onChange((value) => {
+                chromeModels.forEach(child => child.material.roughness = value)
+            })
+            this.clothesFolder.add({ envMapIntensity: chromeModels[0].material.envMapIntensity }, 'envMapIntensity').min(0).max(1).step(0.1).name('Env Map Intensity').onChange((value) => {
+                chromeModels.forEach(child => {
+                    child.material.envMap = this.environment.environmentMap;
+                    child.material.envMapIntensity = value;
+                })
+            })
+
+            const body = this.model.children[0]
+            const bodyMaterial = body.material;
+            this.bodyFolder.addColor({ color: bodyMaterial.color.getHex() }, 'color').name('Material Color').onChange((value) => {
+                bodyMaterial.color.set(value);
+            });
+            this.bodyFolder.add({ metalness: bodyMaterial.metalness }, 'metalness').min(0).max(1).step(0.01).name('Metalness').onChange((value) => {
+                bodyMaterial.metalness = value;
+            });
+            this.bodyFolder.add({ roughness: bodyMaterial.roughness }, 'roughness').min(0).max(1).step(0.01).name('Roughness').onChange((value) => {
+                bodyMaterial.roughness = value;
+            });
+            this.bodyFolder.add({ envMapIntensity: bodyMaterial.envMapIntensity }, 'envMapIntensity').min(0).max(1).step(0.1).name('Env Map Intensity').onChange((value) => {
+                bodyMaterial.envMap = this.environment.environmentMap;
+                bodyMaterial.envMapIntensity = value;
+            });
 
 
 
-                    }
+            }
     }
 
     setBloom()
