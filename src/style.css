@@ -80,41 +80,21 @@
 }
 
 
-/* 
-#ui-overlay #orbit-objects
-{
-
-} */
-
-/* @keyframes scaleAnimation {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.5);
-    }
-    100% {
-        transform: scale(1);
-    }
-} */
-
-#ui-overlay #orbit-objects .toggleButton
-{
-    display: none;
+#ui-overlay #orbit-objects .toggleButton {
+    display: none; /* Ensure it's visible */
     position: fixed;
     color: white;
-    margin: 20px 20px;
-    background-color: transparent;
-    padding: 10px;
-    width: 50px; 
-    height: 50px; 
-    top: 50px;
-    right: 100px;
-    font-size: 20px; 
+    margin: 0;
+    background-color: rgba(0, 0, 0, 1); /* Semi-transparent background */
+    padding: 10px 20px; /* Add padding for better spacing */
+    border-radius: 0px; /* Rounded corners */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+    top: 20px; /* Place near the top */
+    right: 20px; /* Align closer to the corner */
+    font-size: 16px; /* Adjust font size for better readability */
     z-index: 10;
-    animation: scaleAnimation 3s ease-in-out;
-    animation-iteration-count: infinite;
-    border: none; 
+    border: 0px solid white; /* Add a border for visibility */
+    cursor: default; /* No pointer interaction */
 }
 
 #ui-overlay #orbit-objects .toggleButton img

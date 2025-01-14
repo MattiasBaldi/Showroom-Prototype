@@ -365,7 +365,6 @@ export default class Scene_0
                 .min(0)
                 .max(2)
         
-        
                 this.animationFolder
                 .add(debugObject, 'walkSpeed')
                 .name('Move Speed')
@@ -387,7 +386,7 @@ export default class Scene_0
         const worldPosition = new THREE.Vector3();
         this.animatedModel.getWorldPosition(worldPosition);
 
-        console.log(this.animatedModel)
+
         // Initiate
         this.animatedModel.position[this.walkAxis] += (this.time.delta * 0.01) * this.walkSpeed;
 

@@ -45,6 +45,7 @@ export default class Scene_1
 
     setScene()
     {
+        this.body.name = 'model'
         this.scale = 1
         this.sceneModels.scale.set(this.scale, this.scale, this.scale)
         this.scene.add(this.sceneModels)
