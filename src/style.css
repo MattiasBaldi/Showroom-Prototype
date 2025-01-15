@@ -89,8 +89,8 @@
     padding: 10px 20px; /* Add padding for better spacing */
     border-radius: 0px; /* Rounded corners */
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
-    top: 20px; /* Place near the top */
-    right: 20px; /* Align closer to the corner */
+    bottom: 20px; /* Place near the top */
+    left: 20px; /* Align closer to the corner */
     font-size: 16px; /* Adjust font size for better readability */
     z-index: 10;
     border: 0px solid white; /* Add a border for visibility */
