@@ -69,7 +69,7 @@ Debug
 ✔ Godrays @done (29.12.2024, 08.57.32)
 ✔ PivotPoint on Orbitcontrols to the relevant scene @done (29.12.2024, 08.58.05)
 ✔ Single click on soundButton @done (5.1.2025, 16.17.56)
-☐ Setup debugging of all elements
+✔ Setup debugging of all elements @done (15.1.2025, 19.52.38)
 ☐ Adjust walk and pan speed
 ☐ Allow debug of each scene
 ☐ Bloom
@@ -82,14 +82,14 @@ Debug
 
 Lights
 -------
-☐ Figure out correct lighting settings and
+✔ Figure out correct lighting settings and @done (15.1.2025, 19.52.25)
 ✔ Spotlights @done (29.12.2024, 12.10.38)
-☐ Adjust the amount of elements that is bloomed
-☐ Bake shadows and lights
-☐ Correct light target 
-☐ Fix helpers
-☐ Add count debug
-☐ Fix bloom on correct meshes
+✔ Adjust the amount of elements that is bloomed @done (15.1.2025, 19.52.27)
+✔ Bake shadows and lights @done (15.1.2025, 19.52.28)
+✔ Correct light target @done (15.1.2025, 19.52.29)
+✔ Fix helpers @done (15.1.2025, 19.52.31)
+✔ Add count debug @done (15.1.2025, 19.52.33)
+✔ Fix bloom on correct meshes @done (15.1.2025, 19.52.34)
 
 Sound
 ------------------
@@ -97,9 +97,9 @@ Sound
 ✔ Declare radius and switches @done (9.12.2024, 16.25.47)
 ✔ Loop @done (29.12.2024, 08.56.37)
 ✔ Turn down volume when sphere is active @done (29.12.2024, 08.56.39)
-☐ Fix distances
-☐ Fix loader in shared loader thing
-☐ Fix sound doubleclick
+✔ Fix distances @done (15.1.2025, 19.52.09)
+✔ Fix loader in shared loader thing @done (15.1.2025, 19.52.20)
+✔ Fix sound doubleclick @done (15.1.2025, 19.52.16)
 
 ☐ Perfomance tips
 ------------------
