@@ -58,10 +58,8 @@ export default class Scene_0
         // Creating the sccene and init positioning
         this.scale = 0.05
         this.sceneModels.scale.set(this.scale, this.scale, this.scale)
-
-
         this.sceneModels.position.y += 0.01 // avoiding z-fighting
-
+        this.tent.visible = false;
         this.sceneModels.position.z = 50
         this.sceneModels.updateMatrixWorld(true)
         this.scene.add(this.sceneModels)
@@ -92,7 +90,7 @@ export default class Scene_0
 
             this.audienceFolder.add(this.audience, 'visible').name('Audience Visibility');
             this.benchFolder.add(this.bench, 'visible').name('Bench Visibility');
-            this.tentFolder.add(this.tent, 'visible').name('tent Visibility');
+            this.tentFolder.add(this.tent, 'visible').name('Tent Visibility');
 
             this.tentFolder.add(this.tent.scale, 'x').name('tent Scale Z').min(0.1).max(10).step(0.1).onChange(() => {
                 this.tent.scale.x = this.tent.scale.z;

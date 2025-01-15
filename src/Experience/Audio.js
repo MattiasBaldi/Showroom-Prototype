@@ -37,6 +37,14 @@ export default class Audio {
         // Directional Audio
         // this.setDirectionalAudio('Audio_Scene_0',  this.scene_0.catWalk, 2, 8, 0.1)
      
+        // Browsers block audio before a user has interacted with the DOM
+        // Play audio on the first user click of the blocker
+        const blocker = document.querySelector('#blocker')
+        blocker.addEventListener('click', () => {
+            console.log('audio play');
+            this.sounds.forEach((sound) => sound.play());
+        }, { once: true });
+
         // Mute Button
         this.toggleMute()
 
@@ -74,7 +82,6 @@ export default class Audio {
         sound.setRolloffFactor(rollOffFactor); // The amount that the audio will decrease after getting out of that radius
         sound.setDistanceModel('exponential') // The way in which the audio will decrease (exponential, linear etc.)
         // sound.setMaxDistance('x') // The distance which the rollOff stops happening at (default is indefinite)
-        sound.play();
         sound.setLoop(true);
 
         // add to scene
@@ -146,7 +153,6 @@ export default class Audio {
         sound.setRolloffFactor(rollOffFactor); // The amount that the audio will decrease after getting out of that radius
         sound.setDistanceModel('exponential') // The way in which the audio will decrease (exponential, linear etc.)
         // sound.setMaxDistance('x') // The distance which the rollOff stops happening at (default is indefinite)
-        sound.play();
         sound.setLoop(true);
 
         // add position

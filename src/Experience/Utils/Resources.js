@@ -135,6 +135,7 @@ export default class Resources extends EventEmitter
                     source.path,
                     (file) =>
                     {
+                        console.log(`Audio loaded: ${source.path}`);
                         this.sourceLoaded(source, file)
                     }
                 )
