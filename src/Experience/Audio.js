@@ -96,7 +96,7 @@ export default class Audio {
             // helper
             const helper = new PositionalAudioHelper(sound, refDistance)
             sound.add(helper)
-            sound.visible = true;
+            sound.visible = false;
             helper.position.y = 0.5
 
             const soundFolder = this.debugFolder.addFolder(`Audio: ${object.name}`)
@@ -126,7 +126,7 @@ export default class Audio {
                 sound.setDistanceModel(value);
                 helper.update();
             });
-            soundFolder.add({ visible: true }, 'visible').name('Toggle Visibility').onChange((value) => {
+            soundFolder.add({ visible: false }, 'visible').name('Toggle Visibility').onChange((value) => {
                 sound.visible = value;
                 helper.visible = value;
                 helper.update();
@@ -171,7 +171,7 @@ export default class Audio {
             // helper
             const helper = new PositionalAudioHelper(sound, refDistance)
             sound.add(helper)
-            sound.visible = true;
+            sound.visible = false;
             helper.position.y = 0.5
             helper.scale.set(helper.scale.x / scale.x, helper.scale.y / scale.y, helper.scale.z / scale.z)
             console.log(helper.scale)
@@ -220,7 +220,7 @@ export default class Audio {
                 sound.setDistanceModel(value);
                 helper.update();
             });
-            soundFolder.add({ visible: true }, 'visible').name('Toggle Visibility').onChange((value) => {
+            soundFolder.add({ visible: false }, 'visible').name('Toggle Visibility').onChange((value) => {
                 sound.visible = value;
                 helper.visible = value;
                 helper.update();
@@ -271,7 +271,7 @@ export default class Audio {
             sound.add(helper)
             helper.scale.divideScalar(this.scene_0.scale)
             helper.position.y += 0.5/this.scene_0.scale
-            sound.visible = true;
+            sound.visible = false;
 
             const soundFolder = this.debugFolder.addFolder(`Audio: ${object.name}`)
             soundFolder.close()
@@ -335,7 +335,7 @@ export default class Audio {
                 helper.update();
             });
 
-            soundFolder.add({ visible: true }, 'visible').name('Toggle Visibility').onChange((value) => {
+            soundFolder.add({ visible: false }, 'visible').name('Toggle Visibility').onChange((value) => {
                 sound.visible = value;
                 helper.visible = value;
                 helper.update();
