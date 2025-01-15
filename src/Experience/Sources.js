@@ -48,11 +48,6 @@ export default [
         type: 'gltfModel',
         path: 'models/light.glb'
     },
-    {
-        name: 'floor',
-        type: 'gltfModel',
-        path: 'models/floor.glb'
-    },
 
 // AUDIO
     {
