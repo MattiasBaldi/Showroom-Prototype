@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>    
+<head>
+<link rel="stylesheet" href="css.css" media="all">
+<script type="module" src="script.js" > </script>
+</head>
+<body> 
+    
+    <div id="experience"> 
+        <div class="loading overlay"></div> 
+        <canvas class="webgl"></canvas>
+    </div>
+
+    <div id="ui-overlay" style="display: none">
+    <div id="blocker">
+        <div id="instructions">
+            <div id="controls">
+            <button class="full-screen">
+                <img src="/SVG/full-screen.svg"> </img>
+            </button>
+            <button class="sound" onclick="childClick(event)">
+                <script>  function childClick(event) {event.stopPropagation()};  /* Removes click blocker event when clicking sound button*/ </script>
+                <img class="on" src="/SVG/soundOn.svg" style="display: block"> </img>
+                <img class="off" src="/SVG/soundOff.svg" style="display: none"> </img>       
+                </button> 
+        </div>
+            <h1> Click to play </h1>
+            <br>
+            <p>
+                Escape = menu
+            </p>
+        </div>
+    </div>
+    
+    <div id="mobile-blocker">
+        <h1> This experience is available on PC </h1>
+    </div>
+
+    <div id="orbit-objects">
+        <button class="toggleButton">
+            <span style="font-weight: bold;">Press [I] to Inspect </span> 
+        </button>
+
+        <!-- Sphere -->
+        <div class="info sphere">
+        <h2>Object Information</h2>
+        <br> <br>
+        <p id="object-name">Object Name: Example</p>
+        <p id="object-description">Description: This is an example object.</p>
+        </div>
+
+        <!-- PosedBody -->
+        <div class="info model">
+            <h2>Object Information</h2>
+            <p id="object-name">Object Name: Example</p>
+            <p id="object-description">Description: This is an example object.</p>
+        </div>
+
+
+        <!-- Scene_3 -->
+        <div class="info furniture">
+            <h2>Object Information</h2>
+            <p id="object-name">Object Name: Example</p>
+            <p id="object-description">Description: This is an example object.</p>
+        </div>
+
+    </div>
+    
+    </div>
+    </body>
+</html>

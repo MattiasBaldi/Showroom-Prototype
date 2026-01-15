@@ -1,0 +1,113 @@
+Controls / W-A-S-D Movement
+-------
+✔ Controls @done (27.11.2024, 19.15.40)
+✔ Create W-A-S-D file and import PointerLockControls in there @done (3.12.2024, 15.51.36)
+
+Switch
+-------
+✔ Orbit position is weird for some objects @done (3.12.2024, 15.51.16)
+✔ Set geometry origin as true pivotPoint (Issue being that, the max zoom, doesnt match the togggle radius), height parameter needs to be removed @done (9.1.2025, 21.07.49)
+✔ Fix movement controls and speed @done (5.1.2025, 14.53.39)
+✔ Debug @done (5.1.2025, 14.54.36)
+
+
+Teleportation
+-------
+✔ Create .js File @done (28.11.2024, 21.03.09)
+✔ Set each model destination @done (28.11.2024, 22.01.21)
+✔ Update controls @done (28.11.2024, 22.01.21)
+✔ Adjust positoning @done (29.11.2024, 11.47.16)
+
+PostProcessing
+-----------
+✔ Add Debug: DOF @done (7.12.2024, 23.43.37)
+✔ Add Debug: Bloom @done (8.12.2024, 02.29.26)
+✔ Add Debug: Color @done (9.12.2024, 20.06.19)
+✔ Add Debug: Antialiasing @done (9.12.2024, 20.06.19)
+✔ Add Debug: Gods of ray @done (9.12.2024, 20.06.20)
+✔ Add Debug: ToneMapping @done (8.12.2024, 01.48.31)
+✔ Add Blendmodes @done (8.12.2024, 02.29.49)
+✔ Add Selective Bloom to lights @done (29.12.2024, 08.56.22)
+✔ Learn how to merge Selective bloom @done (29.12.2024, 08.56.24)
+✔ Learn GodRays @done (29.12.2024, 08.56.26)
+
+Scene_3
+✔ Debug @done (26.11.2024, 23.33.43)
+✔ Double sided room @done (26.11.2024, 23.33.45)
+☐ Bake lights
+
+Scene_2
+✔ Arts @done (29.12.2024, 08.59.34)
+✔ Sphere setup @done (29.12.2024, 09.07.58)
+✔ Tweak settings @done (29.12.2024, 09.07.59)
+☐ Add debug
+
+Scene_1
+✔ Fade @done (26.11.2024, 23.33.36)
+✔ Remove unneccessary animation @done (5.12.2024, 17.24.36)
+✔ Catwalk Visualizer Debug @done (29.12.2024, 09.07.47)
+✔ Remove hands @done (29.12.2024, 09.35.43)
+
+Environment
+-----------
+✔ Add RGBELoader in resources.js @done (22.11.2024, 13.48.07)
+✔ Import all models & HDR in sources.js and console.log() to check @done (26.11.2024, 11.03.33)
+✔ Environment @done (26.11.2024, 11.04.03)
+✔ Base models @done (26.11.2024, 11.04.02)
+✔ Fog @done (29.12.2024, 09.08.15)
+✔ Fix grid @done (27.11.2024, 23.28.56)
+✔ Add Physics to walls @done (5.1.2025, 14.53.50)
+
+Scene_0
+---------
+Put catWalk audience together into one instanced mesh
+Figure out the correct catwalk scene and textures
+Add audience as isntanced mesh
+
+Debug
+------------------
+✔ Godrays @done (29.12.2024, 08.57.32)
+✔ PivotPoint on Orbitcontrols to the relevant scene @done (29.12.2024, 08.58.05)
+✔ Single click on soundButton @done (5.1.2025, 16.17.56)
+✔ Setup debugging of all elements @done (15.1.2025, 19.52.38)
+☐ Adjust walk and pan speed
+☐ Allow debug of each scene
+☐ Bloom
+☐ ToneMapping
+☐ Debug: ToneMapping
+☐ Debug: Bloom
+☐ Debug: Antialiasing
+☐ Delay on loading
+
+
+Lights
+-------
+✔ Figure out correct lighting settings and @done (15.1.2025, 19.52.25)
+✔ Spotlights @done (29.12.2024, 12.10.38)
+✔ Adjust the amount of elements that is bloomed @done (15.1.2025, 19.52.27)
+✔ Bake shadows and lights @done (15.1.2025, 19.52.28)
+✔ Correct light target @done (15.1.2025, 19.52.29)
+✔ Fix helpers @done (15.1.2025, 19.52.31)
+✔ Add count debug @done (15.1.2025, 19.52.33)
+✔ Fix bloom on correct meshes @done (15.1.2025, 19.52.34)
+
+Sound
+------------------
+✔ Import different sounds @done (9.12.2024, 16.25.45)
+✔ Declare radius and switches @done (9.12.2024, 16.25.47)
+✔ Loop @done (29.12.2024, 08.56.37)
+✔ Turn down volume when sphere is active @done (29.12.2024, 08.56.39)
+✔ Fix distances @done (15.1.2025, 19.52.09)
+✔ Fix loader in shared loader thing @done (15.1.2025, 19.52.20)
+✔ Fix sound doubleclick @done (15.1.2025, 19.52.16)
+
+☐ Perfomance tips
+------------------
+✔ Remove animation on posed model @done (29.12.2024, 08.57.12)
+☐ Check  notion for perfomance tips
+☐ Check three.js for perfomance tips
+☐ Change switch to one object to ensure less drawcalls in tick function
+☐ Bake lights
+
+
+
