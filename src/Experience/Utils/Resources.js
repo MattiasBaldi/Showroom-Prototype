@@ -177,6 +177,7 @@ export default class Resources extends EventEmitter
             this.renderer.instance.compileAsync(this.scene, this.camera, this.scene).then(() => 
             {
                 invisible.forEach((o) => o.visible = false)
+                console.log("FINISH")
                 this.trigger('ready')
             })
 

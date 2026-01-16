@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
 import { PointerLockControls } from 'three/examples/jsm/Addons.js'
+import JoyStickControls from './JoyStickControls.js'
 
 export default class WASD {
     constructor(camera, canvas)
@@ -31,9 +32,30 @@ export default class WASD {
         this.sprint = false; 
         this.sprintSpeed = this.accelerate * 1.5
 
+        // pass itsself
+        this.joystickControls = new JoyStickControls(this)
+
         this.setKeyMap()
         this.setPointerLockControls()
-    
+
+
+        this.isLocked = false; 
+    }
+
+
+    onMouseMove(e) 
+    {
+
+            let previousMouse = { x: 0, y: 0 };
+
+            const dx = e.movementX || e.clientX - previousMouse.x;
+            const dy = e.movementY || e.clientY - previousMouse.y;
+
+            this.camera.rotation.y -= dx * 0.002;
+            this.camera.rotation.x -= dy * 0.002;
+
+            previousMouse.x = e.clientX;
+            previousMouse.y = e.clientY;
     }
 
     setLock()
@@ -41,7 +63,6 @@ export default class WASD {
             this.fullscreen = document.querySelector('button.full-screen');
             this.blocker = document.getElementById('blocker'); 
             const experienceCanvas = document.getElementById('experience');
-            
 
             // Unlock
             // When I click on fullscreen icon, the screen becomes fullscreen and the locker locks
@@ -63,6 +84,7 @@ export default class WASD {
                 }
                 }
             })
+
 
             // When I click the blocker, the controls are locked
             this.blocker.addEventListener('click', () => {
@@ -175,6 +197,9 @@ export default class WASD {
             } else {
                 this.accelerate = this.originalSpeed;
             }
+
+            // update joystick
+            this.joystickControls.update()
 
         }     
     }

@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
+import JoyStickControls from './JoyStickControls.js'
 
 /*
     What this does is, it creates an event listener, 
@@ -26,6 +27,11 @@ export default class Switch {
         //Overlay
         this.overlay = document.querySelector(`.${this.pivotPoint.name}`);
         this.orbitToggleButton = document.querySelector('#orbit-objects .toggleButton')
+
+        // joystick
+        // this.joyStockControls = new JoyStickControls(this.controls); 
+
+        console.log(this.controls)
 
         this.distance = null;
         this.keydownHandler = this.listener.bind(this);
@@ -65,6 +71,14 @@ export default class Switch {
         this.overlay.classList.remove('active')
         this.active = false
     }
+
+    // setJoyStickControls(active) 
+    // {
+    //     this.controls = 
+    //     this.joyStockControls.active = true; 
+
+    //     this.joyStockControls.active = false; 
+    // }
 
     listener(event) {
             // if the key pressed was I
@@ -118,8 +132,8 @@ export default class Switch {
             }
         }
         // else if the camera is not within that direction
-            else 
-            {   
+        else 
+        {   
             //and if there event listener is still there - then remove it 
             if (this.listenerAdded)
             {

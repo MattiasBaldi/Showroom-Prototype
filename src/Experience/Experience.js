@@ -38,7 +38,6 @@ export default class Experience
         this.camera = new Camera(this)
         this.renderer = new Renderer(this)
         this.resources = new Resources(sources)
-
         this.world = new World()
         this.stats = new Stats()
 

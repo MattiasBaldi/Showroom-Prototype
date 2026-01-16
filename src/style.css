@@ -140,6 +140,6 @@ display: block;
 
     #blocker, #experience
     {
-        display: none; 
+        /* display: none;  */
     }
 }

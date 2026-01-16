@@ -14,6 +14,7 @@ export default class Renderer
         this.world = this.experience.world
         this.sizes = this.experience.sizes
         this.scene = this.experience.scene
+        this.resources = this.experience.resources
         this.camera = this.experience.camera
         this.debug = this.experience.debug
         this.resources = this.experience.resources
