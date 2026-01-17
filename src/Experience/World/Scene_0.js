@@ -39,17 +39,18 @@ export default class Scene_0
         // Setup
         this.resource = this.resources.items.Scene_0
         this.sceneModels = this.resource.scene
-        this.animatedModel = this.sceneModels.children[0]
-        this.bench = this.sceneModels.children[1]
-        this.audience = this.sceneModels.children[2]
-        this.catWalk = this.sceneModels.children[3]
-        this.tent = this.sceneModels.children[4]
+        this.animatedModel = this.sceneModels.getObjectByName("model")
+        this.bench = this.sceneModels.getObjectByName("bench")
+        this.audience = this.sceneModels.getObjectByName("audience")
+        this.catWalk = this.sceneModels.getObjectByName("catwalk")
+        this.tent = this.sceneModels.getObjectByName("cloth")
 
         // Call actions
         this.setScene()
         this.setWalkAnimation()
         this.setMaterials()
         this.setBloom()
+        this.setInstances()
 
     }
 
@@ -111,6 +112,88 @@ export default class Scene_0
         }
     }
 
+    setInstances() {
+        const model = this.audience
+        const sourceMesh = model // Get actual mesh from group
+
+        /// Material 
+        const material = sourceMesh.material.clone()
+        material.envMap = this.environment.environmentMap
+        material.envMapIntensity = 0.02
+        this.audience.visible = false; 
+
+        // Config object for tweaking
+        const config = {
+            count: 49,
+            offsetZ: 32,
+            offsetX: -60,
+            rotationY: -Math.PI
+        }
+
+        const createInstances = () => {
+            // Remove old instance if exists
+            if (this.audienceInstance) {
+                this.sceneModels.remove(this.audienceInstance)
+                this.audienceInstance.dispose()
+            }
+
+            const count = config.count
+
+
+            this.audienceInstance = new THREE.InstancedMesh(sourceMesh.geometry, material, count)
+
+            let offset = 0
+            for (let i = 0; i < count; i++) {
+                const matrix = new THREE.Matrix4()
+                const quaternion = new THREE.Quaternion()
+
+                const scale = sourceMesh.scale.clone()
+                let rotation = new THREE.Euler(0, 0, 0)
+                let position = new THREE.Vector3(model.position.x, model.position.y, model.position.z + offset)
+
+                if (i % 2 === 0) 
+                {
+                    rotation = new THREE.Euler(model.rotation.x, config.rotationY, model.rotation.z)
+                    position.x -= config.offsetX
+                    offset += config.offsetZ
+                }
+
+                matrix.compose(position, quaternion.setFromEuler(rotation), scale)
+                this.audienceInstance.setMatrixAt(i, matrix)
+            }
+
+            this.audienceInstance.instanceMatrix.needsUpdate = true
+            this.sceneModels.add(this.audienceInstance)
+        }
+
+        createInstances()
+
+        // Debug controls
+        if (this.debug.active) {
+
+            this.audienceFolder.add(config, 'count').name('Count').min(1).max(100).step(1).onChange(() => {
+                createInstances()
+            })
+
+            this.audienceFolder.add(config, 'offsetZ').name('Offset Z').min(0).max(100).step(0.1).onChange(() => {
+                createInstances()
+            })
+
+            this.audienceFolder.add(config, 'offsetX').name('Offset X').min(-100).max(100).step(1).onChange(() => {
+                createInstances()
+            })
+
+            this.audienceFolder.add(config, 'rotationY').name('Rotation Y').min(-Math.PI).max(Math.PI).step(Math.PI * 0.1).onChange(() => {
+                createInstances()
+            })
+
+            // material
+            this.audienceFolder.add(material, 'envMapIntensity').name('Env Map Intensity').min(0).max(1).step(0.01).onChange((v) => {
+                createInstances(); material.envMapIntensity = v; this.audienceInstance.material.needsUpdate = true
+            })
+        }
+    }
+
     setMaterials()
     {
 
@@ -153,18 +236,18 @@ export default class Scene_0
  
 
         // Audience
-        const audienceClothesMaterial = this.audience.children[0].material
-        const audienceBodyMaterial = this.audience.children[1].material
-        this.audience.traverse((child) =>
-        {
-            if (child instanceof THREE.Mesh && child.material) {
-                child.material.envMap = this.environment.environmentMap;
-                child.material.envMapIntensity = 0;
-                }
-        })
+        // const audienceClothesMaterial = this.audience.children[0].material
+        // const audienceBodyMaterial = this.audience.children[1].material
+        // this.audience.traverse((child) =>
+        // {
+        //     if (child instanceof THREE.Mesh && child.material) {
+        //         child.material.envMap = this.environment.environmentMap;
+        //         child.material.envMapIntensity = 0;
+        //         }
+        // })
 
-        audienceClothesMaterial.envMap = this.environment.environmentMap;
-        audienceClothesMaterial.envMapIntensity = 0.01;
+        // audienceClothesMaterial.envMap = this.environment.environmentMap;
+        // audienceClothesMaterial.envMapIntensity = 0.01;
 
 
         // Tent
@@ -230,32 +313,32 @@ export default class Scene_0
             });
 
             // Audience
-            const audienceDebugObject = {
-            clothesEnvMapIntensity: audienceClothesMaterial.envMapIntensity,
-            bodyEnvMapIntensity: audienceBodyMaterial.envMapIntensity
-            };
+            // const audienceDebugObject = {
+            // clothesEnvMapIntensity: audienceClothesMaterial.envMapIntensity,
+            // bodyEnvMapIntensity: audienceBodyMaterial.envMapIntensity
+            // };
 
-            this.audienceFolder
-            .add(audienceDebugObject, 'clothesEnvMapIntensity')
-            .name('Clothes Env Map Intensity')
-            .min(0)
-            .max(1)
-            .step(0.01)
-            .onChange((value) => {
-            audienceClothesMaterial.envMapIntensity = value;
-            audienceClothesMaterial.needsUpdate = true;
-            });
+            // this.audienceFolder
+            // .add(audienceDebugObject, 'clothesEnvMapIntensity')
+            // .name('Clothes Env Map Intensity')
+            // .min(0)
+            // .max(1)
+            // .step(0.01)
+            // .onChange((value) => {
+            // audienceClothesMaterial.envMapIntensity = value;
+            // audienceClothesMaterial.needsUpdate = true;
+            // });
 
-            this.audienceFolder
-            .add(audienceDebugObject, 'bodyEnvMapIntensity')
-            .name('Body Env Map Intensity')
-            .min(0)
-            .max(1)
-            .step(0.01)
-            .onChange((value) => {
-            audienceBodyMaterial.envMapIntensity = value;
-            audienceBodyMaterial.needsUpdate = true;
-            });
+            // this.audienceFolder
+            // .add(audienceDebugObject, 'bodyEnvMapIntensity')
+            // .name('Body Env Map Intensity')
+            // .min(0)
+            // .max(1)
+            // .step(0.01)
+            // .onChange((value) => {
+            // audienceBodyMaterial.envMapIntensity = value;
+            // audienceBodyMaterial.needsUpdate = true;
+            // });
             
         }
     }
@@ -267,8 +350,7 @@ export default class Scene_0
         this.catWalk.children[1].material.emissiveIntensity = 0.2
 
         this.renderer.selectiveBloom.selection.add(this.audience);
-        this.audience.children[1].material.emissiveIntensity = 0.2
-        this.audience.children[0].material.emissiveIntensity = 0.2
+        this.audience.material.emissiveIntensity = 0.2
 
         if (this.debug.active) {
             const debugObject = {

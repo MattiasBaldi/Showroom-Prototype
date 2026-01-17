@@ -26,33 +26,32 @@ export default class Resources extends EventEmitter
         this.camera = this.experience.camera
 
 
+        // ui
+        this.ui = document.querySelector('#ui-overlay')
+        this.overlay = document.querySelector('.loading.overlay')
     }
 
     setLoadingScreen()
     {
 
-        const overLay = document.querySelector('.loading.overlay')
-        const uiOverlay = document.querySelector('#ui-overlay')
-  
         
         this.loadingManager = new THREE.LoadingManager(
         
         () =>
     {
         // Loaded 
-        gsap.delayedCall(0.5, () =>
-        {
-            gsap.to(overLay, { duration: 3, opacity: 0, onComplete: () => overLay.style.display = 'none' })
-            uiOverlay.style.display = 'block'
-
-        })
+        // gsap.delayedCall(0.5, () =>
+        // {
+        //     gsap.to(this.overLay, { duration: 3, opacity: 0, onComplete: () => this.overlay.style.display = 'none' })
+        //     this.ui.style.display = "block"
+        // })
     },
 
     // Progress 
     (itemUrl, itemsLoaded, itemsTotal) =>
         {
         const progressRatio = itemsLoaded / itemsTotal
-        overLay.innerHTML = `${progressRatio * 100 + '%'}`
+        this.overlay.innerHTML = `${progressRatio * 100 + '%'}`
     });
 
     }
@@ -150,19 +149,26 @@ export default class Resources extends EventEmitter
         }
     }
 
-    sourceLoaded(source, file)
+    async sourceLoaded(source, file)
     {
         this.items[source.name] = file
         this.loaded++
 
         if(this.loaded === this.toLoad)
         {
+            this.overlay.innerHTML = "preparing"; 
+
             // trigger preload instead            
             const invisible = []
             const items = this.scene.traverse((object) => 
             {
                 if (object.isMesh)
                     {
+
+                        if (object.material && typeof object.material.initTexture === 'function') {
+                                        object.material.initTexture();
+                                    }
+
                         // flip
                         if (!object.isVisible) 
                             {   
@@ -174,12 +180,26 @@ export default class Resources extends EventEmitter
                     }
             })
 
-            this.renderer.instance.compileAsync(this.scene, this.camera, this.scene).then(() => 
-            {
+                await this.renderer.instance.compileAsync(this.scene, this.camera, this.scene);
+            
+                const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128)
+                const cubeCamera = new THREE.CubeCamera(0.01, 100000, cubeRenderTarget)
+                cubeCamera.update(  this.renderer.instance, (this.scene))
+                cubeRenderTarget.dispose()
+
                 invisible.forEach((o) => o.visible = false)
-                console.log("FINISH")
+
+                gsap.delayedCall(0.5, 
+
+                    gsap.to(this.overLay, { duration: 3, opacity: 0, onComplete: () => {
+                        
+                        this.overlay.style.display = 'none' 
+                        this.ui.style.display = "block"
+                    }})
+
+                )
+            
                 this.trigger('ready')
-            })
 
         }
     }
