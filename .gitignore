@@ -2,3 +2,9 @@
 node_modules
 reference_code
 /static/files
+
+# Large files
+*.blend
+*.blend1
+*.obj
+dist/
