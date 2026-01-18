@@ -23,7 +23,7 @@ export default class Resources extends EventEmitter
         this.experience = new Experience(); 
         this.renderer = this.experience.renderer
         this.scene = this.experience.scene;
-        this.camera = this.experience.camera
+        this.camera = this.experience.camera.instance
 
 
         // ui
@@ -175,12 +175,24 @@ export default class Resources extends EventEmitter
                     }
             })
 
+                // update frustum for far away objects  
+                 console.log("camera", this.camera)
+                 const originalFar = this.camera.far;
+                this.camera.far = 500000000; // Or whatever max distance your scene needs
+                this.camera.updateProjectionMatrix();
+
                 await this.renderer.instance.compileAsync(this.scene, this.camera, this.scene);
             
+                // env
                 const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128)
                 const cubeCamera = new THREE.CubeCamera(0.01, 100000, cubeRenderTarget)
                 cubeCamera.update(  this.renderer.instance, (this.scene))
                 cubeRenderTarget.dispose()
+
+                // update frustum for far away objects
+                this.renderer.instance.render(this.scene, this.camera)  // Restore original far
+                this.camera.far = originalFar;
+                this.camera.updateProjectionMatrix();
 
                 invisible.forEach((o) => o.visible = false)
 
