@@ -40,11 +40,6 @@ export default class Resources extends EventEmitter
         () =>
     {
         // Loaded 
-        // gsap.delayedCall(0.5, () =>
-        // {
-        //     gsap.to(this.overLay, { duration: 3, opacity: 0, onComplete: () => this.overlay.style.display = 'none' })
-        //     this.ui.style.display = "block"
-        // })
     },
 
     // Progress 
