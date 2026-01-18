@@ -1,7 +1,5 @@
 # Portfolio Showroom
 
-Status: In progress. 
-
 A 3D portfolio space built with Three.js. Walk around, explore different rooms, and inspect objects.
 
 [Live Demo](https://showroom-prototype.pages.dev/)
