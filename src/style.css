@@ -120,13 +120,13 @@
 display: block;
 }
 
-#ui-overlay #mobile-blocker {
+#mobile-blocker {
     display: none;
 } 
 
 @media (max-width: 1024px) {
-    #ui-overlay #mobile-blocker {
-        display: flex; /* Use flexbox */
+    #mobile-blocker {
+        display: flex !important; /* Use flexbox */
         z-index: 2; 
         position: absolute; 
         width: 100vw; 
@@ -136,10 +136,5 @@ display: block;
         font-family: Helvetica, Arial, Helvetica, sans-serif;
         justify-content: center; /* Center horizontally */
         align-items: center; /* Center vertically */
-    }
-
-    #blocker, #experience
-    {
-        /* display: none;  */
     }
 }
